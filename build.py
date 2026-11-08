@@ -10,6 +10,14 @@ assert len(ids) == len(set(ids)) == 105 and set(ids) == expected
 assert len(data['days']) == 12
 assert all(sum(day['budget']) == 90 for day in data['days'])
 html = (ROOT / 'template.html').read_text()
+for block in ('REDIRECT', 'NOTICE'):
+    start = f'<!-- SOURCE_ONLY_{block}_START -->'
+    end = f'<!-- SOURCE_ONLY_{block}_END -->'
+    assert html.count(start) == html.count(end) == 1, f'Missing source-only block: {block}'
+    before, _, remaining = html.partition(start)
+    _, _, after = remaining.partition(end)
+    html = before + after
+assert 'http-equiv="refresh"' not in html, 'The built lesson must not redirect to itself'
 replacements = {
     '/* STYLES */': (ROOT / 'style.css').read_text(),
     '/* COURSE_DATA */': json.dumps(data, ensure_ascii=False).replace('<', '\\u003c'),
