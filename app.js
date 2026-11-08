@@ -47,11 +47,12 @@
   }
   function planCard(item) {
     if (!model.canOpen(item.day, state)) return `<article class="card locked-day"><h2>第${item.day}天</h2><span>尚未解锁</span></article>`;
-    return `<article class="card plan-card"><div class="plan-top"><small class="eyebrow">第${item.day}天</small><h2>${esc(item.title)}</h2></div><ul>${item.goals.map(goal => `<li>${esc(goal)}</li>`).join('')}</ul><details><summary>关联原题</summary><div class="source-items">${sourceItems(item.ids)}</div></details><button data-day="${item.day}">打开课件 →</button></article>`;
+    return `<article class="card plan-card"><div class="plan-top"><small class="eyebrow">第${item.day}天</small><h2>${esc(item.title)}</h2></div><ul>${item.goals.map(goal => `<li>${esc(goal)}</li>`).join('')}</ul><details><summary>关联网站知识点</summary><div class="source-items">${sourceItems(item.ids)}</div></details><button data-day="${item.day}">打开课件 →</button></article>`;
   }
   function roadmap() { $('roadmap-view').innerHTML = `<div class="roadmap-intro"><h1>12天路线</h1></div>${course.days.map(item => `${item.day === 1 || item.day === 7 ? `<h2 class="week-banner">第${item.week}周</h2>` : ''}${planCard(item)}${item.day === 6 || item.day === 12 ? '<p class="week-banner">休息日</p>' : ''}`).join('')}`; }
   function guide() {
-    $('guide-view').innerHTML = `<div class="roadmap-intro"><h1>使用说明</h1></div><section class="card"><h2>每天怎样学习</h2><p>回顾10分钟，图文主线55分钟，自测20分钟，收尾5分钟。每周六个学习日，留一天休息。</p><p>计时归类需手动选择；它只记录用时，不会判断掌握程度。切到后台会暂停。</p><p>正式学习按天解锁：完成5道自测并自评、勾选3项收尾检查后，可以标记本日完成并进入下一天。</p></section><section class="card"><h2>学习模式与笔记</h2><p>学习模式收起两侧栏。每个知识点的“笔记”打开独立记录，支持复制粘贴，输入后自动保存。按Esc先收起笔记，再退出学习模式。</p></section><section class="card"><h2>换电脑继续</h2><ol><li>把项目从GitHub拉到另一台电脑，打开index.html。</li><li>在当前电脑“导出学习记录”，把JSON文件带过去，再“导入学习记录”。</li><li>在另一台电脑继续同一聊天，或将拉下来的项目文件夹关联到新的本地项目。</li></ol><p>课件代码、浏览器学习记录和GPT聊天历史是三件不同的事，不会因同一个账户自动合并。没有文件访问权限时，用“导出本课交接”把当前内容与笔记提供给GPT。</p><p>检查入口review.html可查看全部课程，其记录与正式学习分开。</p></section>`;
+    const progressGuide = review ? '当前为编写检查，12天全部开放；检查完成后再启用逐日解锁。' : '正式学习按天解锁：完成5道自测并自评、勾选3项收尾检查后，可以标记本日完成并进入下一天。';
+    $('guide-view').innerHTML = `<div class="roadmap-intro"><h1>使用说明</h1></div><section class="card"><h2>每天怎样学习</h2><p>回顾10分钟，图文主线55分钟，自测20分钟，收尾5分钟。每周六个学习日，留一天休息。</p><p>计时归类需手动选择；它只记录用时，不会判断掌握程度。切到后台会暂停。</p><p>${progressGuide}</p></section><section class="card"><h2>学习模式与笔记</h2><p>学习模式收起两侧栏。每个知识点的“笔记”打开独立记录，支持复制粘贴，输入后自动保存。按Esc先收起笔记，再退出学习模式。</p></section><section class="card"><h2>换电脑继续</h2><ol><li>把项目从GitHub拉到另一台电脑，打开index.html。</li><li>在当前电脑“导出学习记录”，把JSON文件带过去，再“导入学习记录”。</li><li>在另一台电脑继续同一聊天，或将拉下来的项目文件夹关联到新的本地项目。</li></ol><p>课件代码、浏览器学习记录和GPT聊天历史是三件不同的事，不会因同一个账户自动合并。没有文件访问权限时，用“导出本课交接”把当前内容与笔记提供给GPT。</p><p>编写检查记录与正式学习记录分开。</p></section>`;
   }
   function ratingButtons(id, quiz = false) {
     const labels = quiz ? ['能独立解释', '只答对部分', '需要重学'] : ['已理解', '有点模糊', '需要补充'];
@@ -65,9 +66,9 @@
       el.querySelector('.quiz-rating').innerHTML = `<div class="rating-group">${ratingButtons(id, true)}</div>`;
     });
     document.querySelectorAll('#day-content [data-save]').forEach(el => { const value = state.fields[el.dataset.save]; if (el.type === 'checkbox') el.checked = value === true; else el.value = typeof value === 'string' ? value : ''; });
-    document.querySelectorAll('[data-day-sources]').forEach(el => el.innerHTML = `<span>本课关联原题</span><div class="source-row">${sourceItems(dayInfo().ids, true)}</div>`);
+    document.querySelectorAll('[data-day-sources]').forEach(el => el.innerHTML = `<span>本课关联网站知识点</span><div class="source-row">${sourceItems(dayInfo().ids, true)}</div>`);
     document.querySelectorAll('#day-content .topic').forEach(topic => {
-      topic.querySelector('[data-topic-sources]').innerHTML = `<span>对应原题</span><div class="source-row">${sourceItems(topic.dataset.sources.split(','))}</div>`;
+      topic.querySelector('[data-topic-sources]').innerHTML = `<span>对应网站知识点</span><div class="source-row">${sourceItems(topic.dataset.sources.split(','))}</div>`;
     });
     document.querySelectorAll('[data-day-references]').forEach(el => el.innerHTML = `<div class="source-items">${sourceItems(dayInfo().ids)}</div>`);
     document.querySelectorAll('#section-nav a').forEach((link, i) => link.href = `#d${day}-${['warmup', 'main', 'quiz', 'close'][i]}`);
@@ -172,7 +173,7 @@
     const topic = topics().find(item => item.id === feedbackTopic);
     const ids = topic ? topic.sources : dayInfo().ids;
     const sections = topic ? [topic] : topics();
-    return [`课程：${course.title} v${course.version}`, `位置：第${day}天 · ${topic?.title || dayInfo().title}`, `我的问题：${$('feedback-note').value.trim()}`, '关联原题：', ...ids.map(id => `#${id} ${course.questions[id].label} ${course.questions[id].url}`), ...sections.flatMap(section => [`知识点：${section.title}\n${topicText(section.id)}`, `我的笔记：${state.fields[noteKey(section.id)] || '（未写）'}`]), '请先用适合初学者的解释和例子讲清，再用一道小问题检查我的理解；需要修改课件时，先提出具体建议。'].join('\n\n');
+    return [`课程：${course.title} v${course.version}`, `位置：第${day}天 · ${topic?.title || dayInfo().title}`, `我的问题：${$('feedback-note').value.trim()}`, '关联网站知识点：', ...ids.map(id => `#${id} ${course.questions[id].label} ${course.questions[id].url}`), ...sections.flatMap(section => [`知识点：${section.title}\n${topicText(section.id)}`, `我的笔记：${state.fields[noteKey(section.id)] || '（未写）'}`]), '请先用适合初学者的解释和例子讲清，再用一道小问题检查我的理解；需要修改课件时，先提出具体建议。'].join('\n\n');
   }
   function openFeedback(id) {
     feedbackTopic = id;
@@ -191,7 +192,7 @@
   function download(text, filename, type) { const url = URL.createObjectURL(new Blob([text], { type })); const link = document.createElement('a'); link.href = url; link.download = filename; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
   function exportRecord() { tick(); save(); download(JSON.stringify({ ...state, courseVersion: course.version, exportedAt: new Date().toISOString() }, null, 2), `network-course-${mode}.json`, 'application/json'); }
   function exportHandoff() {
-    const lines = [`# ${course.title}：第${day}天`, `版本 ${course.version}；${dayInfo().title}`, '请作为零基础计算机网络导师，基于下面的课件继续答疑。先解释疑问，再提出是否更新课件。不要因我阅读过内容就认定已掌握。', '## 原题', ...dayInfo().ids.map(id => `- #${id} ${course.questions[id].label}：${course.questions[id].url}`), '## 本课知识'];
+    const lines = [`# ${course.title}：第${day}天`, `版本 ${course.version}；${dayInfo().title}`, '请作为零基础计算机网络导师，基于下面的课件继续答疑。先解释疑问，再提出是否更新课件。不要因我阅读过内容就认定已掌握。', '## 网站知识点', ...dayInfo().ids.map(id => `- #${id} ${course.questions[id].label}：${course.questions[id].url}`), '## 本课知识'];
     for (const topic of topics()) lines.push(`### ${topic.title}`, topicText(topic.id), `我的笔记：${state.fields[noteKey(topic.id)] || '（未写）'}`);
     lines.push('## 我的作答');
     document.querySelectorAll('[data-quiz]').forEach(el => {
@@ -245,7 +246,7 @@
   window.addEventListener('pagehide', pause);
   let ticks = 0; setInterval(() => { if (running) { tick(); renderTimer(); if (++ticks % 10 === 0) save(); } }, 1000);
   document.body.classList.toggle('review-mode', review);
-  $('review-banner').hidden = !review; $('review-return').hidden = !review;
+  $('review-banner').hidden = !review; $('review-return').hidden = !review || course.default_mode === 'review';
   $('version').textContent = course.version;
   roadmap(); guide(); openDay(day, false);
 })();

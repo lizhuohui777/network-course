@@ -39,6 +39,7 @@ class LessonInspector(HTMLParser):
 
 
 def validate(course):
+    assert course['default_mode'] in ('review', 'study')
     assert len(course['days']) == 12
     mapped = [qid for day in course['days'] for qid in day['ids']]
     assert len(mapped) == len(set(mapped)) == 105
@@ -100,7 +101,7 @@ def main():
     options = args.parse_args()
     course = json.loads((ROOT / 'curriculum.json').read_text(encoding='utf-8'))
     lessons = validate(course)
-    for filename, mode in [('index.html', 'study'), ('review.html', 'review')]:
+    for filename, mode in [('index.html', course['default_mode']), ('review.html', 'review')]:
         html = assemble(course, lessons, mode)
         path = ROOT / filename
         if options.check:
