@@ -29,3 +29,69 @@
 .week-banner{font-weight:600}
 @media screen and (max-width:1220px){.timer-breakdown{display:none}}
 @media screen and (max-width:760px){.day-copy{display:block}.day-button{flex-shrink:0}}
+
+/* Distinct knowledge blocks and an optional notebook. */
+#d1-main.lesson-section{border:0;background:transparent;padding:0}
+#d1-main>.section-heading{padding:5px 3px 10px}
+#d1-main .topic{padding:30px;margin:0 0 30px;background:var(--paper);border:1px solid #cfddd2;border-top:4px solid #9ebfac;border-radius:15px;scroll-margin-top:90px}
+#d1-main .topic:first-of-type{padding-top:30px;border-top:4px solid #9ebfac}
+.topic-heading{display:flex;align-items:center;gap:13px;padding-bottom:20px;margin-bottom:22px;border-bottom:1px solid var(--line)}
+.topic-heading h3{margin:0;font-size:23px;flex:1}
+.topic-number{width:34px;height:34px;flex-shrink:0;border-radius:9px;background:var(--accent);color:white;font-size:13px;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.topic-note-button{padding:5px 11px;font-size:12px;color:var(--accent)}
+.study-mode-entry{font-size:13px;color:var(--accent);margin-left:10px}
+.phase-help{font-size:11px;line-height:1.7;margin:9px 0;color:var(--muted)}
+.study-toolbar{position:fixed;top:0;left:0;right:0;z-index:45;background:var(--paper);border-bottom:1px solid var(--line)}
+.study-toolbar-inner{max-width:1540px;margin:auto;min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 32px}
+#study-day-label{font-size:13px;color:var(--muted)}
+.compact-timer{display:flex;align-items:center;gap:12px;margin-left:auto;font-size:13px}
+.compact-timer select{max-width:155px;border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:var(--paper);color:var(--ink);font-size:12px}
+#study-timer-display{font-variant-numeric:tabular-nums;font-size:21px;font-weight:650;min-width:58px}
+#study-timer-toggle{padding:5px 12px;color:var(--accent)}
+.study-toolbar-actions{display:flex;gap:8px}
+.study-toolbar-actions button{font-size:12px;padding:5px 10px}
+.topic-notes{grid-column:3;grid-row:1;position:sticky;top:24px;align-self:start;max-height:calc(100vh - 48px);padding:20px;border:1px solid var(--line);border-radius:15px;background:var(--paper);display:flex;flex-direction:column;gap:12px;min-width:0;z-index:30}
+.notes-heading{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.notes-heading h2{font-size:18px;margin:0}
+#notes-close{border:0;font-size:24px;line-height:1;padding:3px 7px}
+.topic-notes>label{font-size:12px;color:var(--muted)}
+#notes-topic-select{width:100%;min-width:0;padding:9px 6px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;font-size:12px}
+#topic-note-editor{min-height:250px;height:48vh;max-height:calc(100vh - 260px);resize:vertical;font-size:14px;line-height:1.85;padding:13px}
+.notes-footer{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:11px;color:var(--muted)}
+.notes-footer button{font-size:12px;white-space:nowrap}
+.notes-backdrop{display:none}
+body.notes-open .study-tools{display:none}
+body.study-mode .topbar,body.study-mode .sidebar,body.study-mode .study-tools,body.study-mode .page-footer{display:none}
+@media screen{
+ body.study-mode .layout{display:block;max-width:1180px;padding:92px 32px 40px}
+ body.study-mode .layout main{width:100%;min-width:0;grid-column:1;grid-row:1}
+ body.study-mode .hero{padding-top:0}
+ body.study-mode.notes-open .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;max-width:1540px;gap:28px}
+ body.study-mode .topic-notes{grid-column:2;grid-row:1;top:88px;max-height:calc(100vh - 112px)}
+ body.study-mode section[id]{scroll-margin-top:90px}
+}
+@media screen and (max-width:1100px){
+ body.study-mode.notes-open .layout{display:block;max-width:1180px}
+ body.notes-open .topic-notes{position:fixed;top:82px;right:16px;bottom:16px;max-height:none;width:min(380px,calc(100vw - 32px));z-index:60}
+ body.notes-open .notes-backdrop{display:block;position:fixed;inset:0;z-index:50;border:0;border-radius:0;padding:0;background:#18352f44}
+ #topic-note-editor{height:auto;flex:1;min-height:170px;max-height:none}
+ .notes-footer{flex-shrink:0}
+}
+@media screen and (max-width:760px){
+ #d1-main .topic,#d1-main .topic:first-of-type{padding:21px 17px;margin-bottom:25px}
+ .topic-heading{gap:10px;flex-wrap:wrap;margin-bottom:18px;padding-bottom:16px}
+ .topic-heading h3{font-size:20px;min-width:150px}
+ .topic-number{width:30px;height:30px}
+ .topbar nav{flex-wrap:wrap}
+ .study-mode-entry{margin-left:0;padding:6px 9px;font-size:12px}
+ body.study-mode .layout{padding:90px 14px 25px}
+ .study-toolbar-inner{padding:9px 12px;gap:8px;min-height:66px}
+ #study-day-label{display:none}
+ .compact-timer{margin:0;gap:7px}
+ .compact-timer select{max-width:115px;font-size:11px;padding:5px}
+ #study-timer-display{font-size:18px;min-width:48px}
+ #study-timer-toggle{font-size:11px;padding:5px 8px}
+ .study-toolbar-actions{gap:5px;margin-left:auto}
+ .study-toolbar-actions button{font-size:11px;padding:5px 7px}
+}
+@media print{.study-toolbar,.topic-notes,.notes-backdrop,.topic-note-button,.study-mode-entry{display:none!important}#d1-main .topic{border:0;padding:12px 0;margin:15px 0}.topic-heading{padding-bottom:10px;margin-bottom:12px}}

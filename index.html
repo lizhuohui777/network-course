@@ -37,12 +37,81 @@
 .week-banner{font-weight:600}
 @media screen and (max-width:1220px){.timer-breakdown{display:none}}
 @media screen and (max-width:760px){.day-copy{display:block}.day-button{flex-shrink:0}}
+
+/* Distinct knowledge blocks and an optional notebook. */
+#d1-main.lesson-section{border:0;background:transparent;padding:0}
+#d1-main>.section-heading{padding:5px 3px 10px}
+#d1-main .topic{padding:30px;margin:0 0 30px;background:var(--paper);border:1px solid #cfddd2;border-top:4px solid #9ebfac;border-radius:15px;scroll-margin-top:90px}
+#d1-main .topic:first-of-type{padding-top:30px;border-top:4px solid #9ebfac}
+.topic-heading{display:flex;align-items:center;gap:13px;padding-bottom:20px;margin-bottom:22px;border-bottom:1px solid var(--line)}
+.topic-heading h3{margin:0;font-size:23px;flex:1}
+.topic-number{width:34px;height:34px;flex-shrink:0;border-radius:9px;background:var(--accent);color:white;font-size:13px;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.topic-note-button{padding:5px 11px;font-size:12px;color:var(--accent)}
+.study-mode-entry{font-size:13px;color:var(--accent);margin-left:10px}
+.phase-help{font-size:11px;line-height:1.7;margin:9px 0;color:var(--muted)}
+.study-toolbar{position:fixed;top:0;left:0;right:0;z-index:45;background:var(--paper);border-bottom:1px solid var(--line)}
+.study-toolbar-inner{max-width:1540px;margin:auto;min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 32px}
+#study-day-label{font-size:13px;color:var(--muted)}
+.compact-timer{display:flex;align-items:center;gap:12px;margin-left:auto;font-size:13px}
+.compact-timer select{max-width:155px;border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:var(--paper);color:var(--ink);font-size:12px}
+#study-timer-display{font-variant-numeric:tabular-nums;font-size:21px;font-weight:650;min-width:58px}
+#study-timer-toggle{padding:5px 12px;color:var(--accent)}
+.study-toolbar-actions{display:flex;gap:8px}
+.study-toolbar-actions button{font-size:12px;padding:5px 10px}
+.topic-notes{grid-column:3;grid-row:1;position:sticky;top:24px;align-self:start;max-height:calc(100vh - 48px);padding:20px;border:1px solid var(--line);border-radius:15px;background:var(--paper);display:flex;flex-direction:column;gap:12px;min-width:0;z-index:30}
+.notes-heading{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.notes-heading h2{font-size:18px;margin:0}
+#notes-close{border:0;font-size:24px;line-height:1;padding:3px 7px}
+.topic-notes>label{font-size:12px;color:var(--muted)}
+#notes-topic-select{width:100%;min-width:0;padding:9px 6px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;font-size:12px}
+#topic-note-editor{min-height:250px;height:48vh;max-height:calc(100vh - 260px);resize:vertical;font-size:14px;line-height:1.85;padding:13px}
+.notes-footer{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:11px;color:var(--muted)}
+.notes-footer button{font-size:12px;white-space:nowrap}
+.notes-backdrop{display:none}
+body.notes-open .study-tools{display:none}
+body.study-mode .topbar,body.study-mode .sidebar,body.study-mode .study-tools,body.study-mode .page-footer{display:none}
+@media screen{
+ body.study-mode .layout{display:block;max-width:1180px;padding:92px 32px 40px}
+ body.study-mode .layout main{width:100%;min-width:0;grid-column:1;grid-row:1}
+ body.study-mode .hero{padding-top:0}
+ body.study-mode.notes-open .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;max-width:1540px;gap:28px}
+ body.study-mode .topic-notes{grid-column:2;grid-row:1;top:88px;max-height:calc(100vh - 112px)}
+ body.study-mode section[id]{scroll-margin-top:90px}
+}
+@media screen and (max-width:1100px){
+ body.study-mode.notes-open .layout{display:block;max-width:1180px}
+ body.notes-open .topic-notes{position:fixed;top:82px;right:16px;bottom:16px;max-height:none;width:min(380px,calc(100vw - 32px));z-index:60}
+ body.notes-open .notes-backdrop{display:block;position:fixed;inset:0;z-index:50;border:0;border-radius:0;padding:0;background:#18352f44}
+ #topic-note-editor{height:auto;flex:1;min-height:170px;max-height:none}
+ .notes-footer{flex-shrink:0}
+}
+@media screen and (max-width:760px){
+ #d1-main .topic,#d1-main .topic:first-of-type{padding:21px 17px;margin-bottom:25px}
+ .topic-heading{gap:10px;flex-wrap:wrap;margin-bottom:18px;padding-bottom:16px}
+ .topic-heading h3{font-size:20px;min-width:150px}
+ .topic-number{width:30px;height:30px}
+ .topbar nav{flex-wrap:wrap}
+ .study-mode-entry{margin-left:0;padding:6px 9px;font-size:12px}
+ body.study-mode .layout{padding:90px 14px 25px}
+ .study-toolbar-inner{padding:9px 12px;gap:8px;min-height:66px}
+ #study-day-label{display:none}
+ .compact-timer{margin:0;gap:7px}
+ .compact-timer select{max-width:115px;font-size:11px;padding:5px}
+ #study-timer-display{font-size:18px;min-width:48px}
+ #study-timer-toggle{font-size:11px;padding:5px 8px}
+ .study-toolbar-actions{gap:5px;margin-left:auto}
+ .study-toolbar-actions button{font-size:11px;padding:5px 7px}
+}
+@media print{.study-toolbar,.topic-notes,.notes-backdrop,.topic-note-button,.study-mode-entry{display:none!important}#d1-main .topic{border:0;padding:12px 0;margin:15px 0}.topic-heading{padding-bottom:10px;margin-bottom:12px}}
 </style>
 </head>
 <body>
 
   <a class="skip" href="#workspace">跳到课程正文</a>
-  <header class="topbar"><a class="brand" href="#" data-view="lesson"><span class="brand-mark">N</span><span>网络入门</span></a><nav aria-label="主要导航"><button class="tab active" data-view="lesson">学习课件</button><button class="tab" data-view="roadmap">12天路线</button><button class="tab" data-view="guide">使用说明</button></nav></header>
+  <header class="topbar"><a class="brand" href="#" data-view="lesson"><span class="brand-mark">N</span><span>网络入门</span></a><nav aria-label="主要导航"><button class="tab active" data-view="lesson">学习课件</button><button class="tab" data-view="roadmap">12天路线</button><button class="tab" data-view="guide">使用说明</button><button id="study-mode-toggle" class="study-mode-entry" aria-pressed="false">学习模式</button></nav></header>
+  <div id="study-toolbar" class="study-toolbar" aria-label="学习模式工具栏" hidden>
+    <div class="study-toolbar-inner"><span id="study-day-label">第1天</span><div class="compact-timer"><label class="sr-only" for="study-phase-select">计时归类（手动）</label><select id="study-phase-select"><option value="recall">回忆检查</option><option value="main">今日主线</option><option value="quiz">理解自测</option><option value="close">收尾记录</option></select><span id="study-timer-display">00:00</span><button id="study-timer-toggle">开始</button></div><div class="study-toolbar-actions"><button id="notes-toggle" aria-controls="topic-notes" aria-expanded="false">笔记</button><button id="study-mode-exit">退出学习模式</button></div></div>
+  </div>
   <div class="layout">
     <aside class="sidebar" aria-label="课程目录">
       <div class="side-intro"><h2>课程目录</h2></div>
@@ -61,11 +130,18 @@
       <footer class="page-footer"><div class="utility"><button class="text-button" id="export-data">导出学习记录</button><label class="text-button import-label" for="import-data">导入学习记录</label><input id="import-data" type="file" accept="application/json,.json" hidden><button class="text-button" id="print-page">打印 / 存为PDF</button></div><small>v<span id="version"></span></small></footer>
     </main>
     <aside class="study-tools" aria-label="学习辅助">
-      <div class="timer-card"><h2>学习计时</h2><div id="timer-display" class="timer" aria-live="off">00:00</div><p id="timer-hint">本日用时 / 90分钟</p><div class="timer-actions"><button id="timer-toggle" class="primary">开始计时</button></div><label for="phase-select">当前环节</label><select id="phase-select"><option value="recall">回忆 / 摸底 · 10分钟</option><option value="main">图文主线 · 55分钟</option><option value="quiz">理解自测 · 20分钟</option><option value="close">收尾记录 · 5分钟</option></select><details class="timer-breakdown"><summary>分段用时</summary><div id="phase-times" class="phase-times"></div></details></div>
+      <div class="timer-card"><h2>学习计时</h2><div id="timer-display" class="timer" aria-live="off">00:00</div><p id="timer-hint">本日用时 / 90分钟</p><div class="timer-actions"><button id="timer-toggle" class="primary">开始计时</button></div><label for="phase-select">计时归类（手动）</label><select id="phase-select"><option value="recall">回忆 / 摸底 · 10分钟</option><option value="main">图文主线 · 55分钟</option><option value="quiz">理解自测 · 20分钟</option><option value="close">收尾记录 · 5分钟</option></select><details class="timer-breakdown"><summary>分段用时</summary><p class="phase-help">手动选择类别后计时；切换类别时，先结算上一段用时。</p><div id="phase-times" class="phase-times"></div></details></div>
       <nav id="section-nav" class="section-nav" aria-label="本课导航"><a href="#d1-warmup">01 回忆检查</a><a href="#d1-main">02 今日主线</a><a href="#d1-quiz">03 理解自测</a><a href="#d1-close">04 收尾记录</a></nav>
       <button id="feedback-open" class="feedback-trigger">这里没懂，整理问题 →</button>
     </aside>
+    <aside id="topic-notes" class="topic-notes" aria-labelledby="notes-heading" hidden>
+      <div class="notes-heading"><h2 id="notes-heading">学习笔记</h2><button id="notes-close" aria-label="收起学习笔记">×</button></div>
+      <label for="notes-topic-select">知识点</label><select id="notes-topic-select"></select>
+      <label class="sr-only" for="topic-note-editor">本知识点的笔记</label><textarea id="topic-note-editor" rows="16" maxlength="20000" placeholder="写下你的理解、例子或问题，也可以直接粘贴文本。"></textarea>
+      <div class="notes-footer"><span id="topic-note-status" role="status"></span><button id="copy-topic-note" class="text-button">复制笔记</button></div>
+    </aside>
   </div>
+  <button id="notes-backdrop" class="notes-backdrop" aria-label="收起学习笔记" hidden></button>
   <dialog id="feedback-dialog" aria-labelledby="feedback-heading" aria-describedby="feedback-intro">
     <form method="dialog"><button class="dialog-close" aria-label="关闭反馈">×</button></form>
     <h2 id="feedback-heading">这里没懂，问一问</h2>
@@ -80,7 +156,7 @@
     <p class="feedback-help">复制后，回到我们的聊天输入框，粘贴并发送即可。网页不会自动发送；你也可以直接在聊天中问我。</p>
   </dialog>
   <div id="toast" role="status" aria-live="polite"></div>
-  <script id="course-data" type="application/json">{"id": "network-foundations-12", "version": "0.1.3", "checked_at": "2026-11-08", "title": "计算机网络 · 两周入门", "published_days": [1], "source_note": "原站6页正文编号1–104，含一条无编号补充题；第80题跨页重复，合并计入。", "days": [{"day": 1, "week": 1, "title": "先看懂网络这张地图", "ids": ["1", "30", "33", "49", "52", "67", "32"], "goals": ["客户端与服务器各在做什么", "分层如何分工、数据如何封装", "IP地址与端口各解决什么问题"], "why": "从熟悉的网页出发，搭好后面11天都会用到的骨架。", "exit": "区分IP与端口，解释分层的作用，并将常见职责放进五层框架。", "status": "sample", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 2, "week": 1, "title": "数据去哪里：寻址与DNS", "ids": ["78", "90", "31", "91", "3", "4", "17", "34", "18"], "goals": ["链路和跨网络转发的区别", "域名如何变成可用地址", "递归与迭代、缓存与分流"], "why": "有了分层地图，再学习“怎样找到目标”。UDP/TCP选择推迟至第3天。", "exit": "画出DNS查询步骤，说明Ping能检查什么。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 3, "week": 1, "title": "怎样运送：TCP与UDP", "ids": ["50", "85", "86", "87", "88", "89", "45", "92", "5", "6"], "goals": ["可靠字节流与数据报", "TCP/UDP的选择条件", "MTU/MSS与大小限制的初识"], "why": "先理解运输服务，再回头回答DNS为什么使用不同运输方式。", "exit": "根据可靠性、顺序和延迟要求，说明TCP与UDP的选择。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 4, "week": 1, "title": "先建立连接：TCP握手", "ids": ["47", "51", "55", "56", "57", "58", "59", "60"], "goals": ["序列号和确认号做什么", "三次握手怎样互相确认", "队列与SYN攻击的关系"], "why": "第3天知道TCP提供什么，今天解释连接如何开始。", "exit": "画出三次握手，并解释每一步确认了什么。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 5, "week": 1, "title": "连接怎样结束：挥手与状态", "ids": ["48", "61", "62", "63", "64", "65", "68", "81", "103"], "goals": ["两个方向分别关闭", "TIME_WAIT为什么存在", "状态和应用程序动作的关系"], "why": "先理解握手，再用双向通信解释关闭，合并重复等待题。", "exit": "解释主动与被动关闭的差异，以及TIME_WAIT的作用。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 6, "week": 1, "title": "可靠到达与消息边界", "ids": ["84", "94", "8", "66", "S1"], "goals": ["丢失怎样被发现与重传", "为什么TCP不保留应用消息边界", "从建立、传输到关闭的完整过程"], "why": "先有序列号、确认和连接概念，才能理解重传与拆分消息。", "exit": "追踪一次丢包重传，并为连续字节设计消息边界。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 7, "week": 2, "title": "快慢协调：窗口与拥塞", "ids": ["82", "93", "100", "101", "79", "80"], "goals": ["接收方忙与网络拥堵是两种问题", "窗口怎样控制在途数据", "经典拥塞算法的变化方向"], "why": "第一周休息后，用可靠传输和确认机制理解节奏控制。", "exit": "区分流量控制与拥塞控制，解释窗口为什么变化。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 8, "week": 2, "title": "应用说什么：HTTP报文", "ids": ["53", "10", "23", "102", "11", "36", "37", "38", "39", "77"], "goals": ["请求和响应各含什么", "方法与状态码表达什么", "区分规范、实现限制与常见误解"], "why": "运输机制已知，现在观察运输的应用内容。", "exit": "读懂一组HTTP请求与响应，解释GET和POST的区别。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 9, "week": 2, "title": "少做重复工作：复用与缓存", "ids": ["7", "12", "13", "14", "54", "9", "35", "46", "76"], "goals": ["连接复用与协议版本", "缓存的命中、过期和验证", "私有缓存与共享缓存"], "why": "在会读报文后，用首部解释连接和缓存策略。", "exit": "判断一次缓存验证过程，说明连接复用与协议版本的关系。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 10, "week": 2, "title": "安全地传：HTTPS与TLS", "ids": ["19", "20", "69", "70", "71", "72", "73", "75", "21", "22", "74"], "goals": ["窃听和身份冒充是不同风险", "两类密钥各有什么用途", "证书和TLS如何配合"], "why": "先解释加密、认证和证书，再讲HTTPS过程。", "exit": "用流程图解释HTTPS如何保护数据并验证身份。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 11, "week": 2, "title": "记住用户：状态与基础安全", "ids": ["24", "25", "26", "27", "28", "40", "41", "42", "43", "29", "44", "95", "96", "97", "98", "99"], "goals": ["Cookie如何携带标识", "服务器Session如何关联用户", "识别几类常见安全风险"], "why": "9道状态题合并为一条主线；其余安全题仅作风险与防护的认识。", "exit": "用一次登录解释Cookie与Session的配合，区分XSS和CSRF。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 12, "week": 2, "title": "把整条链路讲通", "ids": ["2", "15", "16", "83", "104"], "goals": ["从输入地址到显示网页的全过程", "把应用接口放回网络地图", "综合自测与薄弱点整理"], "why": "此时再学原站最前面的综合题，避免零基础背长流程。", "exit": "独立串联一次网页访问中的DNS、传输、HTTP/TLS与缓存。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}], "questions": {"1": {"label": "分层各自负责什么", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 1}, "2": {"label": "HTTP通信的大致过程", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 12}, "3": {"label": "DNS的用途", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 2}, "4": {"label": "DNS如何找到地址", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 2}, "5": {"label": "DNS查询与UDP", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 3}, "6": {"label": "DNS区域传送与TCP", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 3}, "7": {"label": "HTTP连接的复用方式", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 9}, "8": {"label": "TCP为什么需要消息边界", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 6}, "9": {"label": "缓存解决什么问题", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 9}, "10": {"label": "HTTP的方法", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 8}, "11": {"label": "GET与POST如何区分", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 8}, "12": {"label": "连接与请求的数量关系", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 9}, "13": {"label": "HTTP请求并发与版本差异", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 9}, "14": {"label": "浏览器连接数的适用条件", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 9}, "15": {"label": "网页访问的全链路概览", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 12}, "16": {"label": "网页访问的详细串联", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 12}, "17": {"label": "域名解析的逐步追踪", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 2}, "18": {"label": "DNS如何分配访问流量", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 2}, "19": {"label": "HTTP与HTTPS的差异", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 10}, "20": {"label": "TLS的用途", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 10}, "21": {"label": "HTTPS安全通信的过程", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 10}, "22": {"label": "公钥的可信来源", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 10}, "23": {"label": "HTTP报文结构", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 8}, "24": {"label": "Cookie的含义", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "25": {"label": "Cookie的用途", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "26": {"label": "Session的整体认识", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "27": {"label": "Session如何运转", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "28": {"label": "登录状态两种机制的比较", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "29": {"label": "SQL注入的基本风险", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "30": {"label": "用图理解OSI分层", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 1}, "31": {"label": "RARP的历史用途", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 2}, "32": {"label": "端口的编号范围", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 1}, "33": {"label": "分层为什么能降低复杂度", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 1}, "34": {"label": "递归查询与迭代查询", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 2}, "35": {"label": "缓存的共享范围", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 9}, "36": {"label": "GET参数与编码位置", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 8}, "37": {"label": "GET长度限制来自哪里", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 8}, "38": {"label": "GET/POST与传输安全", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 8}, "39": {"label": "POST与数据包数量的误解", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 8}, "40": {"label": "认识服务器会话状态", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "41": {"label": "一次Session使用过程", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 11}, "42": {"label": "登录状态方案的选择", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 11}, "43": {"label": "Cookie/Session比较与回顾", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 11}, "44": {"label": "DDoS的基本认识", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 11}, "45": {"label": "MTU与MSS的区别", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 3}, "46": {"label": "缓存的新鲜度与验证", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 9}, "47": {"label": "TCP报头的作用", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "48": {"label": "TCP状态的整体地图", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 5}, "49": {"label": "分层与协议的对应关系", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 1}, "50": {"label": "TCP提供的服务", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 3}, "51": {"label": "TCP关键字段与职责", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "52": {"label": "OSI各层的功能回顾", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 1}, "53": {"label": "常见应用协议的用途", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 8}, "54": {"label": "HTTP完成后连接的去留", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 9}, "55": {"label": "三次握手的过程", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "56": {"label": "为什么需要第三步确认", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "57": {"label": "半连接队列的作用", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "58": {"label": "初始序列号的选择", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "59": {"label": "握手时能否携带数据", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "60": {"label": "SYN攻击利用了什么", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "61": {"label": "连接如何双向关闭", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "62": {"label": "关闭连接的步骤为何不同", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "63": {"label": "等待时间与MSL", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "64": {"label": "等待如何保护关闭过程", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "65": {"label": "TIME_WAIT与旧报文", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "66": {"label": "字节流的消息边界方案", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 6}, "67": {"label": "表示层和会话层的职责", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 1}, "68": {"label": "连接状态变化的全景图", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "69": {"label": "对称加密的特点", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "70": {"label": "非对称加密的特点", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "71": {"label": "HTTPS的整体认识", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "72": {"label": "明文HTTP的局限", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "73": {"label": "HTTPS组合使用加密机制", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "74": {"label": "TLS会话复用的认识", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "75": {"label": "证书在认证中的作用", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "76": {"label": "缓存的验证与控制", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 9}, "77": {"label": "请求大小限制的来源", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 8}, "78": {"label": "网络层协议的角色", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 2}, "79": {"label": "拥塞控制的四种经典机制", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 7}, "80": {"label": "快速重传的触发依据", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 7}, "81": {"label": "关闭状态与程序行为", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 5}, "82": {"label": "流量控制的目标", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 7}, "83": {"label": "服务器Socket接口的顺序", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 12}, "84": {"label": "可靠传输如何协作", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 6}, "85": {"label": "UDP提供的服务", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "86": {"label": "TCP和UDP如何选择", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "87": {"label": "传输服务的关键特点", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "88": {"label": "TCP与上层应用的关系", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "89": {"label": "UDP与上层应用的关系", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "90": {"label": "链路层协议的角色", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 2}, "91": {"label": "Ping与ICMP", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 2}, "92": {"label": "UDP报文大小的取舍", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "93": {"label": "接收窗口怎样限制发送", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 7}, "94": {"label": "RTT/RTO与超时重传", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 6}, "95": {"label": "XSS的基本风险", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 11}, "96": {"label": "CSRF的基本风险", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 11}, "97": {"label": "CSRF的防护思路", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 11}, "98": {"label": "上传文件带来的风险", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 11}, "99": {"label": "文件上传的防护思路", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 11}, "100": {"label": "拥塞控制的目标", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 7}, "101": {"label": "流量控制和拥塞控制的区别", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html", "day": 7}, "102": {"label": "HTTP状态码的分类", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html", "day": 8}, "103": {"label": "CLOSE_WAIT堆积的诊断方向", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html", "day": 5}, "104": {"label": "端口号与连接数量的区别", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html", "day": 12}, "S1": {"label": "封包与应用消息边界的补充认识", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 6}}, "references": [{"label": "原站：计算机网络第1页", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html"}, {"label": "RFC 1122：Internet分层与封装", "url": "https://www.rfc-editor.org/rfc/rfc1122.html"}, {"label": "RFC 6335：端口号与分配范围", "url": "https://www.rfc-editor.org/rfc/rfc6335.html"}, {"label": "MDN：HTTP概览与版本", "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview"}]}</script>
+  <script id="course-data" type="application/json">{"id": "network-foundations-12", "version": "0.2.0", "checked_at": "2026-11-08", "title": "计算机网络 · 两周入门", "published_days": [1], "source_note": "原站6页正文编号1–104，含一条无编号补充题；第80题跨页重复，合并计入。", "days": [{"day": 1, "week": 1, "title": "先看懂网络这张地图", "ids": ["1", "30", "33", "49", "52", "67", "32"], "goals": ["客户端与服务器各在做什么", "分层如何分工、数据如何封装", "IP地址与端口各解决什么问题"], "why": "从熟悉的网页出发，搭好后面11天都会用到的骨架。", "exit": "区分IP与端口，解释分层的作用，并将常见职责放进五层框架。", "status": "sample", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 2, "week": 1, "title": "数据去哪里：寻址与DNS", "ids": ["78", "90", "31", "91", "3", "4", "17", "34", "18"], "goals": ["链路和跨网络转发的区别", "域名如何变成可用地址", "递归与迭代、缓存与分流"], "why": "有了分层地图，再学习“怎样找到目标”。UDP/TCP选择推迟至第3天。", "exit": "画出DNS查询步骤，说明Ping能检查什么。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 3, "week": 1, "title": "怎样运送：TCP与UDP", "ids": ["50", "85", "86", "87", "88", "89", "45", "92", "5", "6"], "goals": ["可靠字节流与数据报", "TCP/UDP的选择条件", "MTU/MSS与大小限制的初识"], "why": "先理解运输服务，再回头回答DNS为什么使用不同运输方式。", "exit": "根据可靠性、顺序和延迟要求，说明TCP与UDP的选择。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 4, "week": 1, "title": "先建立连接：TCP握手", "ids": ["47", "51", "55", "56", "57", "58", "59", "60"], "goals": ["序列号和确认号做什么", "三次握手怎样互相确认", "队列与SYN攻击的关系"], "why": "第3天知道TCP提供什么，今天解释连接如何开始。", "exit": "画出三次握手，并解释每一步确认了什么。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 5, "week": 1, "title": "连接怎样结束：挥手与状态", "ids": ["48", "61", "62", "63", "64", "65", "68", "81", "103"], "goals": ["两个方向分别关闭", "TIME_WAIT为什么存在", "状态和应用程序动作的关系"], "why": "先理解握手，再用双向通信解释关闭，合并重复等待题。", "exit": "解释主动与被动关闭的差异，以及TIME_WAIT的作用。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 6, "week": 1, "title": "可靠到达与消息边界", "ids": ["84", "94", "8", "66", "S1"], "goals": ["丢失怎样被发现与重传", "为什么TCP不保留应用消息边界", "从建立、传输到关闭的完整过程"], "why": "先有序列号、确认和连接概念，才能理解重传与拆分消息。", "exit": "追踪一次丢包重传，并为连续字节设计消息边界。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 7, "week": 2, "title": "快慢协调：窗口与拥塞", "ids": ["82", "93", "100", "101", "79", "80"], "goals": ["接收方忙与网络拥堵是两种问题", "窗口怎样控制在途数据", "经典拥塞算法的变化方向"], "why": "第一周休息后，用可靠传输和确认机制理解节奏控制。", "exit": "区分流量控制与拥塞控制，解释窗口为什么变化。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 8, "week": 2, "title": "应用说什么：HTTP报文", "ids": ["53", "10", "23", "102", "11", "36", "37", "38", "39", "77"], "goals": ["请求和响应各含什么", "方法与状态码表达什么", "区分规范、实现限制与常见误解"], "why": "运输机制已知，现在观察运输的应用内容。", "exit": "读懂一组HTTP请求与响应，解释GET和POST的区别。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 9, "week": 2, "title": "少做重复工作：复用与缓存", "ids": ["7", "12", "13", "14", "54", "9", "35", "46", "76"], "goals": ["连接复用与协议版本", "缓存的命中、过期和验证", "私有缓存与共享缓存"], "why": "在会读报文后，用首部解释连接和缓存策略。", "exit": "判断一次缓存验证过程，说明连接复用与协议版本的关系。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 10, "week": 2, "title": "安全地传：HTTPS与TLS", "ids": ["19", "20", "69", "70", "71", "72", "73", "75", "21", "22", "74"], "goals": ["窃听和身份冒充是不同风险", "两类密钥各有什么用途", "证书和TLS如何配合"], "why": "先解释加密、认证和证书，再讲HTTPS过程。", "exit": "用流程图解释HTTPS如何保护数据并验证身份。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 11, "week": 2, "title": "记住用户：状态与基础安全", "ids": ["24", "25", "26", "27", "28", "40", "41", "42", "43", "29", "44", "95", "96", "97", "98", "99"], "goals": ["Cookie如何携带标识", "服务器Session如何关联用户", "识别几类常见安全风险"], "why": "9道状态题合并为一条主线；其余安全题仅作风险与防护的认识。", "exit": "用一次登录解释Cookie与Session的配合，区分XSS和CSRF。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 12, "week": 2, "title": "把整条链路讲通", "ids": ["2", "15", "16", "83", "104"], "goals": ["从输入地址到显示网页的全过程", "把应用接口放回网络地图", "综合自测与薄弱点整理"], "why": "此时再学原站最前面的综合题，避免零基础背长流程。", "exit": "独立串联一次网页访问中的DNS、传输、HTTP/TLS与缓存。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}], "questions": {"1": {"label": "分层各自负责什么", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 1}, "2": {"label": "HTTP通信的大致过程", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 12}, "3": {"label": "DNS的用途", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 2}, "4": {"label": "DNS如何找到地址", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 2}, "5": {"label": "DNS查询与UDP", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 3}, "6": {"label": "DNS区域传送与TCP", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 3}, "7": {"label": "HTTP连接的复用方式", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 9}, "8": {"label": "TCP为什么需要消息边界", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 6}, "9": {"label": "缓存解决什么问题", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 9}, "10": {"label": "HTTP的方法", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 8}, "11": {"label": "GET与POST如何区分", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 8}, "12": {"label": "连接与请求的数量关系", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 9}, "13": {"label": "HTTP请求并发与版本差异", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 9}, "14": {"label": "浏览器连接数的适用条件", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 9}, "15": {"label": "网页访问的全链路概览", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 12}, "16": {"label": "网页访问的详细串联", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 12}, "17": {"label": "域名解析的逐步追踪", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 2}, "18": {"label": "DNS如何分配访问流量", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 2}, "19": {"label": "HTTP与HTTPS的差异", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 10}, "20": {"label": "TLS的用途", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 10}, "21": {"label": "HTTPS安全通信的过程", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 10}, "22": {"label": "公钥的可信来源", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 10}, "23": {"label": "HTTP报文结构", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 8}, "24": {"label": "Cookie的含义", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "25": {"label": "Cookie的用途", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "26": {"label": "Session的整体认识", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "27": {"label": "Session如何运转", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "28": {"label": "登录状态两种机制的比较", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "29": {"label": "SQL注入的基本风险", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "30": {"label": "用图理解OSI分层", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 1}, "31": {"label": "RARP的历史用途", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 2}, "32": {"label": "端口的编号范围", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 1}, "33": {"label": "分层为什么能降低复杂度", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 1}, "34": {"label": "递归查询与迭代查询", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 2}, "35": {"label": "缓存的共享范围", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 9}, "36": {"label": "GET参数与编码位置", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 8}, "37": {"label": "GET长度限制来自哪里", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 8}, "38": {"label": "GET/POST与传输安全", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 8}, "39": {"label": "POST与数据包数量的误解", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 8}, "40": {"label": "认识服务器会话状态", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "41": {"label": "一次Session使用过程", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 11}, "42": {"label": "登录状态方案的选择", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 11}, "43": {"label": "Cookie/Session比较与回顾", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 11}, "44": {"label": "DDoS的基本认识", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 11}, "45": {"label": "MTU与MSS的区别", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 3}, "46": {"label": "缓存的新鲜度与验证", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 9}, "47": {"label": "TCP报头的作用", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "48": {"label": "TCP状态的整体地图", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 5}, "49": {"label": "分层与协议的对应关系", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 1}, "50": {"label": "TCP提供的服务", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 3}, "51": {"label": "TCP关键字段与职责", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "52": {"label": "OSI各层的功能回顾", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 1}, "53": {"label": "常见应用协议的用途", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 8}, "54": {"label": "HTTP完成后连接的去留", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 9}, "55": {"label": "三次握手的过程", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "56": {"label": "为什么需要第三步确认", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "57": {"label": "半连接队列的作用", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "58": {"label": "初始序列号的选择", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "59": {"label": "握手时能否携带数据", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "60": {"label": "SYN攻击利用了什么", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "61": {"label": "连接如何双向关闭", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "62": {"label": "关闭连接的步骤为何不同", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "63": {"label": "等待时间与MSL", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "64": {"label": "等待如何保护关闭过程", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "65": {"label": "TIME_WAIT与旧报文", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "66": {"label": "字节流的消息边界方案", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 6}, "67": {"label": "表示层和会话层的职责", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 1}, "68": {"label": "连接状态变化的全景图", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "69": {"label": "对称加密的特点", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "70": {"label": "非对称加密的特点", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "71": {"label": "HTTPS的整体认识", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "72": {"label": "明文HTTP的局限", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "73": {"label": "HTTPS组合使用加密机制", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "74": {"label": "TLS会话复用的认识", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "75": {"label": "证书在认证中的作用", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "76": {"label": "缓存的验证与控制", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 9}, "77": {"label": "请求大小限制的来源", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 8}, "78": {"label": "网络层协议的角色", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 2}, "79": {"label": "拥塞控制的四种经典机制", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 7}, "80": {"label": "快速重传的触发依据", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 7}, "81": {"label": "关闭状态与程序行为", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 5}, "82": {"label": "流量控制的目标", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 7}, "83": {"label": "服务器Socket接口的顺序", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 12}, "84": {"label": "可靠传输如何协作", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 6}, "85": {"label": "UDP提供的服务", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "86": {"label": "TCP和UDP如何选择", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "87": {"label": "传输服务的关键特点", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "88": {"label": "TCP与上层应用的关系", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "89": {"label": "UDP与上层应用的关系", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "90": {"label": "链路层协议的角色", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 2}, "91": {"label": "Ping与ICMP", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 2}, "92": {"label": "UDP报文大小的取舍", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "93": {"label": "接收窗口怎样限制发送", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 7}, "94": {"label": "RTT/RTO与超时重传", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 6}, "95": {"label": "XSS的基本风险", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 11}, "96": {"label": "CSRF的基本风险", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 11}, "97": {"label": "CSRF的防护思路", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 11}, "98": {"label": "上传文件带来的风险", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 11}, "99": {"label": "文件上传的防护思路", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 11}, "100": {"label": "拥塞控制的目标", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 7}, "101": {"label": "流量控制和拥塞控制的区别", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html", "day": 7}, "102": {"label": "HTTP状态码的分类", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html", "day": 8}, "103": {"label": "CLOSE_WAIT堆积的诊断方向", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html", "day": 5}, "104": {"label": "端口号与连接数量的区别", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html", "day": 12}, "S1": {"label": "封包与应用消息边界的补充认识", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 6}}, "references": [{"label": "原站：计算机网络第1页", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html"}, {"label": "RFC 1122：Internet分层与封装", "url": "https://www.rfc-editor.org/rfc/rfc1122.html"}, {"label": "RFC 6335：端口号与分配范围", "url": "https://www.rfc-editor.org/rfc/rfc6335.html"}, {"label": "MDN：HTTP概览与版本", "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview"}]}</script>
   <template id="lesson-01"><section class="card lesson-goals">
   <h2>本课的三个问题</h2>
   <ol class="objectives"><li>客户端、服务器和协议分别是什么？</li><li>网络为什么分层？数据怎样逐层封装？</li><li>IP地址和端口各负责找到什么？</li></ol>
@@ -98,7 +174,7 @@
   <div class="section-heading"><h2><span class="section-number">02</span>今日主线</h2></div>
 
   <article class="topic" id="d1-client-server" data-topic="客户端、服务器与协议">
-    <h3>网页不是凭空出现在屏幕上的。</h3>
+    <div class="topic-heading"><span class="topic-number">01</span><h3>客户端、服务器与协议</h3><button class="topic-note-button" data-note="d1-client-server" aria-controls="topic-notes">笔记</button></div>
     <p>想象你打开一个课程网站。<strong>浏览器先提出请求，对方的服务程序处理请求，再返回内容。</strong>浏览器拿到描述页面的内容后，才把它显示出来。</p>
     <figure class="figure"><div class="flow" role="img" aria-label="浏览器作为客户端发送网页请求，服务器的服务程序处理并返回网页内容"><div class="endpoint"><strong>你的浏览器</strong><span>运行在你的设备上<br>客户端程序</span></div><div class="flow-middle">想要课程首页<span class="flow-arrow">→</span><span class="flow-arrow">←</span>返回页面内容</div><div class="endpoint"><strong>网站服务程序</strong><span>运行在远方的设备上<br>服务器程序</span></div></div><figcaption>图1 · 请求与响应。中间可能经过多台网络设备。</figcaption></figure>
     <div class="three-col"><div class="mini-card"><strong>客户端</strong><p>在这次交互中发起请求的一方。浏览器是常见例子；手机App也可以是客户端。</p></div><div class="mini-card"><strong>服务器</strong><p>提供服务、接收并处理请求的一方。这个词有时指程序，有时指运行程序的计算机，要看上下文。</p></div><div class="mini-card"><strong>协议</strong><p>双方交流遵守的规则：消息怎么写、字段是什么意思、收到后怎样回应。</p></div></div>
@@ -111,7 +187,7 @@
   </article>
 
   <article class="topic" id="d1-layers" data-topic="分层模型与封装">
-    <h3>一次通信，需要好几种不同的能力。</h3>
+    <div class="topic-heading"><span class="topic-number">02</span><h3>分层模型与封装</h3><button class="topic-note-button" data-note="d1-layers" aria-controls="topic-notes">笔记</button></div>
     <p>“把网页发过去”看似只有一件事，实际要解决：内容怎么表达、交给哪个程序、跨网络怎么走、相邻设备怎么传，以及最后怎样变成信号。<strong>把不同问题拆成不同层，就可以分别设计和改进。</strong></p>
     <p>例如，从Wi-Fi换成网线，并不意味着网站要重新发明一套HTTP规则。上层使用下层提供的能力，而不是自己处理所有细节。这正是分层带来的价值。</p>
     <figure class="figure"><span class="eyebrow">点一个职责，看它解决的问题</span><div class="layer-controls" role="group" aria-label="选择要了解的网络层"><button class="layer-button" data-layer="application" aria-pressed="true">应用</button><button class="layer-button" data-layer="transport" aria-pressed="false">传输</button><button class="layer-button" data-layer="network" aria-pressed="false">网络</button><button class="layer-button" data-layer="link" aria-pressed="false">链路</button><button class="layer-button" data-layer="physical" aria-pressed="false">物理</button></div>
@@ -133,7 +209,7 @@
   </article>
 
   <article class="topic" id="d1-addresses" data-topic="IP地址与端口的分工">
-    <h3>找到网络地址，还不等于选中了服务。</h3>
+    <div class="topic-heading"><span class="topic-number">03</span><h3>IP地址与端口的分工</h3><button class="topic-note-button" data-note="d1-addresses" aria-controls="topic-notes">笔记</button></div>
     <p>同一台服务器可以同时提供不同服务。只知道一个IP地址，还不足以表达“我要和这里的哪项TCP或UDP服务通信”。<strong>IP用于网络层寻址；端口用于传输层，帮助定位通信端点。</strong></p>
     <p>初学时可以暂把IP看成“到哪处地址”，端口看成“在这个地址上找哪个服务入口”。但真实网络里，一台设备可以有多个IP地址，多个程序的安排也有例外，所以“IP=一台电脑、端口=一个固定程序”只能是简化印象。</p>
     <figure class="figure"><span class="eyebrow">同一个IP，不同的服务入口</span><div class="address-map" role="img" aria-label="客户端192.0.2.10连接服务器198.51.100.20，服务器提供TCP443和TCP8443两个示意服务端口"><div class="address-client"><strong>浏览器</strong><br><code>192.0.2.10</code><br><small>客户端IP</small></div><span class="flow-arrow">→</span><div class="address-server"><strong>同一个服务器IP</strong><br><code>198.51.100.20</code><div class="service active" data-service="443"><span>课程首页</span><code>TCP :443</code></div><div class="service" data-service="8443"><span>另一项Web服务</span><code>TCP :8443</code></div></div></div><div class="demo-buttons" style="margin-top:18px"><button data-port="443" aria-pressed="true">访问课程首页</button><button data-port="8443" aria-pressed="false">访问另一服务</button></div><p id="port-explanation" class="demo-caption" aria-live="polite">目标为TCP的 198.51.100.20:443。IP相同，端口用于区分这里的服务入口。</p><figcaption>图4 · 地址与服务均为教学示意。443是HTTPS常用端口；8443在本例中人为分配给另一服务，不是必须这样使用。</figcaption></figure>
@@ -178,10 +254,13 @@
   const $ = id => document.getElementById(id);
   const KEY = 'network-foundations-12:learner:v1';
   const phases = { recall: '回忆', main: '主线', quiz: '自测', close: '收尾' };
-  const fresh = () => ({ schema: 1, courseId: course.id, fields: {}, ratings: {}, completed: [], timing: { recall: 0, main: 0, quiz: 0, close: 0 } });
+  const topicCatalog = [...document.querySelectorAll('template[id^="lesson-"]')].flatMap(template => [...template.content.querySelectorAll('.topic[id][data-topic]')].map(topic => ({ id: topic.id, title: topic.dataset.topic })));
+  const noteKey = id => `${id}-note`;
+  const fresh = () => ({ schema: 1, courseId: course.id, fields: {}, ratings: {}, completed: [], timing: { recall: 0, main: 0, quiz: 0, close: 0 }, ui: { phase: 'recall', studyMode: false, noteTopic: topicCatalog[0]?.id || '' } });
   const allowedFields = new Set([...document.getElementById('lesson-01').content.querySelectorAll('[data-save]')].map(el => el.dataset.save));
   for (let i = 1; i <= 5; i++) allowedFields.add(`d1-q${i}-answer`);
   allowedFields.add('feedback-draft');
+  topicCatalog.forEach(topic => allowedFields.add(noteKey(topic.id)));
   const allowedRatings = new Set(['d1-client-server', 'd1-layers', 'd1-addresses', ...Array.from({ length: 5 }, (_, i) => `d1-q${i + 1}`)]);
   function cleanState(raw) {
     if (!raw || raw.schema !== 1 || raw.courseId !== course.id) throw Error('这不是本课程的学习记录。');
@@ -190,11 +269,15 @@
     for (const [k, v] of Object.entries(raw.ratings || {})) if (allowedRatings.has(k) && ['understood', 'partial', 'review'].includes(v)) next.ratings[k] = v;
     if (Array.isArray(raw.completed)) next.completed = [...new Set(raw.completed.filter(x => Number.isInteger(x) && x >= 1 && x <= 12))];
     for (const k of Object.keys(phases)) if (Number.isFinite(raw.timing?.[k]) && raw.timing[k] >= 0 && raw.timing[k] < 31536000000) next.timing[k] = raw.timing[k];
+    if (Object.hasOwn(phases, raw.ui?.phase)) next.ui.phase = raw.ui.phase;
+    if (typeof raw.ui?.studyMode === 'boolean') next.ui.studyMode = raw.ui.studyMode;
+    if (topicCatalog.some(topic => topic.id === raw.ui?.noteTopic)) next.ui.noteTopic = raw.ui.noteTopic;
     return next;
   }
   let state = fresh(), persistent = true;
   try { const raw = localStorage.getItem(KEY); if (raw) state = cleanState(JSON.parse(raw)); } catch { persistent = false; }
-  let currentDay = 1, currentView = 'lesson', running = false, startedAt = 0, phase = 'recall', encap = 0, feedbackTopic = '', feedbackTopicLabel = '', toastTimeout;
+  let currentDay = 1, currentView = 'lesson', running = false, startedAt = 0, phase = state.ui.phase, encap = 0, feedbackTopic = '', feedbackTopicLabel = '', toastTimeout;
+  let studyMode = state.ui.studyMode, notesOpen = false, selectedNoteTopic = state.ui.noteTopic, lastNotesTrigger = null;
   const esc = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const formatTime = ms => { const seconds = Math.floor(ms / 1000); return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`; };
   const totalTime = () => Object.values(state.timing).reduce((a, b) => a + b, 0);
@@ -203,6 +286,89 @@
     $('storage-warning').hidden = persistent;
   }
   function toast(message) { $('toast').textContent = message; $('toast').classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => $('toast').classList.remove('show'), 4200); }
+  function currentTopics() {
+    return [...document.querySelectorAll('#day-content .topic[id][data-topic]')].map(topic => ({ id: topic.id, title: topic.dataset.topic }));
+  }
+  function readingAnchor() {
+    const nodes = [...document.querySelectorAll('.hero, #d1-warmup, #d1-main > .section-heading, #d1-main .topic, #d1-quiz, #d1-close')];
+    const element = nodes.find(node => node.getBoundingClientRect().bottom > 110);
+    return element ? { element, top: element.getBoundingClientRect().top } : null;
+  }
+  function restoreReadingAnchor(anchor) {
+    if (anchor) requestAnimationFrame(() => { if (anchor.element.isConnected) window.scrollBy(0, anchor.element.getBoundingClientRect().top - anchor.top); });
+  }
+  function renderStudyUI() {
+    const available = currentView === 'lesson' && currentDay === 1;
+    document.body.classList.toggle('study-mode', studyMode && available);
+    document.body.classList.toggle('notes-open', notesOpen && available);
+    $('study-toolbar').hidden = !(studyMode && available);
+    $('topic-notes').hidden = !(notesOpen && available);
+    $('notes-backdrop').hidden = !(notesOpen && available);
+    $('study-mode-toggle').disabled = !available;
+    $('study-mode-toggle').setAttribute('aria-pressed', String(studyMode && available));
+    $('notes-toggle').setAttribute('aria-expanded', String(notesOpen && available));
+    $('study-day-label').textContent = `第${currentDay}天`;
+    document.querySelectorAll('[data-note]').forEach(button => button.setAttribute('aria-expanded', String(notesOpen && button.dataset.note === selectedNoteTopic)));
+  }
+  function setStudyMode(enabled) {
+    if (enabled && (currentView !== 'lesson' || currentDay !== 1)) return;
+    const anchor = readingAnchor();
+    studyMode = enabled;
+    if (!enabled) notesOpen = false;
+    state.ui.studyMode = enabled;
+    save(); renderStudyUI(); restoreReadingAnchor(anchor);
+  }
+  function visibleTopicId() {
+    const topics = [...document.querySelectorAll('#day-content .topic')];
+    const visible = topics.find(topic => { const rect = topic.getBoundingClientRect(); return rect.bottom > 120 && rect.top < window.innerHeight; });
+    return visible?.id || selectedNoteTopic || topics[0]?.id;
+  }
+  function renderNotes() {
+    const topics = currentTopics();
+    if (!topics.some(topic => topic.id === selectedNoteTopic)) selectedNoteTopic = topics[0]?.id || '';
+    $('notes-topic-select').innerHTML = topics.map((topic, i) => `<option value="${esc(topic.id)}">${String(i + 1).padStart(2, '0')} · ${esc(topic.title)}</option>`).join('');
+    $('notes-topic-select').value = selectedNoteTopic;
+    const note = state.fields[noteKey(selectedNoteTopic)];
+    $('topic-note-editor').value = typeof note === 'string' ? note : '';
+    $('topic-note-status').textContent = persistent ? note ? '已保存到此浏览器' : '输入后自动保存' : '保存失败，请复制备份';
+    state.ui.noteTopic = selectedNoteTopic;
+  }
+  function openNotes(topicId, trigger) {
+    if (!currentTopics().length) return;
+    const anchor = readingAnchor();
+    selectedNoteTopic = currentTopics().some(topic => topic.id === topicId) ? topicId : visibleTopicId();
+    lastNotesTrigger = trigger || document.activeElement;
+    notesOpen = true;
+    renderNotes(); save(); renderStudyUI(); restoreReadingAnchor(anchor);
+    $('topic-note-editor').focus({ preventScroll: true });
+  }
+  function closeNotes() {
+    const anchor = readingAnchor();
+    notesOpen = false; renderStudyUI(); restoreReadingAnchor(anchor);
+    if (lastNotesTrigger?.isConnected) lastNotesTrigger.focus({ preventScroll: true });
+  }
+  function changePhase(nextPhase) {
+    if (!Object.hasOwn(phases, nextPhase)) return;
+    tick(); phase = nextPhase; state.ui.phase = nextPhase;
+    save(); renderTimer();
+  }
+  function toggleTimer() {
+    if (currentDay !== 1) return;
+    if (running) pauseTimer();
+    else { running = true; startedAt = Date.now(); renderTimer(); }
+  }
+  async function copyTopicNote() {
+    const text = $('topic-note-editor').value;
+    if (!text.trim()) { $('topic-note-status').textContent = '先写下这条笔记'; return; }
+    const topic = currentTopics().find(item => item.id === selectedNoteTopic);
+    try {
+      await navigator.clipboard.writeText(`第${currentDay}天 · ${topic?.title || '学习笔记'}\n\n${text}`);
+      $('topic-note-status').textContent = '笔记已复制';
+    } catch {
+      $('topic-note-editor').focus(); $('topic-note-editor').select();
+      $('topic-note-status').textContent = '已选中文字，请手动复制';
+    }
+  }
   function renderNav() {
     $('day-nav').innerHTML = course.days.map(day => `${day.day === 1 || day.day === 7 ? `<div class="week-label">第${day.week}周</div>` : ''}<button class="day-button ${currentDay === day.day && currentView === 'lesson' ? 'active' : ''} ${state.completed.includes(day.day) ? 'done' : ''}" data-day="${day.day}" ${currentDay === day.day && currentView === 'lesson' ? 'aria-current="page"' : ''}><span class="day-number">${state.completed.includes(day.day) ? '✓' : String(day.day).padStart(2, '0')}</span><span class="day-copy">${esc(day.title)}</span></button>${day.day === 6 || day.day === 12 ? '<div class="rest-label">休息日</div>' : ''}`).join('');
     $('progress-label').textContent = `${state.completed.length} / 12`;
@@ -218,7 +384,7 @@
     $('roadmap-view').innerHTML = `<div class="roadmap-intro"><h1>12天路线</h1></div>${course.days.map(d => `${d.day === 1 || d.day === 7 ? `<h2 class="week-banner">第${d.week}周</h2>` : ''}${planCard(d)}${d.day === 6 || d.day === 12 ? '<div class="week-banner">休息日</div>' : ''}`).join('')}`;
   }
   function renderGuide() {
-    $('guide-view').innerHTML = `<div class="roadmap-intro"><h1>使用说明</h1></div><section class="card"><h2>学习安排</h2><p>两周共12个学习日，每周学习6天、休息1天。目前开放第1天。</p><div class="table-wrap"><table class="data-table"><thead><tr><th>环节</th><th>建议用时</th></tr></thead><tbody><tr><td>回忆检查</td><td>10分钟</td></tr><tr><td>今日主线</td><td>55分钟</td></tr><tr><td>理解自测</td><td>20分钟</td></tr><tr><td>收尾记录</td><td>5分钟</td></tr></tbody></table></div><p style="margin-top:18px">计时可随时暂停，切到后台也会暂停。90分钟后仍有疑问，可以记录下来，在聊天中继续问。</p></section><section class="card"><h2>遇到没懂的地方</h2><ol><li>点击“这里还没懂”，写下你的疑问。</li><li>点击复制，把问题粘贴到我们的聊天中发送。</li><li>先答疑；需要补进课件时，我会提出修改建议，等你同意后更新。</li></ol><p>也可以直接在聊天中提问。</p></section><section class="card"><h2>保存与备份</h2><p>回答、笔记和自评保存在当前浏览器。换浏览器或清理数据前，使用页尾的“导出学习记录”备份；之后可以导入恢复。</p><p>网页里的记录需要复制或导出后，才能在聊天中提供给我。</p></section>`;
+    $('guide-view').innerHTML = `<div class="roadmap-intro"><h1>使用说明</h1></div><section class="card"><h2>学习安排</h2><p>两周共12个学习日，每周学习6天、休息1天。目前开放第1天。</p><div class="table-wrap"><table class="data-table"><thead><tr><th>环节</th><th>建议用时</th></tr></thead><tbody><tr><td>回忆检查</td><td>10分钟</td></tr><tr><td>今日主线</td><td>55分钟</td></tr><tr><td>理解自测</td><td>20分钟</td></tr><tr><td>收尾记录</td><td>5分钟</td></tr></tbody></table></div><p style="margin-top:18px">计时归类需手动选择。开始后，用时计入所选类别；切换时先结算上一段。它不会识别阅读位置或自动切换课程。切到后台会暂停，回来后手动继续。</p></section><section class="card"><h2>学习模式与笔记</h2><p>点击“学习模式”收起两侧栏；顶部保留计时、笔记和退出按钮。每个知识点标题旁的“笔记”可打开对应记录，也能在笔记栏切换知识点。</p><p>笔记支持复制粘贴文本，输入后自动保存在当前浏览器，并包含在导出的学习记录中。按Esc先收起笔记，再次按Esc退出学习模式。</p></section><section class="card"><h2>遇到没懂的地方</h2><ol><li>点击“这里还没懂”，写下你的疑问。</li><li>点击复制，把问题粘贴到我们的聊天中发送。</li><li>先答疑；需要补进课件时，我会提出修改建议，等你同意后更新。</li></ol><p>也可以直接在聊天中提问。</p></section><section class="card"><h2>保存与备份</h2><p>回答、笔记和自评保存在当前浏览器。换浏览器或清理数据前，使用页尾的“导出学习记录”备份；之后可以导入恢复。</p><p>网页里的记录需要复制或导出后，才能在聊天中提供给我。</p></section>`;
   }
   function ratingsMarkup(id, quiz = false) {
     const labels = quiz ? ['能独立解释', '只答对部分', '需要重学'] : ['已理解', '有点模糊', '需要补充'];
@@ -241,14 +407,16 @@
     updateQuizSummary(); updateCompletion();
   }
   function showView(view) {
-    if (view !== 'lesson') pauseTimer();
+    if (view !== 'lesson') { pauseTimer(); setStudyMode(false); }
     currentView = view;
     ['lesson', 'roadmap', 'guide'].forEach(v => { $(`${v}-view`).hidden = v !== view; });
     document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.view === view));
     document.querySelector('.study-tools').hidden = view !== 'lesson';
     renderNav();
+    renderStudyUI();
   }
   function openDay(number, scroll = true) {
+    if (number !== 1) setStudyMode(false);
     pauseTimer(); currentDay = number;
     const day = course.days.find(x => x.day === number);
     showView('lesson');
@@ -261,6 +429,7 @@
     $('timer-toggle').disabled = number !== 1;
     $('phase-select').disabled = number !== 1;
     $('section-nav').hidden = number !== 1;
+    renderNotes(); renderStudyUI();
     renderTimer();
     if (scroll) { window.scrollTo(0, 0); $('workspace').focus({ preventScroll: true }); }
   }
@@ -287,6 +456,9 @@
     if (!$('timer-display')) return;
     $('timer-display').textContent = currentDay === 1 ? formatTime(totalTime()) : '—';
     $('timer-toggle').textContent = running ? '暂停计时' : totalTime() > 0 ? '继续计时' : '开始计时';
+    $('study-timer-display').textContent = formatTime(totalTime());
+    $('study-timer-toggle').textContent = running ? '暂停' : totalTime() > 0 ? '继续' : '开始';
+    for (const id of ['phase-select', 'study-phase-select']) if ($(id).value !== phase) $(id).value = phase;
     $('timer-hint').textContent = currentDay !== 1 ? '正文尚未制作，暂不计时' : totalTime() >= 5400000 ? '已用时90分钟' : '本日用时 / 90分钟';
     $('phase-times').innerHTML = currentDay === 1 ? Object.entries(phases).map(([k, v]) => `<span>${v} ${formatTime(state.timing[k])}</span>`).join('') : '';
   }
@@ -393,6 +565,7 @@
       $('port-explanation').textContent = `目标为TCP的 198.51.100.20:${port}。${port === '443' ? '现在选择课程首页。' : '现在选择另一项服务。'}IP没变，目标端口变了。`;
     }
     if (target.dataset.feedback) openFeedback(target.dataset.feedback);
+    if (target.dataset.note) openNotes(target.dataset.note, target);
     if (target.dataset.rate) {
       state.ratings[target.dataset.rate] = target.dataset.value;
       document.querySelectorAll('[data-rate]').forEach(el => { if (el.dataset.rate === target.dataset.rate) el.setAttribute('aria-pressed', String(el.dataset.value === target.dataset.value)); });
@@ -402,10 +575,12 @@
     if (target.id === 'encap-reset') { encap = 0; renderEnvelope(); }
     if (target.id === 'feedback-open') openFeedback('本日整体');
     if (target.id === 'copy-feedback') copyFeedback();
-    if (target.id === 'timer-toggle') {
-      if (running) pauseTimer();
-      else { running = true; startedAt = Date.now(); renderTimer(); }
-    }
+    if (target.id === 'timer-toggle' || target.id === 'study-timer-toggle') toggleTimer();
+    if (target.id === 'study-mode-toggle') setStudyMode(true);
+    if (target.id === 'study-mode-exit') setStudyMode(false);
+    if (target.id === 'notes-toggle') { if (notesOpen) closeNotes(); else openNotes(visibleTopicId(), target); }
+    if (target.id === 'notes-close' || target.id === 'notes-backdrop') closeNotes();
+    if (target.id === 'copy-topic-note') copyTopicNote();
     if (target.id === 'mark-complete') {
       if (state.completed.includes(1)) state.completed = state.completed.filter(x => x !== 1);
       else {
@@ -426,7 +601,22 @@
   }
   document.addEventListener('input', saveField);
   document.addEventListener('change', saveField);
-  $('phase-select').addEventListener('change', event => { tick(); phase = event.target.value; save(); renderTimer(); });
+  for (const id of ['phase-select', 'study-phase-select']) $(id).addEventListener('change', event => changePhase(event.target.value));
+  $('notes-topic-select').addEventListener('change', event => {
+    selectedNoteTopic = event.target.value;
+    renderNotes(); save(); renderStudyUI();
+  });
+  $('topic-note-editor').addEventListener('input', () => {
+    if (!selectedNoteTopic) return;
+    state.fields[noteKey(selectedNoteTopic)] = $('topic-note-editor').value;
+    save();
+    const message = persistent ? '已保存到此浏览器' : '保存失败，请复制备份';
+    if ($('topic-note-status').textContent !== message) $('topic-note-status').textContent = message;
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || $('feedback-dialog').open) return;
+    if (notesOpen) closeNotes(); else if (studyMode) setStudyMode(false);
+  });
   $('feedback-note').addEventListener('input', () => {
     state.fields['feedback-draft'] = $('feedback-note').value;
     $('feedback-error').hidden = true;
@@ -440,7 +630,8 @@
       if (file.size > 1000000) throw Error('记录文件过大，请选择本课件导出的JSON。');
       const imported = cleanState(JSON.parse(await file.text()));
       if (!window.confirm('导入将替换当前浏览器的本课程记录。建议先导出备份。继续吗？')) return;
-      pauseTimer(); state = imported; save(); openDay(currentDay, false); toast('学习记录已恢复。计时保持暂停。');
+      pauseTimer(); state = imported; phase = state.ui.phase; studyMode = state.ui.studyMode; selectedNoteTopic = state.ui.noteTopic; notesOpen = false;
+      save(); openDay(currentDay, false); toast('学习记录已恢复。计时保持暂停。');
     } catch (error) { toast(`未导入：${error.message}`); }
     finally { event.target.value = ''; }
   });
