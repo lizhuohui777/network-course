@@ -1,25 +1,241 @@
-<section class="card lesson-goals"><h2>本课的三个问题</h2><ol class="objectives"><li>IP包怎样跨网络，而帧只完成当前一跳？</li><li>域名怎样经过递归、迭代和缓存得到记录？</li><li>Ping和DNS分流各能说明什么、不能保证什么？</li></ol><div class="day-source-links" data-day-sources></div></section><section class="lesson-section" id="d2-warmup" data-phase="recall"><div class="section-heading"><h2><span class="section-number">01</span>回忆检查</h2></div><details class="mini-check"><summary>回顾1：IP与端口分别解决什么问题？</summary><p>IP用于网络层寻址；TCP或UDP端口帮助区分传输端点。同一IP可以有多个服务入口。</p></details><details class="mini-check"><summary>回顾2：封装为什么要加入不同层的信息？</summary><p>各层处理不同职责，如传输层需要端口，IP层需要源和目的地址，链路层需要当前链路的控制信息。</p></details><details class="mini-check"><summary>回顾3：换成网线是否要求重新设计HTTP？</summary><p>通常不需要。应用协议使用下层能力，接入方式与应用消息规则有分工。</p></details></section><section class="lesson-section lesson-main" id="d2-main" data-phase="main"><div class="section-heading"><h2><span class="section-number">02</span>今日主线</h2></div><article class="topic" id="d2-hop" data-topic="相邻交付与跨网络转发" data-sources="78,90,31"><div class="topic-heading"><span class="topic-number">01</span><h3>相邻交付与跨网络转发</h3><button class="topic-note-button" data-note="d2-hop" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
-<p>一台笔记本要访问远方网站，数据通常不会一步跨过整个互联网。<strong>IP负责目标地址与跨网络转发，链路层负责眼前这一跳怎样交付。</strong>路由器连接不同网络，收到IP包后查路由表，决定下一跳，再使用另一条链路继续发送。路由表像“去这个方向走哪个出口”的规则，不必逐项列出世界上每台主机。</p>
-<p>在以太网中，一帧含有当前链路使用的源、目标MAC地址。MAC是链路接口的地址；不能把它当作网页服务器在全球的永恒身份证。设备跨过路由器时，旧链路帧被处理，新链路形成新帧；在这个不含NAT等转换的例子中，IP包的源、目的地址保持不变。IPv4的TTL每经一台路由器减少，避免包无限循环。</p>
-<figure class="figure"><div class="flow" role="img" aria-label="笔记本先把以服务器为IP目标的数据交给默认网关，路由器再逐跳转发"><div class="endpoint"><strong>笔记本</strong><span>目的IP：网站<br>当前帧目标：网关MAC</span></div><span class="flow-arrow">→</span><div class="endpoint"><strong>默认网关</strong><span>查路由表<br>换上下一跳的帧</span></div><span class="flow-arrow">→</span><div class="endpoint"><strong>后续网络与网站</strong><span>逐跳向目的地前进</span></div></div><figcaption>图1 · 最终目的IP与眼前下一跳不是同一个概念。此图省略NAT和隧道。</figcaption></figure>
-<p>例如笔记本是<code>192.168.1.10/24</code>，网关是<code>192.168.1.1</code>，网站地址为<code>198.51.100.20</code>。这里的<code>/24</code>表示前24位是网络前缀。系统判断网站不在直连网段，便把包交给网关，而不是在家里的Wi-Fi里直接寻找远方服务器的MAC。</p>
-<p><strong>ARP</strong>解决IPv4局域链路中的“已知下一跳IP，怎样知道对应MAC”。它可以在本链路广播询问，并缓存回答；广播不会被普通路由器转到全互联网。IP是网络层协议；ARP连接IPv4寻址与链路交付，通常放在链路层附近讨论；以太网、Wi-Fi承担链路相关职责，不必强把所有协议硬塞进同一种分类口径。</p>
-<p>历史上的<strong>RARP</strong>方向相反：早期无盘工作站知道自己的硬件地址，向本地服务器询问自己的协议地址。它不能等同于今天的DNS，也不能单独提供完整的启动配置；后来BOOTP、DHCP承担了更丰富的配置工作。IPv6邻居发现使用ICMPv6，并不使用ARP。</p>
-<details class="mini-check"><summary>小检查：去远方网站时，第一帧的目标MAC为什么通常是网关？</summary><p>因为链路层只能把这一步交给本链路可达的下一跳；最终网站仍由IP目的地址表达。把“最终目的地”和“当前接力点”分开，就能同时理解两种地址。</p></details></article><article class="topic" id="d2-ping" data-topic="Ping检查了什么" data-sources="91"><div class="topic-heading"><span class="topic-number">02</span><h3>Ping检查了什么</h3><button class="topic-note-button" data-note="d2-ping" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
-<p>当网页打不开时，需要把“名字没有解析出来”“网络层没有回音”“服务程序没有响应”分开。<strong>Ping通常发送ICMP Echo Request，并等待Echo Reply。</strong>ICMP是IP的控制与差错报告机制之一，不是TCP或UDP的应用端口服务。目标系统若允许并能处理请求，就返回应答。</p>
-<p>Ping统计请求与应答的往返时间，常显示丢包比例。往返时间包含去程与回程的传播、排队和处理等因素，不是网页下载速度；能收到一个很小的应答，也不能证明大文件会以同样表现传输。IPv4使用ICMP，IPv6对应ICMPv6。</p>
-<p>例如<code>ping example.com</code>先要把名字解析成地址，再做探测。因此“找不到主机”可能卡在名字解析；已显示IP却超时则是另一种现象。直接探测一个已知IP可绕开这一步，但结果仍需谨慎解释。超时可能来自路径故障、目标不回应、防火墙过滤或限速，<strong>不能仅凭超时断言对方关机</strong>。</p>
-<p>反过来，Ping成功说明此次探测的往返得到了回应，不说明网站的TCP443端口开放，更不说明登录、数据库或页面内容正常。可以把它想成“这一种回声得到回答”，而不是整栋楼所有服务都验收通过。排查时先说清实际观察，再提出可能原因，避免把工具输出当成唯一结论。</p>
-<details class="mini-check"><summary>小检查：Ping通了，HTTPS网页仍打不开，矛盾吗？</summary><p>不矛盾。ICMP探测与HTTPS服务解决不同问题。服务未监听、端口被过滤、证书或应用处理失败，都可能使网页访问失败。</p></details></article><article class="topic" id="d2-dns" data-topic="DNS怎样一步步找到记录" data-sources="3,4,17,34"><div class="topic-heading"><span class="topic-number">03</span><h3>DNS怎样一步步找到记录</h3><button class="topic-note-button" data-note="d2-dns" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
-<p>人容易记住域名，网络通信却需要可用的目标地址。<strong>DNS是一套分布式命名系统，查询的是“名字、类型对应什么记录”。</strong>A记录给出IPv4地址，AAAA给出IPv6地址；CNAME给出另一个名字，后续仍需查询它的地址。DNS还承载邮件等记录，所以“DNS就是网址转IP”只是最常用的一种用途。</p>
-<p>浏览器或系统通常先查自己的缓存，再向配置的递归解析器提问。递归的意思是“请你继续查并给我最终结果或错误”。递归解析器可能由网络运营方、公司或其他服务提供，不等同于你电脑里的一个文件。浏览器还可能使用加密DNS与自行配置的解析服务，实际路径未必完全相同。</p>
-<figure class="figure"><div class="sequence" role="img" aria-label="缓存未命中时，客户端向递归解析器请求结果，解析器依次向根、顶级域和权威服务器查询"><p><strong>① 你的设备 → 递归解析器：</strong>请查 <code>www.example.com</code> 的A记录。</p><p><strong>② 解析器 → 根服务器：</strong>得到负责 <code>.com</code> 的服务器线索。</p><p><strong>③ 解析器 → .com服务器：</strong>得到负责 <code>example.com</code> 的权威服务器线索。</p><p><strong>④ 解析器 → 权威服务器：</strong>得到相应记录，必要时继续跟随别名。</p><p><strong>⑤ 解析器 → 你的设备：</strong>返回答案，并按TTL缓存。</p></div><figcaption>图2 · 一个冷缓存查询的简化过程。“根”提供下一步线索，通常不保存每个网站的地址。</figcaption></figure>
-<p><strong>迭代查询</strong>更像“我不知道最终答案，但告诉你下一位该问谁”。上图中递归解析器对外常进行这种逐级查询。递归和迭代描述的是谁负责继续问，不是TCP与UDP的名称，也不是“经过几台服务器”。用户的一次请求，可以由递归服务结合多次迭代完成。</p>
-<p>手工追踪这个例子：若解析器已有<code>example.com</code>权威服务器的有效缓存，就可跳过根和<code>.com</code>；若已有有效A记录，甚至无需向外查询。<strong>TTL是记录可以被缓存的剩余时间上限依据</strong>，不是保证这段时间内服务器永远可用。不同层缓存到期时间不同，所以刚改地址时，有人看到新记录、有人仍用旧记录是可能的。</p>
-<p>无记录也可以被暂时缓存。域名存在但没有所问类型，与整个名字不存在是不同结果；查询超时又是另一件事。先区分“回答说没有”和“根本没有收到回答”，能让后面的故障判断更清楚。</p>
-<details class="mini-check"><summary>小检查：根服务器没被访问，这次DNS查询一定不完整吗？</summary><p>不一定。有效缓存可能已提供最终记录或中间委派线索。分布式查询配合缓存，目的就是减少重复访问。</p></details></article><article class="topic" id="d2-dns-traffic" data-topic="DNS怎样影响访问流量" data-sources="18"><div class="topic-heading"><span class="topic-number">04</span><h3>DNS怎样影响访问流量</h3><button class="topic-note-button" data-note="d2-dns-traffic" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
-<p>一个名字不一定只有一个地址。网站可以让DNS返回多个A或AAAA记录，或者按解析器位置、策略、健康检查结果返回不同记录，使不同访问者走向不同服务节点。这就是DNS参与流量分配的方式：<strong>先影响客户端得到什么候选地址，再由客户端发起后续连接。</strong></p>
-<p>例如某站有甲、乙两个节点。解析器一次得到甲和乙两个地址，客户端选择其中之一尝试访问；另一地区可能得到附近节点的地址。DNS本身不会把后续每个HTTP请求接过去再分配，也没有为TCP字节流做实时调度。后面还可能有负载均衡器、CDN或代理，它们与DNS是不同层面的配合。</p>
-<p>这种分流有边界。递归缓存可能使许多用户共享同一答案；TTL尚未过期时，客户端可能继续使用旧地址；解析器位置也未必等于用户位置。即使把故障节点从权威记录里移除，也不表示所有客户端立刻切换。DNS通常也看不到每个节点正在处理的全部业务请求，因此不能承诺绝对均匀。</p>
-<p>推演一次更新：原记录TTL为300秒，某解析器在修改前一刻取得旧地址。权威服务器立即更新后，该解析器仍可能在有效期内继续回答旧记录。降低TTL有助于缩短未来缓存周期，但刚刚降低TTL不会倒过来消除别人已经缓存的旧TTL。这解释了为什么地址调整要考虑缓存，而不只是改一行记录。</p>
-<details class="mini-check"><summary>小检查：DNS返回两个IP，是否保证每个节点收到一半请求？</summary><p>不保证。客户端选择、缓存共享、连接复用及节点可达性都会影响实际流量。多个答案提供候选路径，不能直接等同于逐请求轮流分配。</p></details></article></section><section class="lesson-section" id="d2-quiz" data-phase="quiz"><div class="section-heading"><h2><span class="section-number">03</span>理解自测</h2></div><p>先写出判断和理由，再展开参考答案。</p><article class="question" data-quiz="d2-q1"><h3>1 / 笔记本访问外网时，是先找网站MAC还是网关MAC？解释IP包与帧的目标。</h3><div class="quiz-input"></div><details><summary>查看参考答案</summary><div class="answer"><p>通常先找到本地下一跳网关的MAC，形成交给网关的帧；IP包目的地址仍是网站。ARP广播只在本链路，不能跨互联网寻找网站MAC。若目标就在直连网段，下一跳判断会不同。</p></div></details><div class="quiz-rating"></div></article><article class="question" data-quiz="d2-q2"><h3>2 / “Ping超时说明网站已关机；Ping成功说明网页一定正常。”两句哪里有问题？</h3><div class="quiz-input"></div><details><summary>查看参考答案</summary><div class="answer"><p>超时也可能由过滤、限速、路径问题或不回应造成。成功只说明此次ICMP探测得到回应，不能验证HTTPS端口和应用处理。常见错因是把一种探测当成全部服务的证明。</p></div></details><div class="quiz-rating"></div></article><article class="question" data-quiz="d2-q3"><h3>3 / 冷缓存时查询www.example.com，根、顶级域、权威服务器分别提供什么？</h3><div class="quiz-input"></div><details><summary>查看参考答案</summary><div class="answer"><p>根通常提供.com的服务器线索，.com提供example.com的权威服务器线索，权威服务器提供记录或别名等答案。递归解析器负责继续查。根不需要保存所有网站的最终IP。</p></div></details><div class="quiz-rating"></div></article><article class="question" data-quiz="d2-q4"><h3>4 / 递归与迭代怎样合作？缓存命中时为何可能不再访问根？</h3><div class="quiz-input"></div><details><summary>查看参考答案</summary><div class="answer"><p>客户端可要求解析器递归取得最终结果；解析器再迭代地依据转介继续查询。有效缓存可能已含答案或中间线索，因此跳过重复步骤是正常行为。递归不是“每台服务器都替你查到底”。</p></div></details><div class="quiz-rating"></div></article><article class="question" data-quiz="d2-q5"><h3>5 / DNS删除故障IP后，为什么仍有人访问旧节点？返回多个IP又为何不保证平均？</h3><div class="quiz-input"></div><details><summary>查看参考答案</summary><div class="answer"><p>已有缓存可能尚未过期，现存连接也不会仅因记录变化立即改道。客户端选址、共享缓存和连接复用会使流量不均。TTL约束缓存使用，不能保证业务节点的健康或实时切换。</p></div></details><div class="quiz-rating"></div></article><p id="quiz-summary" class="notice" hidden></p></section><section class="lesson-section" id="d2-close" data-phase="close"><div class="section-heading"><h2><span class="section-number">04</span>收尾记录</h2></div><div class="checklist"><label><input type="checkbox" data-save="d2-exit-1">画出从笔记本到网关的IP与MAC分工。</label><label><input type="checkbox" data-save="d2-exit-2">用冷缓存和缓存命中两个例子解释DNS查询。</label><label><input type="checkbox" data-save="d2-exit-3">区分Ping观察、DNS候选地址与应用服务结果。</label></div><label class="inline-label" for="d2-exit-note">用自己的话记下今天能解释的机制，以及仍有疑问的位置</label><textarea id="d2-exit-note" data-save="d2-exit-note" rows="3" maxlength="20000"></textarea><div class="close-actions"><button id="mark-complete" class="primary">标记本日完成</button><button data-feedback="d2-close">整理本日反馈</button></div><div id="next-lesson"></div><p id="completion-note"></p></section><details class="source-map lesson-sources"><summary>网站知识点与参考资料</summary><div data-day-references></div><p>规范核验：2026-11-08。</p><ul><li><a href="https://www.rfc-editor.org/rfc/rfc1034">RFC 1034：DNS概念、递归与迭代</a></li><li><a href="https://www.rfc-editor.org/rfc/rfc1035">RFC 1035：DNS记录和TTL</a></li><li><a href="https://www.rfc-editor.org/rfc/rfc826">RFC 826：ARP</a></li><li><a href="https://www.rfc-editor.org/rfc/rfc903">RFC 903：RARP历史用途</a></li><li><a href="https://www.rfc-editor.org/rfc/rfc792">RFC 792：ICMP Echo</a></li></ul></details>
+<section class="card lesson-goals">
+  <h2>本课的三个问题</h2>
+  <ol class="objectives">
+    <li>访问远方网站时，为什么先把数据交给家里的网关？</li>
+    <li>只知道域名时，DNS怎样帮我们找到地址？</li>
+    <li>拿到地址、Ping得到回应，分别能说明访问走到了哪一步？</li>
+  </ol>
+  <div class="day-source-links" data-day-sources></div>
+</section>
+
+<section class="lesson-section" id="d2-warmup" data-phase="recall">
+  <div class="section-heading"><h2><span class="section-number">01</span>回忆检查</h2></div>
+  <details class="mini-check"><summary>昨天：同一个IP上，为什么还要区分端口？</summary><p>IP参与网络层寻址；同一IP上可能有不同的TCP或UDP服务入口，端口帮助区分这些通信端点。例如同一服务器上的两项服务可以分别使用TCP443和TCP8443。</p></details>
+  <details class="mini-check"><summary>昨天：应用已经写好请求，为什么还要逐层封装？</summary><p>“要什么内容”和“怎样把数据送过去”是不同问题。传输层加入端口等控制信息，IP层加入源、目的地址等信息，链路层再组织当前链路能交付的帧。各层使用自己需要的信息完成分工。</p></details>
+  <details class="mini-check"><summary>昨天：从Wi-Fi换成网线，是否必须重写HTTP规则？</summary><p>通常不需要。HTTP约定应用消息的含义，接入方式影响更底层的交付。分层允许这些职责分别变化；网络切换仍可能使已有连接中断，但不要求重新设计HTTP。</p></details>
+</section>
+
+<section class="lesson-section lesson-main" id="d2-main" data-phase="main">
+  <div class="section-heading"><h2><span class="section-number">02</span>今日主线</h2></div>
+
+  <article class="topic" id="d2-hop" data-topic="相邻交付与跨网络转发" data-sources="78,90,31">
+    <div class="topic-heading"><span class="topic-number">01</span><h3>相邻交付与跨网络转发</h3><button class="topic-note-button" data-note="d2-hop" aria-controls="topic-notes">笔记</button></div>
+    <div class="topic-source-links" data-topic-sources></div>
+    <p>你坐在家里，用笔记本访问一个课程网站。笔记本连着家里的路由器，网站服务器却在远方。<strong>笔记本能把数据交给眼前的网络，却不能隔着整个互联网直接喊到网站。</strong>数据需要由一台台路由器接力转发。</p>
+    <p>先假设我们已经知道网站的IP地址。下面先解决“知道地址后怎样出发”；第三个知识点再解释“只有域名时怎样得到地址”。本课域名与地址都是教学示例，不代表实际查询结果。</p>
+
+    <h4>先分清：最终目的地和下一位接力者</h4>
+    <p><strong>路由器</strong>连接不同的网络，根据目的IP决定把包从哪个出口继续送出。<strong>下一跳</strong>就是当前这一步要交给的下一位网络接力者。家中网络通常配置一个<strong>默认网关</strong>：没有更具体路线时，就把去往其他网络的包交给它。家庭路由器常承担这个角色。</p>
+    <p>可以借用寄快递理解：包裹写着远方收件地址，但你先交给附近的收件站。收件站没有因此变成最终收件人。网络中的两种地址也在回答不同问题：<strong>IP目的地址表示最终要送往哪里；当前帧的目标MAC地址表示这一步交给谁。</strong>这个类比只帮助理解接力，实际转发依据的是协议字段和路由规则。</p>
+
+    <h4>什么叫“在同一个网段”？把 /24 拆开看</h4>
+    <p>先看一组具体地址：笔记本是<code>192.168.1.10/24</code>，网关是<code>192.168.1.1</code>。IPv4地址由32个比特组成，每8位写成一个十进制数，所以你看到四组数字。<code>/24</code>表示前24位是网络前缀；<strong>恰好在这个例子里，就是前三组数字用来辨认网络，最后一组区分其中的地址。</strong></p>
+    <p>因此，按本例配置，<code>192.168.1.20</code>与笔记本属于同一个<code>192.168.1.0/24</code>网段；网站的<code>198.51.100.20</code>不属于它。这里的网段可以先理解为“按地址前缀划出的网络范围”。其他前缀长度不一定刚好落在点号处，不能把“比较前三组”当成所有网络的规则。</p>
+    <figure class="figure">
+      <div class="table-wrap"><table class="data-table">
+        <caption>图1 · 同一台笔记本，两种不同的下一跳</caption>
+        <thead><tr><th>想访问谁</th><th>本例的路由判断</th><th>这一帧交给谁</th></tr></thead>
+        <tbody>
+          <tr><td>家中设备<br><code>192.168.1.20</code></td><td>在直连网段，可以直接交付</td><td>家中设备的MAC地址</td></tr>
+          <tr><td>远方网站<br><code>198.51.100.20</code></td><td>没有更具体路线，使用默认网关</td><td>网关的MAC地址</td></tr>
+        </tbody>
+      </table></div>
+      <figcaption>假设只有这一条本地直连路线和默认路线。网段判断帮助选择下一跳；对方是否在线、链路和服务是否可用，还要分别检查。</figcaption>
+    </figure>
+
+    <h4>知道网关IP，为什么还要找它的MAC？</h4>
+    <p>昨天学过，IP包还要放进链路层的帧，才能在眼前的链路上交付。在以太网中，帧使用<strong>MAC地址</strong>标识链路接口。接口就是设备连接网络的入口，例如网卡；MAC可以先理解为链路交付时使用的接口编号。它与IP属于不同层次，也不是一个设备永远不变的全球身份证。</p>
+    <p>此时笔记本只知道下一跳网关的IP是<code>192.168.1.1</code>，还不知道应在帧上填写哪个目标MAC。<strong>ARP要补上的正是这一步：在本地IPv4链路上，根据下一跳IP寻找对应的MAC地址。</strong></p>
+    <figure class="figure">
+      <div class="sequence" role="img" aria-label="ARP先查缓存，没有记录就本地广播询问网关的MAC，网关回复后保存对应关系">
+        <p><strong>① 先翻已有记录：</strong>笔记本检查ARP缓存，看看是否已记着 <code>192.168.1.1 → 网关MAC</code>。有可用记录就直接使用。</p>
+        <p><strong>② 没有记录就询问：</strong>在本地链路广播“谁是192.168.1.1？请告诉我你的MAC”。广播是让本链路的其他设备收到询问，不是向整个互联网喊话。</p>
+        <p><strong>③ 网关回答：</strong>“这个IP属于我，我的MAC是G。”这里用字母G代称一个MAC，实际MAC通常写成多组十六进制数。</p>
+        <p><strong>④ 写好帧并出发：</strong>笔记本把对应关系记入缓存，再用网关MAC作为这一帧的目标。</p>
+      </div>
+      <figcaption>图2 · ARP找的是当前链路上的下一跳。普通路由器不会把这次广播一路转发到远方网站。</figcaption>
+    </figure>
+
+    <h4>交给网关以后，网站的IP会被改成网关IP吗？</h4>
+    <p>不会因为“交给网关”就把最终目的地改掉。<strong>网关MAC写在外层帧中，网站IP仍写在里面的IP包中。</strong>这两项信息可以同时存在，作用也不同。</p>
+    <figure class="figure">
+      <div class="envelope" role="img" aria-label="交给网关的帧内部承载目的地址仍为网站的IP包">
+        <div class="packet"><span class="packet-label">当前链路上的帧 · 目标MAC：网关G</span><div class="packet"><span class="packet-label">里面的IP包</span>源IP：192.168.1.10<br>目的IP：198.51.100.20<br>承载的上层数据</div></div>
+      </div>
+      <figcaption>图3 · 外层回答“先交给谁”，内层回答“最终去哪里”。这是概念封装图，省略其他字段。</figcaption>
+    </figure>
+    <p>网关收到交给自己的帧，处理链路封装，查看里面IP包的目的地址，再查<strong>路由表</strong>。路由表保存“某个目的网络应走哪个出口、交给哪个下一跳”等规则。选好下一跳后，路由器按出口链路重新封装，继续发送。因此，<strong>一次跨网络传输会经历不同的链路封装</strong>。</p>
+    <p>在不含地址转换的示例中，IP源、目的地址沿途保持不变，但IPv4的<strong>TTL</strong>会随着路由器转发而减少。这里的TTL可先理解为“还允许经过多少次路由转发”的预算：耗尽后包被丢弃，避免路线出现环路时永远转下去。</p>
+    <details class="mini-check"><summary>换一个目标：改为访问192.168.1.20，还要先找网关MAC吗？</summary><p>在图1的配置下，不需要把它交给默认网关。系统认为目标在直连网段，下一跳就是目标设备，可以用ARP寻找192.168.1.20的MAC。两种场景都要先确定下一跳，再解决当前链路的交付；“所有数据都先交网关”并不成立。</p></details>
+    <details class="mini-check"><summary>网站知识点中的RARP，与ARP、DNS有什么区别？</summary><p>ARP从“已知的下一跳IPv4地址”找本链路上的MAC。历史上的RARP则反过来：早期一些没有本地磁盘的工作站启动时知道自己的硬件地址，却不知道自己的IP，便向本地RARP服务器询问自己的协议地址。</p><p>RARP不是为用户查询网站地址，也不能单独提供完整的网络启动配置；后来BOOTP、DHCP提供了更丰富的配置能力。DNS解决“名字对应什么记录”，与RARP的启动任务不同。IPv6使用基于ICMPv6的邻居发现机制寻找邻居链路地址，不使用ARP。</p></details>
+    <details class="mini-check"><summary>如果家庭路由器做了NAT，哪些说法要加条件？</summary><p>NAT是一种地址转换机制，例如把私有网络发出的包的源地址改成出口使用的地址。本课图3没有画这一步，因此“IP地址沿途不变”只用于不含这类转换的示例。无论是否转换地址，区分最终IP目的地与当前链路下一跳的思路仍然有用。</p></details>
+  </article>
+
+  <article class="topic" id="d2-ping" data-topic="Ping检查了什么" data-sources="91">
+    <div class="topic-heading"><span class="topic-number">02</span><h3>Ping检查了什么</h3><button class="topic-note-button" data-note="d2-ping" aria-controls="topic-notes">笔记</button></div>
+    <div class="topic-source-links" data-topic-sources></div>
+    <p>刚才我们推演了包怎样出发。假如现在网页打不开，能不能先发一小段探测，看看对方是否会回应？<strong>Ping就是常用的探测工具。</strong>它通常发送ICMP的“回显请求”（Echo Request）；目标若允许并能处理这种请求，就返回“回显应答”（Echo Reply）。</p>
+    <p><strong>ICMP</strong>是配合IP工作的控制与差错报告机制。你可以先把回显理解为：“我发一个探测，请你回一声。”这份回应由目标网络协议栈处理，不要求网站程序先生成首页。Ping也不需要选TCP443这样的网页服务端口；IPv6使用相应的ICMPv6。</p>
+    <figure class="figure">
+      <div class="flow" role="img" aria-label="本机向目标IP发送ICMP回显请求，目标返回回显应答，本机统计整个往返耗时">
+        <div class="endpoint"><strong>你的电脑</strong><span>记下发出时刻<br>收到回应后计算耗时</span></div>
+        <div class="flow-middle">回显请求 →<br>← 回显应答<br><strong>一次往返</strong></div>
+        <div class="endpoint"><strong>目标IP</strong><span>允许并处理探测<br>返回回应</span></div>
+      </div>
+      <figcaption>图4 · 往返时间包含去程和回程，也包含路径中的排队、处理等时间。两边的路线不必完全相同。</figcaption>
+    </figure>
+
+    <h4>看到 time=18ms，到底知道了什么？</h4>
+    <p>假设某次探测显示<code>time=18ms</code>。它表示这次从发出请求到收到回应约用了18毫秒，毫秒是千分之一秒。<strong>它不是每秒能下载多少数据。</strong>一次小探测能回来，与持续传输一段大视频，是不同的观察。如果发送四次只收到三次应答，工具可能显示25%的丢包；这个小样本也不能直接代表以后所有访问的丢包率。</p>
+
+    <h4>沿着失败的位置，一步步解释输出</h4>
+    <p>输入<code>ping www.example.com</code>时，工具首先需要把这个名字解析成地址，再向地址发探测；直接输入一个IP则可以跳过这次名字解析。于是，“没有找到名字”和“有地址但没有回应”就应该分开解释。</p>
+    <div class="table-wrap"><table class="data-table">
+      <caption>同一句“打不开”，可能停在不同位置</caption>
+      <thead><tr><th>观察到什么</th><th>目前能说明什么</th><th>接下来还要查什么</th></tr></thead>
+      <tbody>
+        <tr><td>提示无法解析名字</td><td>还没有得到这个名字的可用地址</td><td>名字是否写对、DNS配置与解析过程</td></tr>
+        <tr><td>已显示目标IP，但探测超时</td><td>在等待时间内没收到这次回应</td><td>路径、目标状态、过滤与限速等原因</td></tr>
+        <tr><td>收到回应，但网页仍打不开</td><td>这次ICMP往返得到应答</td><td>网页服务端口、连接建立与网站程序等后续环节</td></tr>
+      </tbody>
+    </table></div>
+    <p>例如网站服务器允许ICMP探测，但它的网页服务程序没有启动。系统仍可回复Ping，浏览器却取不到网页。反过来，服务器也可以禁止ICMP回显，同时正常接待网页请求。因此，<strong>超时只是“没收到这种回应”，成功只是“收到这种回应”</strong>；两种结果都需要结合你实际想验证的服务来解释。</p>
+    <details class="mini-check"><summary>一个网站能正常打开，但Ping一直超时，可能吗？</summary><p>可能。网站服务与ICMP回显采用不同机制。目标或路径可以过滤、限速ICMP，而允许网页访问。不能为了让两种观察看起来一致，就断定其中一个工具必然出错。</p></details>
+  </article>
+
+  <article class="topic" id="d2-dns" data-topic="DNS怎样一步步找到记录" data-sources="3,4,17,34">
+    <div class="topic-heading"><span class="topic-number">03</span><h3>DNS怎样一步步找到记录</h3><button class="topic-note-button" data-note="d2-dns" aria-controls="topic-notes">笔记</button></div>
+    <div class="topic-source-links" data-topic-sources></div>
+    <p>前两节都需要一个目标IP，但人通常输入的是<code>www.example.com</code>这样的名字。笔记本怎样知道应当联系哪个地址？<strong>DNS是一套分布式命名系统，它帮助查询“某个名字对应什么记录”。</strong>域名是名字，IP是通信所用的地址；二者需要一份可查询的对应关系。</p>
+    <p>你可以把记录想成有类型的条目：同一个名字下面可能有地址、别名等不同信息。查询时不仅要说“查谁”，还要说“查哪种记录”。DNS也承载邮件相关记录，找网站地址只是常见用途之一。</p>
+    <div class="table-wrap"><table class="data-table">
+      <caption>访问网站时常见的三种记录</caption>
+      <thead><tr><th>记录类型</th><th>答案是什么</th><th>教学示例</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>IPv4地址</td><td><code>www.example.com → 198.51.100.20</code></td></tr>
+        <tr><td>AAAA</td><td>IPv6地址，使用另一种IP地址格式</td><td><code>www.example.com → 2001:db8::20</code></td></tr>
+        <tr><td>CNAME</td><td>另一个名字，也就是别名指向</td><td><code>www.example.com → edge.example.net</code>，随后还要取得后者的地址</td></tr>
+      </tbody>
+    </table></div>
+
+    <h4>先认识替你继续查的人：递归解析器</h4>
+    <p>假设浏览器和系统中都没有可用的地址记录，你的设备会向配置的<strong>递归解析器</strong>发出请求。解析器是一项替客户端查DNS的服务，可能由网络运营方、公司或其他提供方运行。你把任务交给它：“请查出这个名字的A记录，给我最终结果，或者告诉我失败原因。”</p>
+    <p>“递归”在这里描述的是<strong>接受任务的一方负责继续查找</strong>。你不必自己向每一类DNS服务器重复提问。解析器如果也没有现成答案，就要根据DNS的层级寻找负责这个名字的服务器。</p>
+
+    <h4>为什么需要根、顶级域和权威服务器？</h4>
+    <p>DNS没有要求一台服务器保存全世界所有网站的地址。域名可以从右向左看层级：<code>www.example.com</code>的右边是<code>com</code>，再向下是<code>example.com</code>。不同管理方分别维护自己的部分，并提供“这部分该去问谁”的线索。</p>
+    <p><strong>根服务器</strong>位于查询层级的起点，能够提供顶级域的服务器线索；<strong>.com顶级域服务器</strong>再提供负责example.com的服务器线索；<strong>权威服务器</strong>维护相应区域的记录。本例假设www.example.com的记录就在example.com的权威区域中。权威表示它是这份区域数据的正式来源，不表示它替你保存了全互联网的数据。</p>
+    <figure class="figure">
+      <div class="sequence" role="img" aria-label="冷缓存查询中，客户端委托解析器，解析器依次询问根、com顶级域及example.com权威服务器，每次收到回答后再问下一位">
+        <p><strong>① 你的设备 → 解析器：</strong>“请给我www.example.com的A记录。”<br><strong>解析器现在知道：</strong>要查的名字与类型，还不知道最终IP。</p>
+        <p><strong>② 解析器问根服务器，根回答：</strong>“去问这些负责.com的服务器。”<br><strong>解析器现在多知道：</strong>下一位该问谁，仍没拿到网站IP。</p>
+        <p><strong>③ 解析器问.com服务器，得到回答：</strong>“example.com由这些权威服务器负责。”<br><strong>解析器现在多知道：</strong>谁保存相关区域的数据。</p>
+        <p><strong>④ 解析器问example.com权威服务器，得到回答：</strong>“www.example.com的A记录是198.51.100.20。”<br><strong>解析器现在拿到：</strong>本例需要的地址记录。</p>
+        <p><strong>⑤ 解析器 → 你的设备：</strong>返回地址记录，设备才可以用它准备后续通信。<br><strong>这时拿到的是地址，网页正文还没有取回来。</strong></p>
+      </div>
+      <figcaption>图5 · 每一步都有一次请求和一次回答，解析器依据回答继续问。并不是根服务器把你的查询自动一路传给后面几台服务器。</figcaption>
+    </figure>
+    <p>解析器一般通过预配置的根服务器线索开始查找；它不必先把“根服务器在哪里”也交给一套无限重复的域名查询。图中省略了查找服务器地址等细节，并假设本次没有别名，也没有可用缓存。</p>
+
+    <h4>递归与迭代，是同一次查询里的两种分工</h4>
+    <p>你的设备对解析器说“你继续查，给我结果”，这是递归服务的要求。解析器去问根或顶级域时，对方给出“下一位该问谁”的转介，解析器再按线索发起下一次查询，这体现了<strong>迭代</strong>的查找过程。迭代中的回答也可能直接就是最终答案或错误，不是每次都必须转介。</p>
+    <div class="callout"><p><strong>看谁承担“继续问”的责任：</strong>递归是接受任务的一方继续查；迭代时，提问的一方根据收到的回答决定下一问。设备的一次递归请求，可以由解析器用多次迭代查询完成。它们与TCP、UDP如何运送消息是不同的问题。</p></div>
+
+    <h4>为什么第二次查询，可能根本不访问根服务器？</h4>
+    <p><strong>缓存</strong>就是把查到的结果暂时记下来，之后遇到同样问题时优先复用。若解析器还保存着www.example.com的有效A记录，直接回答即可；若没有最终地址，却记着example.com的权威服务器线索，也可以从那里继续，省掉前面几步。浏览器、系统和解析器都可能有自己的缓存。</p>
+    <p>记录中的<strong>TTL</strong>规定可以缓存多久，单位是秒。例如某份DNS记录TTL为300，表示普通缓存可以在这段有效期内复用它；缓存也可能提前被清除。<strong>这里的DNS TTL是缓存时间，前面IP包的TTL是转发次数预算，不能把两者的数值当成同一种计量。</strong></p>
+    <details class="mini-check"><summary>跟着走一次：解析器知道example.com的权威服务器，但没有www的A记录，下一步问谁？</summary><p>直接问相关权威服务器，不必从根重来。若权威服务器返回CNAME，解析器还需要根据别名继续取得地址。本质是沿已有线索补齐缺少的信息。</p></details>
+    <details class="mini-check"><summary>“查到没有记录”和“查询超时”有什么区别？</summary><p>前者是收到了明确结果，例如名字不存在，或名字存在却没有所问类型的记录；后者是等待时间内没有收到所需回答。明确的“没有”也可以按规则暂时缓存，称为否定缓存。不能把查不到IPv6的AAAA记录直接理解成这个名字不存在，更不能把超时当成权威服务器已经回答“没有”。</p></details>
+    <details class="mini-check"><summary>浏览器使用加密DNS，还会是同一套分工吗？</summary><p>浏览器可能自行选择解析服务，通过加密方式向它查询，而没有走你预想的系统解析路径。但“名字与记录”“递归查找”“权威来源”“缓存有效期”等概念仍然适用。后续学习传输和HTTPS时，再把这些查询消息怎样被运送、被保护连起来。</p></details>
+  </article>
+
+  <article class="topic" id="d2-dns-traffic" data-topic="DNS怎样影响访问流量" data-sources="18">
+    <div class="topic-heading"><span class="topic-number">04</span><h3>DNS怎样影响访问流量</h3><button class="topic-note-button" data-note="d2-dns-traffic" aria-controls="topic-notes">笔记</button></div>
+    <div class="topic-source-links" data-topic-sources></div>
+    <p>设想课程网站越来越忙，一台服务器接待不过来，网站准备了甲、乙两个服务节点。<strong>节点</strong>在这里指一个能够接待访问的服务位置。为了让用户不必记两套域名，网站可以让同一个名字提供不同候选地址。</p>
+    <p>例如www.example.com的A记录返回甲的<code>198.51.100.20</code>和乙的<code>198.51.100.21</code>。客户端拿到候选地址，再按自身策略尝试连接其中一个。网站也可能让不同地区的查询得到不同答案，以便访问较近的节点。这样，DNS通过<strong>影响客户端最先拿到哪些地址</strong>，参与了流量分配。</p>
+    <figure class="figure">
+      <div class="flow" role="img" aria-label="DNS向浏览器返回甲乙两个候选地址，浏览器选择并连接服务节点，网页内容由节点返回">
+        <div class="endpoint"><strong>先查DNS</strong><span>得到甲、乙两个候选IP<br>这一步没有网页正文</span></div>
+        <span class="flow-arrow">→</span>
+        <div class="endpoint"><strong>再尝试连接</strong><span>例如选择甲<br>后续访问交给甲节点</span></div>
+      </div>
+      <figcaption>图6 · DNS帮助选出候选目的地；后续网页请求不会因此自动经过DNS服务器。</figcaption>
+    </figure>
+
+    <h4>为什么“两个IP”不等于“各接一半请求”？</h4>
+    <p>假设同一公司的100位用户共用一个解析器，它缓存了一份偏向甲的答案，这批用户就可能集中走向甲。某个客户端还可能优先选择更容易连通的地址，并在同一连接中重复访问。<strong>DNS不是在每次网页请求到来时轮流喊“这次甲、下次乙”。</strong>它通常看不到所有节点当前的业务负担，不能单独保证均匀分配。</p>
+    <p>若网站根据查询来源位置选择节点，看到的也可能是解析器位置，未必是每位用户的位置。DNS可以结合策略和健康检查调整答案；CDN、代理或负载均衡器还可能承担后续的分配工作，不能把这些机制都当成DNS自身的动作。</p>
+
+    <h4>完整推演：改了地址，为什么还有人访问旧节点？</h4>
+    <p>假设甲故障，网站想让之后的访问转向乙。管理员更新权威记录，只保留乙；但另一处解析器手里可能还拿着有效的旧记录。沿时间看，原因就清楚了：</p>
+    <figure class="figure">
+      <div class="sequence" role="img" aria-label="十点缓存旧答案三百秒，十点零二更新权威记录，旧缓存仍可能用到十点零五">
+        <p><strong>10:00：</strong>解析器取得旧答案“甲”，TTL为300秒，按本例可缓存到10:05。</p>
+        <p><strong>10:02：</strong>权威记录改成“乙”。权威服务器上的答案已变，但没有把所有已有缓存立即抹掉。</p>
+        <p><strong>10:04：</strong>有人向这个解析器查询。旧答案还剩约60秒有效期，解析器仍可能回答“甲”，用户因此继续尝试故障节点。</p>
+        <p><strong>10:05以后：</strong>旧缓存到期；下一次需要重新查询时，若查询成功，就能取得更新后的答案“乙”。</p>
+      </div>
+      <figcaption>图7 · 假设没有提前清除或刷新，也没有特殊的过期记录服务策略。TTL限制缓存使用时间，不保证这个地址在有效期内一直健康。</figcaption>
+    </figure>
+    <p>这也解释了为何<strong>刚把TTL从300改成30，不会让别人早已缓存的300秒记录立刻缩短</strong>：对方还没重新查询，就还不知道你改了这个字段。较短TTL有助于缩短之后新记录的缓存周期，但会增加重复查询；地址切换需要把已有缓存的时间也算进去。已经建立的连接也不会仅因DNS记录变化就自动改道。</p>
+    <details class="mini-check"><summary>换个时间算：12:00缓存甲，TTL为120秒；12:00:30改成乙。12:01还可能查到甲吗？</summary><p>可能。原缓存通常可用到12:02，12:01还剩约60秒。记录更新与缓存到期是两件事。即使下一次查询拿到乙，也还要继续验证到乙的网络与服务是否可用。</p></details>
+    <div class="callout"><p><strong>把本课连成一句话：</strong>先用DNS取得候选IP，再按路由确定下一跳、完成链路交付；需要探测时，Ping能观察一种IP层面的往返。查到名字、找到下一跳、收到探测回应、成功取回网页，是不同阶段的结果。</p></div>
+  </article>
+</section>
+
+<section class="lesson-section" id="d2-quiz" data-phase="quiz">
+  <div class="section-heading"><h2><span class="section-number">03</span>理解自测</h2></div>
+  <p>先写出过程和理由，再展开参考答案。</p>
+  <article class="question" data-quiz="d2-q1">
+    <h3>1 / 笔记本访问外网时，是先找网站MAC还是网关MAC？解释IP包与帧的目标。</h3>
+    <p>笔记本为192.168.1.10/24，网关为192.168.1.1，网站为198.51.100.20；假设使用本课的直连路线与默认路线。按“判断目标 → 选择下一跳 → 查MAC → 封装”写出过程。再说明：若改为访问192.168.1.20，哪一步的结果会变？</p>
+    <div class="quiz-input"></div><details><summary>查看参考答案</summary><div class="answer"><p>网站不在本机的192.168.1.0/24直连网段，系统选默认网关192.168.1.1作为下一跳。先检查它的ARP缓存，没有可用记录时通过ARP寻找网关MAC；外层帧目标写网关MAC，里面IP包目的仍写网站IP。网关收到后继续按路由转发。</p><p>若目标改为192.168.1.20，它在本例直连网段，下一跳就是目标设备，ARP寻找的应是它的MAC。判断的关键是下一跳发生变化；不是把所有帧都先发给网关。</p></div></details><div class="quiz-rating"></div>
+  </article>
+  <article class="question" data-quiz="d2-q2">
+    <h3>2 / “Ping超时说明网站已关机；Ping成功说明网页一定正常。”两句哪里有问题？</h3>
+    <p>分别为这两句话给出一个反例，并说明Ping实际观察的是什么。</p>
+    <div class="quiz-input"></div><details><summary>查看参考答案</summary><div class="answer"><p>超时可能因为目标过滤或限速ICMP回显，即使网页仍正常；成功也可能发生在网页服务程序停机时，因为网络协议栈仍能回答探测。Ping通常观察ICMP回显的一次往返是否有应答、耗时多少，不会替你验证网页服务端口和业务处理。</p></div></details><div class="quiz-rating"></div>
+  </article>
+  <article class="question" data-quiz="d2-q3">
+    <h3>3 / 冷缓存时查询www.example.com，根、顶级域、权威服务器分别提供什么？</h3>
+    <p>沿图5的场景写出：谁负责继续问？每次收到回答后，多知道了什么？哪一步才得到网站地址？</p>
+    <div class="quiz-input"></div><details><summary>查看参考答案</summary><div class="answer"><p>递归解析器负责继续查。根返回.com服务器线索；.com返回example.com权威服务器线索；本例权威服务器返回www的A记录198.51.100.20。解析器再把地址返回设备。前两类转介告诉它下一步问谁，通常没有直接给出这个网站的最终IP。</p></div></details><div class="quiz-rating"></div>
+  </article>
+  <article class="question" data-quiz="d2-q4">
+    <h3>4 / 递归与迭代怎样合作？缓存命中时为何可能不再访问根？</h3>
+    <p>分别比较“已有www的有效A记录”和“只有example.com的有效权威服务器线索”两个情况，说明各能省掉什么查询。</p>
+    <div class="quiz-input"></div><details><summary>查看参考答案</summary><div class="answer"><p>设备请求解析器递归取得结果；解析器可根据转介迭代地继续提问。若缓存已有最终A记录，直接回答，无需本次向外查；若只保存相关权威服务器线索，就从该权威服务器查起，跳过根与.com。递归、迭代说明继续查询的责任，缓存决定手头已经有什么可复用信息。</p></div></details><div class="quiz-rating"></div>
+  </article>
+  <article class="question" data-quiz="d2-q5">
+    <h3>5 / DNS删除故障IP后，为什么仍有人访问旧节点？返回多个IP又为何不保证平均？</h3>
+    <p>12:00取得甲的记录，TTL为120秒；12:00:30权威记录切到乙。解释12:01的用户为何仍可能得到甲。若改成同时返回甲乙，是否能推出各承担50%请求？</p>
+    <div class="quiz-input"></div><details><summary>查看参考答案</summary><div class="answer"><p>本例旧缓存可以持续到12:02；权威更新不会立即清除解析器的有效旧答案，所以12:01仍可能得到甲。现有连接也不会仅因DNS更新就改道。</p><p>同时返回两个IP不保证平均：用户可能共享同一缓存，客户端选择与连接复用也会影响流量。DNS提供候选地址，不能直接逐个调度之后的所有网页请求。</p></div></details><div class="quiz-rating"></div>
+  </article>
+  <p id="quiz-summary" class="notice" hidden></p>
+</section>
+
+<section class="lesson-section" id="d2-close" data-phase="close">
+  <div class="section-heading"><h2><span class="section-number">04</span>收尾记录</h2></div>
+  <div class="checklist">
+    <label><input type="checkbox" data-save="d2-exit-1">画出笔记本到网关这一步，标清IP目的地址、帧目标MAC，并解释ARP补了哪条信息。</label>
+    <label><input type="checkbox" data-save="d2-exit-2">追踪一次冷缓存查询，再说明有地址缓存或权威线索时会省去哪些步骤。</label>
+    <label><input type="checkbox" data-save="d2-exit-3">用一个具体例子解释：拿到IP、Ping有回应和网页正常为什么要分开判断。</label>
+  </div>
+  <label class="inline-label" for="d2-exit-note">用自己的话记下今天能解释的机制，以及仍有疑问的位置</label>
+  <textarea id="d2-exit-note" data-save="d2-exit-note" rows="3" maxlength="20000"></textarea>
+  <div class="close-actions"><button id="mark-complete" class="primary">标记本日完成</button><button data-feedback="d2-close">整理本日反馈</button></div>
+  <div id="next-lesson"></div><p id="completion-note"></p>
+</section>
+<details class="source-map lesson-sources">
+  <summary>网站知识点与参考资料</summary><div data-day-references></div>
+  <p>规范核验：2026-11-08。</p>
+  <ul>
+    <li><a href="https://www.rfc-editor.org/rfc/rfc1034">RFC 1034：DNS概念、递归与迭代</a></li>
+    <li><a href="https://www.rfc-editor.org/rfc/rfc1035">RFC 1035：DNS记录和TTL</a></li>
+    <li><a href="https://www.rfc-editor.org/rfc/rfc826">RFC 826：ARP</a></li>
+    <li><a href="https://www.rfc-editor.org/rfc/rfc903">RFC 903：RARP历史用途</a></li>
+    <li><a href="https://www.rfc-editor.org/rfc/rfc792">RFC 792：ICMP Echo</a></li>
+    <li><a href="https://www.rfc-editor.org/rfc/rfc1812#section-5.2.4">RFC 1812 §5.2.4：IPv4下一跳选择</a></li>
+  </ul>
+</details>
