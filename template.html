@@ -10,12 +10,13 @@
   <title>网络入门 · 12个学习日</title>
   <style>/* STYLES */</style>
 </head>
-<body>
+<body data-course-mode="/* MODE */">
   <!-- SOURCE_ONLY_NOTICE_START -->
   <p style="padding:20px;font:16px/1.7 sans-serif">这是制作课件用的模板，正在打开正式学习页面。若没有自动跳转，请<a href="index.html">点击这里打开课件</a>。</p>
   <!-- SOURCE_ONLY_NOTICE_END -->
   <a class="skip" href="#workspace">跳到课程正文</a>
-  <header class="topbar"><a class="brand" href="#" data-view="lesson"><span class="brand-mark">N</span><span>网络入门</span></a><nav aria-label="主要导航"><button class="tab active" data-view="lesson">学习课件</button><button class="tab" data-view="roadmap">12天路线</button><button class="tab" data-view="guide">使用说明</button><button id="study-mode-toggle" class="study-mode-entry" aria-pressed="false">学习模式</button></nav></header>
+  <header class="topbar"><a class="brand" href="#" data-view="lesson"><span class="brand-mark">N</span><span>网络入门</span></a><nav aria-label="主要导航"><button class="tab active" data-view="lesson">学习课件</button><button class="tab" data-view="roadmap">12天路线</button><button class="tab" data-view="guide">使用说明</button><button id="study-mode-toggle" class="study-mode-entry" aria-pressed="false">学习模式</button></nav><a id="review-return" href="index.html" hidden>正式学习</a></header>
+  <div id="review-banner" class="review-banner" hidden>开发检查 · 全部12天可查看，检查记录与正式学习分开</div>
   <div id="study-toolbar" class="study-toolbar" aria-label="学习模式工具栏" hidden>
     <div class="study-toolbar-inner"><span id="study-day-label">第1天</span><div class="compact-timer"><label class="sr-only" for="study-phase-select">计时归类（手动）</label><select id="study-phase-select"><option value="recall">回忆检查</option><option value="main">今日主线</option><option value="quiz">理解自测</option><option value="close">收尾记录</option></select><span id="study-timer-display">00:00</span><button id="study-timer-toggle">开始</button></div><div class="study-toolbar-actions"><button id="notes-toggle" aria-controls="topic-notes" aria-expanded="false">笔记</button><button id="study-mode-exit">退出学习模式</button></div></div>
   </div>
@@ -24,17 +25,17 @@
       <div class="side-intro"><h2>课程目录</h2></div>
       <div class="progress-label"><span>已完成</span><b id="progress-label">0 / 12</b></div><progress id="course-progress" max="12" value="0" aria-label="已标记完成的学习日"></progress>
       <div id="day-nav"></div>
-      <div class="side-foot">目前开放第1天</div>
+      <div class="side-foot" id="unlock-status"></div>
     </aside>
     <main id="workspace" tabindex="-1">
       <div id="storage-warning" class="notice" hidden>当前浏览器不能持久保存。你仍可学习，请使用“导出学习记录”保留记录。</div>
       <div id="lesson-view">
-        <section class="hero"><div class="eyebrow" id="day-label"></div><h1 id="lesson-title"></h1><div class="hero-meta" id="lesson-meta" hidden></div></section>
+        <section class="hero"><div class="eyebrow" id="day-label"></div><h1 id="lesson-title"></h1></section>
         <div id="day-content"></div>
       </div>
       <section id="roadmap-view" hidden></section>
       <section id="guide-view" hidden></section>
-      <footer class="page-footer"><div class="utility"><button class="text-button" id="export-data">导出学习记录</button><label class="text-button import-label" for="import-data">导入学习记录</label><input id="import-data" type="file" accept="application/json,.json" hidden><button class="text-button" id="print-page">打印 / 存为PDF</button></div><small>v<span id="version"></span></small></footer>
+      <footer class="page-footer"><div class="utility"><button class="text-button" id="export-data">导出学习记录</button><label class="text-button import-label" for="import-data">导入学习记录</label><input id="import-data" type="file" accept="application/json,.json" hidden><button class="text-button" id="export-handoff">导出本课交接</button><button class="text-button" id="print-page">打印 / 存为PDF</button></div><small>v<span id="version"></span></small></footer>
     </main>
     <aside class="study-tools" aria-label="学习辅助">
       <div class="timer-card"><h2>学习计时</h2><div id="timer-display" class="timer" aria-live="off">00:00</div><p id="timer-hint">本日用时 / 90分钟</p><div class="timer-actions"><button id="timer-toggle" class="primary">开始计时</button></div><label for="phase-select">计时归类（手动）</label><select id="phase-select"><option value="recall">回忆 / 摸底 · 10分钟</option><option value="main">图文主线 · 55分钟</option><option value="quiz">理解自测 · 20分钟</option><option value="close">收尾记录 · 5分钟</option></select><details class="timer-breakdown"><summary>分段用时</summary><p class="phase-help">手动选择类别后计时；切换类别时，先结算上一段用时。</p><div id="phase-times" class="phase-times"></div></details></div>
@@ -64,7 +65,8 @@
   </dialog>
   <div id="toast" role="status" aria-live="polite"></div>
   <script id="course-data" type="application/json">/* COURSE_DATA */</script>
-  <template id="lesson-01">/* LESSON_01 */</template>
+  <!-- LESSON_TEMPLATES -->
+  <script>/* STATE */</script>
   <script>/* APP */</script>
 </body>
 </html>

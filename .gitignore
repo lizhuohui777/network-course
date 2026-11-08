@@ -2,7 +2,12 @@
 __pycache__/
 *.py[cod]
 .local/
-learner-state.json
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+network-course-study*.json
+network-course-review*.json
 network-learning-record*.json
-preview.jpg
-diagram-preview.jpg
+*handoff.md

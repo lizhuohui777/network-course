@@ -1,19 +1,15 @@
 # Network course maintenance
 
-The directory containing this file is the authoritative project root. The previous Codex project entry links here. Make changes in this root; keep one maintained copy. Resolve all course paths relative to this root so future Git clones remain portable.
+The directory containing this file is the project root. Resolve paths relative to it so clones on another computer work.
 
-When continuing this course, answering a learner's course question, creating a lesson, or changing HTML:
+1. Before course work, read `docs/LEARNING_CONTEXT.md`, `docs/REQUIREMENTS.md` and `课程维护约定.md`. User instructions override the initial pilot workflow: all twelve lessons are now complete and reviewable. Browser records are not automatically available in project files; use only learner-provided records or reports.
+2. For a course question, read the relevant lesson and its curriculum mappings, explain the question first, then offer a concrete HTML update when useful. Wait for agreement before a new clarification update; direct user requests for edits already authorize that work.
+3. Preserve substantive beginner explanations, diagrams, worked examples and meaningful technical qualifications. Show original-question links at the day and topic levels. Keep authoring rationale, pacing reminders and coverage audits out of learner prose; follow the attention rules in the maintenance agreement.
+4. Keep topic IDs, answer keys and published lesson mappings stable. `index.html` enforces sequential progress; `review.html` shows every lesson and has separate records. Validate each topic-source assignment and all twelve lessons with `build.py`.
+5. Edit authoritative lesson/template/code sources, rebuild both pages and run relevant checks. Never infer mastery, elapsed study time, start dates or quiz success from visits. Never commit personal learning records, local archives, screenshots or credentials.
 
-1. Read `课程维护约定.md`, `learner-state.json`, and the relevant lesson and curriculum entries. If the learner state is absent in a fresh checkout, copy `learner-state.example.json` to `learner-state.json`. Treat synced reference material in the original ChatGPT project as read-only. Local research archives are in `.local/research/`.
-2. Explain the learner's current question first. Use one concrete example, a mechanism or diagram when helpful, and a short transfer question to check understanding. Treat the answer as unknown until the learner responds.
-3. Identify a reusable gap: missing prerequisite, ambiguous explanation, mistaken analogy, missing example, factual error, or excessive workload. Proactively propose a specific HTML update naming the lesson and change. Wait for user agreement before applying a new clarification update. Existing authorization to build the initial curriculum and Day 1 remains valid.
-4. Record only user-reported learning facts in `learner-state.json`. Keep suggested changes pending, distinct from approved and published changes. Never infer mastery, actual time, quiz success, or a start date from page visits or elapsed chat time. Follow the user's latest authorization for records and edits.
-5. For an approved update, edit the single authoritative content location; adjust dependent lessons, the following day's review and relevant questions only when needed. Preserve stable IDs and browser progress. Update version and `CHANGELOG.md`, rebuild `index.html`, and verify the affected interactions. Report what now works.
+Use only the current record schema. The user explicitly requested removal of old development-record compatibility. Maintain portable code, no account or network service dependency for learning. GPT answer context is copied/exported by the learner; the HTML does not send chat messages or synchronize accounts.
 
-The deliverable is local HTML. Publish or connect an external account only if the user requests it. Browser feedback is local until the learner copies or exports it into the chat; do not claim automatic chat-to-HTML or HTML-to-project synchronization.
+Public GitHub publication for this delivery is authorized to `lizhuohui777/network-course`. Scan tracked files and Git history for secrets before pushing; never expose credentials in output. Do not alter unrelated repositories or stored credentials. No destructive Git history rewrite.
 
-Keep private learner records and local archives out of Git using `.gitignore`. Prepare local version history as needed; create a GitHub repository or push only when the user requests that step.
-
-Communicate in Chinese by default. Lead with the outcome, number multi-step instructions, and give one small next action when work remains open. Keep explanations beginner-friendly and expand when asked.
-
-For learner-facing copy, read the attention rules in `课程维护约定.md`. Lessons and the roadmap should show subject matter, examples, meaningful technical qualifications, exercises and necessary controls. Keep production rationale, coverage audits, calibration promises, repeated pacing reminders and implementation instructions in project documentation. Preserve explanatory depth while removing distracting commentary; do not reduce the knowledge to slogans or an outline.
+Communicate in Chinese by default, lead with the outcome, keep multi-step actions numbered and avoid implementation detail unless useful. Use explicit review findings and appropriate tests to drive fixes, not speculative refactoring.
