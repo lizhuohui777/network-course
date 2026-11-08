@@ -11,9 +11,9 @@
 <details class="mini-check"><summary>小检查：收到ACK 1301，能推出对方已显示了这300字节吗？</summary><p>不能。只能据此知道相应连续字节被对端TCP确认。应用何时读取、解释或显示，是更上层的事情。</p></details></article>
 <article class="topic" id="d6-rto" data-topic="用往返时间设置重传等待" data-sources="94"><div class="topic-heading"><span class="topic-number">02</span><h3>用往返时间设置重传等待</h3><button class="topic-note-button" data-note="d6-rto" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
 <p>数据发出后没立即收到确认，不一定已经丢失，也可能只是路远、排队或确认延迟。等待太短会制造不必要的重传；等待太长又会拖慢恢复。<strong>RTT（往返时延）</strong>描述一次发送到相应确认返回的时间；<strong>RTO（重传超时）</strong>是发送方为等待进展设置的超时阈值。两者有关，但不能直接画等号。</p>
-<p>RFC 6298用平滑的RTT估计SRTT，以及衡量变化的RTTVAR，形成RTO。可以先理解为“典型往返耗时，加上给波动留的余量”。它还考虑计时器粒度，并规定计算后小于1秒的RTO应向上取到1秒。这里描述规范的基础算法，不能据此断言每个系统、每个场景的实际计时值都相同。</p>
+<p>RFC 6298用平滑的RTT估计SRTT，以及衡量变化的RTTVAR，形成RTO。可以先理解为“典型往返耗时，加上给波动留的余量”。它还考虑计时器粒度，并建议计算后小于1秒的RTO向上取到1秒。这里描述规范的基础算法，不能据此断言每个系统、每个场景的实际计时值都相同。</p>
 <figure class="figure"><div class="flow" role="img" aria-label="发送数据后等待确认；收到新确认更新计时，超时则重传并扩大等待时间"><div class="endpoint"><strong>发送数据</strong><span>启动重传计时</span></div><div class="flow-middle"><span class="flow-arrow">→</span>有新确认：推进边界<br>超时：重传未确认数据<span class="flow-arrow">→</span></div><div class="endpoint"><strong>继续观察</strong><span>超时后RTO翻倍<br>后续有效样本再校准</span></div></div><figcaption>图2 · 超时是恢复信号，不是“已经证明对方没收到”的证据。</figcaption></figure>
-<p>具体算一次：暂取SRTT=200毫秒、RTTVAR=50毫秒，忽略更大的计时粒度，原始估计为200+4×50=400毫秒。依RFC 6298的下限规则应取1秒。如果超时重传后仍无进展，等待可从1秒退避为2秒、4秒。<strong>指数退避</strong>避免在疑似不通或拥挤的网络里不停追加同样频率的重传。</p>
+<p>具体算一次：暂取SRTT=200毫秒、RTTVAR=50毫秒，忽略更大的计时粒度，原始估计为200+4×50=400毫秒。本例按RFC 6298的基础建议取1秒。如果超时重传后仍无进展，等待可从1秒退避为2秒、4秒。<strong>指数退避</strong>避免在疑似不通或拥挤的网络里不停追加同样频率的重传。</p>
 <p>重传还带来测量歧义：同一字节发过两次后，返回的确认到底对应第一次还是第二次？没有额外信息时不能随意拿它测RTT，这就是Karn算法关注的问题；时间戳选项等机制可以帮助消除歧义。下一课还会看到：重复确认能在超时之前提示缺口，不是所有重传都必须等待RTO。</p>
 <details class="mini-check"><summary>小检查：RTT最近约80毫秒，RTO就必须是80毫秒吗？</summary><p>不必。RTO包含时延波动余量、计时规则与规范约束；用单次RTT直接替代会把正常延迟误判为丢包。</p></details></article>
 <article class="topic" id="d6-stream" data-topic="字节流不保留发送调用的边界" data-sources="8"><div class="topic-heading"><span class="topic-number">03</span><h3>字节流不保留发送调用的边界</h3><button class="topic-note-button" data-note="d6-stream" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>

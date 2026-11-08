@@ -5,6 +5,7 @@ import re
 from collections import Counter
 from html.parser import HTMLParser
 from pathlib import Path
+from lesson_examples import enrich, validate_examples
 
 ROOT = Path(__file__).resolve().parent
 
@@ -38,7 +39,9 @@ class LessonInspector(HTMLParser):
             self.forbidden.append(tag)
 
 
-def validate(course):
+def validate(course, examples=None):
+    if examples is None:
+        examples = json.loads((ROOT / "interactive-examples.json").read_text(encoding="utf-8"))
     assert course['default_mode'] in ('review', 'study')
     assert len(course['days']) == 12
     mapped = [qid for day in course['days'] for qid in day['ids']]
@@ -50,6 +53,7 @@ def validate(course):
         n = day['day']
         path = ROOT / 'lessons' / f'lesson-{n:02}.html'
         html = path.read_text(encoding='utf-8')
+        html = enrich(html, examples)
         parser = LessonInspector()
         parser.feed(html)
         assert not parser.forbidden, (path, 'executable lesson content')
@@ -69,10 +73,13 @@ def validate(course):
         assert sum(day['budget']) == 90
         lesson_sources.append(f'<template id="lesson-{n:02}" data-day="{n}">\n{html}\n</template>')
     assert len(all_topics) == len(set(all_topics))
+    validate_examples(examples, all_topics)
     return '\n'.join(lesson_sources)
 
 
-def assemble(course, lessons, mode):
+def assemble(course, lessons, mode, examples=None):
+    if examples is None:
+        examples = json.loads((ROOT / "interactive-examples.json").read_text(encoding="utf-8"))
     html = (ROOT / 'template.html').read_text(encoding='utf-8')
     for block in ('REDIRECT', 'NOTICE'):
         start, end = f'<!-- SOURCE_ONLY_{block}_START -->', f'<!-- SOURCE_ONLY_{block}_END -->'
@@ -86,6 +93,8 @@ def assemble(course, lessons, mode):
         '/* STYLES */': (ROOT / 'style.css').read_text(encoding='utf-8'),
         '/* COURSE_DATA */': json.dumps(course, ensure_ascii=False).replace('<', '\\u003c'),
         '<!-- LESSON_TEMPLATES -->': lessons,
+        '/* DIAGRAM_DATA */': json.dumps(examples, ensure_ascii=False).replace('<', '\\u003c'),
+        '/* DIAGRAMS */': (ROOT / 'diagrams.js').read_text(encoding='utf-8'),
         '/* STATE */': (ROOT / 'state.js').read_text(encoding='utf-8'),
         '/* APP */': (ROOT / 'app.js').read_text(encoding='utf-8'),
     }

@@ -73,6 +73,7 @@
     });
     document.querySelectorAll('[data-day-references]').forEach(el => el.innerHTML = `<div class="source-items">${sourceItems(dayInfo().ids)}</div>`);
     document.querySelectorAll('#section-nav a').forEach((link, i) => link.href = `#d${day}-${['warmup', 'main', 'quiz', 'close'][i]}`);
+    window.CourseDiagrams.mount($('day-content'));
     encap = 0; hopTarget = 'remote'; hopStep = 0; hopAddresses = false; renderHopDemo(); summary(); completion();
   }
   function showView(nextView) {
@@ -167,8 +168,8 @@
   function topicText(id) {
     const el = document.getElementById(id)?.cloneNode(true);
     if (!el) return '';
-    el.querySelectorAll('button,.rating-group,.topic-source-links,input,textarea,select').forEach(node => node.remove());
-    return el.textContent.replace(/\s+/g, ' ').trim();
+    el.querySelectorAll('button,.rating-group,.topic-source-links,[data-example],.example-terms,input,textarea,select').forEach(node => node.remove());
+    return [el.textContent.replace(/\s+/g, ' ').trim(),window.CourseDiagrams.textFor(id)].filter(Boolean).join('\n\n');
   }
   function feedbackText() {
     const topic = topics().find(item => item.id === feedbackTopic);
