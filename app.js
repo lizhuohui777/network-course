@@ -25,6 +25,7 @@
   } catch { persistent = false; }
   let day = state.day, view = 'lesson', running = false, startedAt = 0, phase = state.ui.phase;
   let notesOpen = false, selectedTopic = state.ui.noteTopic, lastNotesTrigger = null, feedbackTopic = '', encap = 0, toastTimeout;
+  let hopTarget = 'remote', hopStep = 0, hopAddresses = false;
   const esc = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const clock = ms => { const seconds = Math.floor(ms / 1000); return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`; };
   const dayInfo = () => course.days.find(item => item.day === day);
@@ -72,7 +73,7 @@
     });
     document.querySelectorAll('[data-day-references]').forEach(el => el.innerHTML = `<div class="source-items">${sourceItems(dayInfo().ids)}</div>`);
     document.querySelectorAll('#section-nav a').forEach((link, i) => link.href = `#d${day}-${['warmup', 'main', 'quiz', 'close'][i]}`);
-    encap = 0; summary(); completion();
+    encap = 0; hopTarget = 'remote'; hopStep = 0; hopAddresses = false; renderHopDemo(); summary(); completion();
   }
   function showView(nextView) {
     if (nextView !== 'lesson') { pause(); setStudyMode(false); }
@@ -213,6 +214,54 @@
     $('encap-visual').innerHTML = html; $('encap-step').textContent = `${encap} / 3`; $('encap-next').disabled = encap === 3;
     $('encap-description').textContent = ['应用组织好请求数据。', 'TCP加入端口等传输控制信息。', 'IP加入源与目标地址等网络控制信息。', '链路层形成帧，接着用物理信号传送。'][encap];
   }
+  function renderHopDemo() {
+    const demo = $('d2-hop-demo');
+    if (!demo) return;
+    const remote = hopTarget === 'remote';
+    const next = remote ? 'gateway' : 'home';
+    const nextName = remote ? '家里的路由器' : '家中设备';
+    const nextIP = remote ? '192.168.1.1' : '192.168.1.20';
+    const finalIP = remote ? '198.51.100.20' : nextIP;
+    const mac = remote ? 'G' : 'H';
+    const steps = [
+      [remote ? '先看位置：网站在家门以外' : '先看位置：目标也在家中网络', remote ? '笔记本和路由器在家中，网站在远方。接下来，看看笔记本怎样把数据送出去。' : '这次要联系上方的家中设备。它和笔记本在本例的同一个网络里。'],
+      [remote ? '先选接力点：交给家里的路由器' : '目标在同一网络：直接交给它', remote ? '网站不在本机直连网段，本例使用默认路线。笔记本选家里的路由器作为“下一跳”，也就是眼前先接手数据的一方。' : '系统判断目标在直连网段，可以直接交付。这次“下一跳”就是家中设备，不用先让路由器跨网络转发。'],
+      ['发出ARP询问：我还不知道它的MAC', `笔记本在家中网络广播：“谁是${nextIP}？请告诉我你的MAC。”MAC是当前链路交付使用的接口地址；这次询问不会被路由器转到远方网站。`],
+      [`${nextName}回答：我的MAC是${mac}`, `${nextName}确认询问的是自己的IP，向笔记本回复MAC ${mac}。笔记本把“${nextIP}对应${mac}”暂时记下来，这份本地记录就是ARP缓存。`],
+      ['写好外层帧，再发给下一跳', remote ? '外层帧写“先交给路由器MAC G”，里面的IP包仍写“最终去网站”。看信封沿家中连线移动：它先到路由器，还没有直接跳到网站。' : '外层帧写“交给家中设备MAC H”，里面IP包的目的地也是这台家中设备。看信封沿家中连线直接送过去。'],
+      [remote ? '路由器接力，继续送向网站' : '数据到达家中设备', remote ? '路由器收到后查看IP目的地址，选择后续路线继续转发。远方还会逐跳接力；图中把这些中间动作合并画出，最终目的地始终是网站。' : '本次交付在家中网络内完成。互联网连线一直没有亮起：同网段通信不需要为了经过路由器而绕到远方。']
+    ];
+    const [title, description] = steps[hopStep];
+    demo.classList.toggle('show-addresses', hopAddresses);
+    demo.querySelectorAll('[data-hop-target]').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.hopTarget === hopTarget)));
+    const addressToggle = demo.querySelector('[data-hop-action="addresses"]');
+    addressToggle.setAttribute('aria-pressed', String(hopAddresses));
+    addressToggle.textContent = hopAddresses ? '收起IP与MAC' : '显示IP与MAC';
+    demo.querySelectorAll('[data-hop-node]').forEach(el => el.classList.toggle('is-active', el.dataset.hopNode === 'laptop' || (hopStep >= 1 && el.dataset.hopNode === next) || (hopStep === 5 && el.dataset.hopNode === hopTarget)));
+    demo.querySelectorAll('[data-hop-goal]').forEach(el => el.classList.toggle('is-visible', el.dataset.hopGoal === hopTarget && (remote || hopStep === 0)));
+    demo.querySelectorAll('[data-hop-next]').forEach(el => el.classList.toggle('is-visible', hopStep >= 1 && el.dataset.hopNext === next));
+    demo.querySelectorAll('[data-hop-line]').forEach(el => {
+      const line = el.dataset.hopLine;
+      el.classList.toggle('is-active', hopStep === 2 ? line !== 'outside' : hopStep >= 4 && (line === next || (line === 'outside' && remote && hopStep === 5)));
+      el.classList.toggle('is-broadcast', hopStep === 2);
+    });
+    demo.querySelector('[data-hop-scene="ask"]').classList.toggle('is-visible', hopStep === 2);
+    demo.querySelectorAll('[data-hop-reply],[data-hop-reply-tag]').forEach(el => el.classList.toggle('is-visible', hopStep === 3 && (el.dataset.hopReply || el.dataset.hopReplyTag) === next));
+    const packet = $('hop-moving-data');
+    packet.setAttribute('class', `hop-envelope hop-send-${hopTarget}-${hopStep}`);
+    packet.classList.toggle('is-visible', hopStep >= 4);
+    $('hop-step-count').textContent = `${hopStep + 1} / ${steps.length}`;
+    $('hop-step-title').textContent = title;
+    $('hop-step-text').textContent = description;
+    $('hop-map-description').textContent = `目标：${remote ? '远方网站' : '家中设备'}。第${hopStep + 1}步：${title}。${description}`;
+    $('hop-address-card').hidden = !(hopAddresses && hopStep >= 1);
+    $('hop-home-address').textContent = `192.168.1.20 · MAC ${hopStep >= 3 && !remote ? 'H' : '?'}`;
+    $('hop-gateway-address').textContent = `192.168.1.1 · MAC ${hopStep >= 3 && remote ? 'G' : '?'}`;
+    $('hop-final-address').textContent = finalIP;
+    $('hop-next-address').textContent = hopStep >= 3 ? `${nextName} · ${mac}` : `${nextName} · MAC还没查到`;
+    demo.querySelector('[data-hop-action="previous"]').disabled = hopStep === 0;
+    demo.querySelector('[data-hop-action="next"]').disabled = hopStep === steps.length - 1;
+  }
   document.addEventListener('click', event => {
     const target = event.target.closest('button,a[data-view]'); if (!target) return;
     if (target.dataset.view) { event.preventDefault(); showView(target.dataset.view); window.scrollTo(0, 0); }
@@ -221,6 +270,14 @@
     if (target.dataset.feedback) openFeedback(target.dataset.feedback);
     if (target.dataset.rate) { state.ratings[target.dataset.rate] = target.dataset.value; document.querySelectorAll(`[data-rate="${target.dataset.rate}"]`).forEach(el => el.setAttribute('aria-pressed', String(el.dataset.value === target.dataset.value))); save(); summary(); }
     if (target.dataset.layer) changeLayer(target.dataset.layer);
+    if (target.dataset.hopTarget) { hopTarget = target.dataset.hopTarget; hopStep = 0; renderHopDemo(); }
+    if (target.dataset.hopAction) {
+      if (target.dataset.hopAction === 'next') hopStep = Math.min(5, hopStep + 1);
+      if (target.dataset.hopAction === 'previous') hopStep = Math.max(0, hopStep - 1);
+      if (target.dataset.hopAction === 'reset') hopStep = 0;
+      if (target.dataset.hopAction === 'addresses') hopAddresses = !hopAddresses;
+      renderHopDemo();
+    }
     if (target.dataset.port) { document.querySelectorAll('[data-service]').forEach(el => el.classList.toggle('active', el.dataset.service === target.dataset.port)); $('port-explanation').textContent = `目标为TCP的198.51.100.20:${target.dataset.port}。IP没有变化，服务入口发生了变化。`; }
     const actions = { 'timer-toggle': toggleTimer, 'study-timer-toggle': toggleTimer, 'study-mode-toggle': () => setStudyMode(true), 'study-mode-exit': () => setStudyMode(false), 'notes-toggle': () => notesOpen ? closeNotes() : openNotes(visibleTopic(), target), 'notes-close': closeNotes, 'notes-backdrop': closeNotes, 'copy-topic-note': copyNote, 'feedback-open': () => openFeedback(visibleTopic()), 'copy-feedback': copyFeedback, 'mark-complete': markComplete, 'export-data': exportRecord, 'export-handoff': exportHandoff, 'print-page': () => window.print(), 'encap-next': () => { encap = Math.min(3, encap + 1); envelope(); }, 'encap-reset': () => { encap = 0; envelope(); } };
     actions[target.id]?.();
