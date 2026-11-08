@@ -30,10 +30,22 @@
     <aside class="study-tools" aria-label="学习辅助">
       <div class="timer-card"><span class="eyebrow">TODAY'S PACE</span><h2>留出思考的时间</h2><div id="timer-display" class="timer" aria-live="off">00:00</div><p id="timer-hint">学习用时 / 预算90分钟</p><div class="timer-actions"><button id="timer-toggle" class="primary">开始计时</button></div><label for="phase-select">当前环节</label><select id="phase-select"><option value="recall">回忆 / 摸底 · 10分钟</option><option value="main">图文主线 · 55分钟</option><option value="quiz">理解自测 · 20分钟</option><option value="close">收尾记录 · 5分钟</option></select><div id="phase-times" class="phase-times"></div><p class="micro">切到后台自动暂停；回来后手动继续。未懂时可以停，不必赶进度。</p></div>
       <nav id="section-nav" class="section-nav" aria-label="本课导航"><span class="eyebrow">IN THIS LESSON</span><a href="#d1-warmup">01 回忆检查</a><a href="#d1-main">02 今日主线</a><a href="#d1-quiz">03 理解自测</a><a href="#d1-close">04 收尾记录</a></nav>
-      <button id="feedback-open" class="feedback-trigger">我卡在这里，带回会话 →</button>
+      <button id="feedback-open" class="feedback-trigger">这里没懂，整理问题 →</button>
     </aside>
   </div>
-  <dialog id="feedback-dialog" aria-labelledby="feedback-heading"><form method="dialog"><button class="dialog-close" aria-label="关闭反馈">×</button></form><span class="eyebrow">ASK & IMPROVE</span><h2 id="feedback-heading">把问题说具体一点</h2><p id="feedback-context"></p><label for="feedback-note">你怎么理解？哪一步开始不确定？</label><textarea id="feedback-note" rows="4" placeholder="例如：我以为IP已经找到服务器了，为什么还要端口？"></textarea><label for="feedback-output">带回会话的文字</label><textarea id="feedback-output" rows="7" readonly></textarea><button id="copy-feedback" class="primary">复制反馈文字</button><p class="micro">复制后粘贴到会话中。我会先答疑，再主动提议是否补充课件。网页不会自动发消息。</p></dialog>
+  <dialog id="feedback-dialog" aria-labelledby="feedback-heading" aria-describedby="feedback-intro">
+    <form method="dialog"><button class="dialog-close" aria-label="关闭反馈">×</button></form>
+    <span class="eyebrow">一起弄懂</span><h2 id="feedback-heading">这里没懂，问一问</h2>
+    <p id="feedback-intro" class="feedback-intro">只需写下你的问题。复制时会自动附上当前课程位置，方便我接着讲。</p>
+    <p id="feedback-context"></p>
+    <label for="feedback-note">哪里没懂？写一句话就可以。</label>
+    <textarea id="feedback-note" rows="4" aria-describedby="feedback-error" placeholder="例如：我理解的是……，但不明白为什么……"></textarea>
+    <p id="feedback-error" role="alert" hidden>先写下你的问题，再复制。</p>
+    <details id="feedback-preview" class="feedback-preview"><summary>查看将复制的内容（自动生成，无需填写）</summary><label for="feedback-output" class="sr-only">自动整理的问题与课程位置</label><textarea id="feedback-output" rows="6" readonly></textarea></details>
+    <button id="copy-feedback" class="primary">复制问题与课程位置</button>
+    <p id="feedback-status" role="status" aria-live="polite"></p>
+    <p class="feedback-help">复制后，回到我们的聊天输入框，粘贴并发送即可。网页不会自动发送；你也可以直接在聊天中问我。</p>
+  </dialog>
   <div id="toast" role="status" aria-live="polite"></div>
   <script id="course-data" type="application/json">/* COURSE_DATA */</script>
   <template id="lesson-01">/* LESSON_01 */</template>

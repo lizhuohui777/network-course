@@ -21,7 +21,7 @@
   }
   let state = fresh(), persistent = true;
   try { const raw = localStorage.getItem(KEY); if (raw) state = cleanState(JSON.parse(raw)); } catch { persistent = false; }
-  let currentDay = 1, currentView = 'lesson', running = false, startedAt = 0, phase = 'recall', encap = 0, feedbackTopic = '', toastTimeout;
+  let currentDay = 1, currentView = 'lesson', running = false, startedAt = 0, phase = 'recall', encap = 0, feedbackTopic = '', feedbackTopicLabel = '', toastTimeout;
   const esc = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const formatTime = ms => { const seconds = Math.floor(ms / 1000); return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`; };
   const totalTime = () => Object.values(state.timing).reduce((a, b) => a + b, 0);
@@ -148,19 +148,55 @@
     tick();
     feedbackTopic = topic || '本日整体';
     const element = $(topic);
-    $('feedback-context').textContent = `第${currentDay}天 · ${element?.dataset.topic || (topic === 'd1-close' ? '收尾与整体反馈' : '本日整体')} · v${course.version}`;
+    feedbackTopicLabel = element?.dataset.topic || (topic === 'd1-close' ? '收尾与整体反馈' : '本日整体');
+    $('feedback-context').textContent = `自动附上位置：第${currentDay}天 · ${feedbackTopicLabel} · v${course.version}`;
+    const examples = {
+      'd1-client-server': '例如：同一台计算机可以同时是客户端和服务器吗？',
+      'd1-layers': '例如：我知道分层是分工，但还不明白封装具体加了什么。',
+      'd1-addresses': '例如：IP已经找到服务器了，为什么还需要端口？'
+    };
+    $('feedback-note').placeholder = examples[topic] || '例如：我理解的是……，但不明白为什么……';
     $('feedback-note').value = state.fields['feedback-draft'] || '';
+    $('feedback-note').removeAttribute('aria-invalid');
+    $('feedback-error').hidden = true;
+    $('feedback-preview').open = false;
+    $('feedback-status').textContent = '';
     makeFeedback();
     $('feedback-dialog').showModal();
     $('feedback-note').focus();
   }
   function makeFeedback() {
-    const ratings = Array.from({ length: 5 }, (_, i) => `Q${i + 1}=${{ understood: '能独立解释', partial: '部分理解', review: '需要重学' }[state.ratings[`d1-q${i + 1}`]] || '未自评'}`).join('，');
-    $('feedback-output').value = `课程：${course.title}\n位置：第${currentDay}天 / ${feedbackTopic} / v${course.version}\n我的疑问或当前理解：${$('feedback-note').value.trim() || '（请补充哪一步没懂）'}\n${currentDay === 1 ? `第1天主动计时：${formatTime(totalTime())}；${Object.entries(phases).map(([k,v]) => `${v}${formatTime(state.timing[k])}`).join('，')}\n自测自评：${ratings}\n` : ''}请先用适合新手的解释和例子讲清，再用一道小问题检查我的理解；如适合补进课件，请主动提出具体修改建议并询问是否更新HTML。`;
+    const labels = { understood: '能独立解释', partial: '部分理解', review: '需要重学' };
+    const ratings = Array.from({ length: 5 }, (_, i) => {
+      const value = state.ratings[`d1-q${i + 1}`];
+      return value ? `Q${i + 1}=${labels[value]}` : '';
+    }).filter(Boolean);
+    const lines = [
+      `课程：${course.title}`,
+      `位置：第${currentDay}天 · ${feedbackTopicLabel} · v${course.version}`,
+      `我的问题：${$('feedback-note').value.trim() || '（在上方写下问题后，这里会自动更新）'}`
+    ];
+    if (currentDay === 1 && totalTime() >= 1000) lines.push(`主动学习计时：${formatTime(totalTime())}`);
+    if (currentDay === 1 && ratings.length) lines.push(`已填写的自测自评：${ratings.join('，')}`);
+    lines.push('请用适合初学者的解释、图解或例子讲清，再用一道小问题检查我的理解。如果适合补进课件，请提出具体修改建议并询问我是否更新。');
+    $('feedback-output').value = lines.join('\n');
   }
   async function copyFeedback() {
-    try { await navigator.clipboard.writeText($('feedback-output').value); toast('已复制。请粘贴到本项目会话中。'); }
-    catch { $('feedback-output').focus(); $('feedback-output').select(); toast('浏览器未允许自动复制，请复制已选中的文字。'); }
+    if (!$('feedback-note').value.trim()) {
+      $('feedback-error').hidden = false;
+      $('feedback-note').setAttribute('aria-invalid', 'true');
+      $('feedback-note').focus();
+      return;
+    }
+    tick(); makeFeedback();
+    try {
+      await navigator.clipboard.writeText($('feedback-output').value);
+      $('feedback-status').textContent = '已复制。回到我们的聊天输入框，粘贴后发送即可。';
+    } catch {
+      $('feedback-preview').open = true;
+      $('feedback-output').focus(); $('feedback-output').select();
+      $('feedback-status').textContent = '浏览器未允许自动复制。已选中整理好的文字，请手动复制，再粘贴到聊天输入框。';
+    }
   }
   function exportData() {
     tick(); save();
@@ -217,7 +253,13 @@
   document.addEventListener('input', saveField);
   document.addEventListener('change', saveField);
   $('phase-select').addEventListener('change', event => { tick(); phase = event.target.value; save(); renderTimer(); });
-  $('feedback-note').addEventListener('input', () => { state.fields['feedback-draft'] = $('feedback-note').value; save(); makeFeedback(); });
+  $('feedback-note').addEventListener('input', () => {
+    state.fields['feedback-draft'] = $('feedback-note').value;
+    $('feedback-error').hidden = true;
+    $('feedback-note').removeAttribute('aria-invalid');
+    $('feedback-status').textContent = '';
+    save(); makeFeedback();
+  });
   $('import-data').addEventListener('change', async event => {
     const file = event.target.files[0]; if (!file) return;
     try {
