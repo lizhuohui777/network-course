@@ -42,7 +42,7 @@
     return `<svg viewBox="0 0 800 365" role="img" aria-label="${esc(step.title+'。'+(step.flows||[]).map(f=>byId[f.from].label+'向'+byId[f.to].label+'：'+f.label).join('；'))}">${base}${flows}${actors}</svg>`;
   }
   function blocks(config, step) {
-    return `<div class="ex-rows">${(step.rows||config.rows).map(row=>`<div class="ex-data-row"><strong>${esc(row.label)}</strong><div class="ex-cells">${row.cells.map(cell=>{const status=step.statuses?.[cell.id];return `<div class="ex-cell ${(step.active||[]).includes(cell.id)?'is-active':''} ${status||''}"><span>${esc(cell.text)}</span>${status ? `<small>${esc(statusNames[status])}</small>`:''}</div>`;}).join('')}</div></div>`).join('')}</div>`;
+    return `<div class="ex-rows">${(step.rows||config.rows).map(row=>`<div class="ex-data-row"><strong>${esc(row.label)}</strong><div class="ex-cells">${row.cells.map(cell=>{const status=step.statuses?.[cell.id];return `<div class="ex-cell ${(step.active||[]).includes(cell.id)?'is-active':''} ${status||''}"><span>${esc(cell.text)}</span>${status ? `<small>${esc(statusNames[status])}</small>`:''}</div>`;}).join('')}</div></div>`).join('')}</div>${config.scaleNote ? `<p class="ex-scale-note">${esc(config.scaleNote)}</p>` : ''}`;
   }
   function chart(config, step) {
     const x=v=>85+v/config.xMax*620,y=v=>270-v/config.yMax*210;
@@ -50,7 +50,7 @@
     const grid = Array.from({length:6},(_,i)=>{const value=i*config.yMax/5;return `<line x1="85" y1="${y(value)}" x2="705" y2="${y(value)}" class="ex-grid"/>${svgText(Number(value.toFixed(1)),60,y(value)+5,'ex-axis',5)}`;}).join('');
     const ticks=Array.from({length:config.xMax+1},(_,i)=>svgText(i,x(i),295,'ex-axis',5)).join('');
     const path=points.map((p,i)=>`${i?'L':'M'}${x(p[0])} ${y(p[1])}`).join(' ');
-    return `<svg viewBox="0 0 800 355" role="img" aria-label="${esc(config.yLabel+'随'+config.xLabel+'变化：'+points.map(p=>p[0]+'轮为'+p[1]).join('；'))}">${grid}<path d="M85 45V270H720" class="ex-chart-axis"/>${ticks}${svgText(config.xLabel,405,332,'ex-axis-label',30)}${svgText(config.yLabel,155,25,'ex-axis-label',25)}<path d="${path}" class="ex-chart-line"/>${points.map(p=>`<circle cx="${x(p[0])}" cy="${y(p[1])}" r="6" class="ex-chart-dot"/>${svgText(p[1],x(p[0]),y(p[1])-13,'ex-axis',8)}`).join('')}</svg>`;
+    return `<svg viewBox="0 0 800 355" role="img" aria-label="${esc(config.yLabel+'随'+config.xLabel+'变化：'+points.map(p=>'横坐标'+p[0]+'，值'+p[1]).join('；'))}">${grid}<path d="M85 45V270H720" class="ex-chart-axis"/>${ticks}${svgText(config.xLabel,405,332,'ex-axis-label',30)}${svgText(config.yLabel,155,25,'ex-axis-label',25)}<path d="${path}" class="ex-chart-line"/>${points.map(p=>`<circle cx="${x(p[0])}" cy="${y(p[1])}" r="6" class="ex-chart-dot"/>${svgText(p[1],x(p[0]),y(p[1])-13,'ex-axis',8)}`).join('')}</svg>`;
   }
   const painters = {network,blocks:(_,c,s)=>blocks(c,s),chart:(_,c,s)=>chart(c,s)};
   function render(el) {
@@ -81,9 +81,17 @@
     if(button.hasAttribute('data-example-next'))state.step=Math.min(example.cases[state.case].steps.length-1,state.step+1);
     render(el);
   });
+  function diagramText(config, step) {
+    if(config.kind==='network') {
+      const names=Object.fromEntries(config.nodes.map(n=>[n.id,n.label]));
+      return ['图中参与方：'+config.nodes.map(n=>n.label).join('、'),...(step.flows||[]).map(f=>`${names[f.from]} → ${names[f.to]}：${f.label}${f.tone==='blocked'?'（图中丢失或过滤，未到达接收方）':''}`),...Object.entries(step.states||{}).map(([id,state])=>`${names[id]}状态：${state}`)].join('；');
+    }
+    if(config.kind==='blocks') return (config.scaleNote ? config.scaleNote+'\n' : '')+'图中区块：'+(step.rows||config.rows).map(row=>row.label+'：'+row.cells.map(cell=>cell.text+(step.statuses?.[cell.id]?'（'+statusNames[step.statuses[cell.id]]+'）':'')).join(' | ')).join('；');
+    return `图中横轴：${config.xLabel}；纵轴：${config.yLabel}；坐标：${step.points.map(p=>'('+p.join(', ')+')').join('、')}`;
+  }
   function textFor(id) {
     const e=examples[id];
-    return e ? [e.title,e.intro,e.terms,...e.cases.flatMap(c=>[`情形：${c.label}；条件：${c.assumption}`,...c.steps.map(s=>`${s.title}：${s.text}${(s.values||[]).map(v=>`；${v.label}：${v.value}`).join('')}`)]),`图示条件：${e.limit}`,...e.references].join('\n') : '';
+    return e ? [e.title,e.intro,e.terms,...e.cases.flatMap(c=>[`情形：${c.label}；条件：${c.assumption}`,...c.steps.map(s=>`${s.title}：${s.text}${(s.values||[]).map(v=>`；${v.label}：${v.value}`).join('')}\n${diagramText(c.diagram||e.diagram,s)}`)]),`图示条件：${e.limit}`,...e.references].join('\n') : '';
   }
   window.CourseDiagrams=Object.freeze({mount,textFor});
 })();

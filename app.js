@@ -168,8 +168,9 @@
   function topicText(id) {
     const el = document.getElementById(id)?.cloneNode(true);
     if (!el) return '';
-    el.querySelectorAll('button,.rating-group,.topic-source-links,[data-example],.example-terms,input,textarea,select').forEach(node => node.remove());
-    return [el.textContent.replace(/\s+/g, ' ').trim(),window.CourseDiagrams.textFor(id)].filter(Boolean).join('\n\n');
+    el.querySelectorAll('button,.rating-group,.topic-source-links,[data-example],#d2-hop-demo,.example-terms,input,textarea,select').forEach(node => node.remove());
+    const hopText = id === 'd2-hop' ? ['下一跳与ARP：已知目标IPv4地址、ARP缓存为空，省略NAT与远方逐跳封装。',...['远方网站','家中设备'].flatMap((label,i)=>[`情形：${label}`,...hopSteps(i === 0).map(([title,text])=>`${title}：${text}`)])].join('\n') : '';
+    return [el.textContent.replace(/\s+/g, ' ').trim(),window.CourseDiagrams.textFor(id),hopText].filter(Boolean).join('\n\n');
   }
   function feedbackText() {
     const topic = topics().find(item => item.id === feedbackTopic);
@@ -215,6 +216,19 @@
     $('encap-visual').innerHTML = html; $('encap-step').textContent = `${encap} / 3`; $('encap-next').disabled = encap === 3;
     $('encap-description').textContent = ['应用组织好请求数据。', 'TCP加入端口等传输控制信息。', 'IP加入源与目标地址等网络控制信息。', '链路层形成帧，接着用物理信号传送。'][encap];
   }
+  function hopSteps(remote) {
+    const nextName = remote ? '家里的路由器' : '家中设备';
+    const nextIP = remote ? '192.168.1.1' : '192.168.1.20';
+    const mac = remote ? 'G' : 'H';
+    return [
+      [remote ? '先看位置：网站在家门以外' : '先看位置：目标也在家中网络', remote ? '笔记本和路由器在家中，网站在远方。接下来，看看笔记本怎样把数据送出去。' : '这次要联系上方的家中设备。它和笔记本在本例的同一个网络里。'],
+      [remote ? '先选接力点：交给家里的路由器' : '目标在同一网络：直接交给它', remote ? '网站不在本机直连网段，本例使用默认路线。笔记本选家里的路由器作为“下一跳”，也就是眼前先接手数据的一方。' : '系统判断目标在直连网段，可以直接交付。这次“下一跳”就是家中设备，不用先让路由器跨网络转发。'],
+      ['发出ARP询问：我还不知道它的MAC', `笔记本在家中网络广播：“谁是${nextIP}？请告诉我你的MAC。”MAC是当前链路交付使用的接口地址；这次询问不会被路由器转到远方网站。`],
+      [`${nextName}回答：我的MAC是${mac}`, `${nextName}确认询问的是自己的IP，向笔记本回复MAC ${mac}。笔记本把“${nextIP}对应${mac}”暂时记下来，这份本地记录就是ARP缓存。`],
+      ['写好外层帧，再发给下一跳', remote ? '外层帧写“先交给路由器MAC G”，里面的IP包仍写“最终去网站”。看信封沿家中连线移动：它先到路由器，还没有直接跳到网站。' : '外层帧写“交给家中设备MAC H”，里面IP包的目的地也是这台家中设备。看信封沿家中连线直接送过去。'],
+      [remote ? '路由器接力，继续送向网站' : '数据到达家中设备', remote ? '路由器收到后查看IP目的地址，选择后续路线继续转发。远方还会逐跳接力；图中把这些中间动作合并画出，最终目的地始终是网站。' : '本次交付在家中网络内完成。互联网连线一直没有亮起：同网段通信不需要为了经过路由器而绕到远方。']
+    ];
+  }
   function renderHopDemo() {
     const demo = $('d2-hop-demo');
     if (!demo) return;
@@ -224,14 +238,7 @@
     const nextIP = remote ? '192.168.1.1' : '192.168.1.20';
     const finalIP = remote ? '198.51.100.20' : nextIP;
     const mac = remote ? 'G' : 'H';
-    const steps = [
-      [remote ? '先看位置：网站在家门以外' : '先看位置：目标也在家中网络', remote ? '笔记本和路由器在家中，网站在远方。接下来，看看笔记本怎样把数据送出去。' : '这次要联系上方的家中设备。它和笔记本在本例的同一个网络里。'],
-      [remote ? '先选接力点：交给家里的路由器' : '目标在同一网络：直接交给它', remote ? '网站不在本机直连网段，本例使用默认路线。笔记本选家里的路由器作为“下一跳”，也就是眼前先接手数据的一方。' : '系统判断目标在直连网段，可以直接交付。这次“下一跳”就是家中设备，不用先让路由器跨网络转发。'],
-      ['发出ARP询问：我还不知道它的MAC', `笔记本在家中网络广播：“谁是${nextIP}？请告诉我你的MAC。”MAC是当前链路交付使用的接口地址；这次询问不会被路由器转到远方网站。`],
-      [`${nextName}回答：我的MAC是${mac}`, `${nextName}确认询问的是自己的IP，向笔记本回复MAC ${mac}。笔记本把“${nextIP}对应${mac}”暂时记下来，这份本地记录就是ARP缓存。`],
-      ['写好外层帧，再发给下一跳', remote ? '外层帧写“先交给路由器MAC G”，里面的IP包仍写“最终去网站”。看信封沿家中连线移动：它先到路由器，还没有直接跳到网站。' : '外层帧写“交给家中设备MAC H”，里面IP包的目的地也是这台家中设备。看信封沿家中连线直接送过去。'],
-      [remote ? '路由器接力，继续送向网站' : '数据到达家中设备', remote ? '路由器收到后查看IP目的地址，选择后续路线继续转发。远方还会逐跳接力；图中把这些中间动作合并画出，最终目的地始终是网站。' : '本次交付在家中网络内完成。互联网连线一直没有亮起：同网段通信不需要为了经过路由器而绕到远方。']
-    ];
+    const steps = hopSteps(remote);
     const [title, description] = steps[hopStep];
     demo.classList.toggle('show-addresses', hopAddresses);
     demo.querySelectorAll('[data-hop-target]').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.hopTarget === hopTarget)));
