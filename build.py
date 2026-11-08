@@ -16,7 +16,7 @@ for block in ('REDIRECT', 'NOTICE'):
     assert html.count(start) == html.count(end) == 1, f'Missing source-only block: {block}'
     before, _, remaining = html.partition(start)
     _, _, after = remaining.partition(end)
-    html = before + after
+    html = before.rstrip(' \t') + after
 assert 'http-equiv="refresh"' not in html, 'The built lesson must not redirect to itself'
 replacements = {
     '/* STYLES */': (ROOT / 'style.css').read_text(),
