@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>网络入门 · 12个学习日</title>
+  <style>:root{--bg:#f6f7f3;--paper:#fff;--ink:#18352f;--muted:#63736b;--line:#dfe7df;--accent:#23745e;--soft:#edf4ec;--warm:#fcf0df;--orange:#a35d19;--radius:16px;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg);font-size:16px;line-height:1.75}*{box-sizing:border-box}body{margin:0}button,input,textarea,select{font:inherit}button,a,label.import-label{touch-action:manipulation}button{cursor:pointer}a{color:var(--accent);text-underline-offset:4px}button{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:9px;padding:8px 13px}button:hover{border-color:var(--accent);background:var(--soft)}button:focus-visible,a:focus-visible,summary:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid #bc8a37;outline-offset:3px}button:disabled{cursor:default;opacity:.5}h1,h2,h3,h4,p{margin-top:0}h2{font-size:25px;line-height:1.45;letter-spacing:-.6px}h3{font-size:21px;line-height:1.5}h4{font-size:17px}p{margin-bottom:16px}small,.micro{font-size:13px;color:var(--muted)}.topbar{height:82px;background:var(--paper);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px;gap:20px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:750;color:var(--ink);line-height:1.4;flex-shrink:0}.brand-mark{background:var(--ink);color:white;width:38px;height:40px;display:grid;place-items:center;border-radius:11px;font-family:Georgia,serif;font-size:25px}.brand-sub{display:block;font-weight:400;font-size:11px;letter-spacing:2px;color:var(--muted)}.topbar nav{display:flex;gap:6px}.tab{border-color:transparent;background:transparent;font-size:14px}.tab.active{background:var(--soft);color:var(--accent);font-weight:650}.version{font-size:12px;color:var(--muted)}.layout{max-width:1550px;display:grid;grid-template-columns:230px minmax(0,830px) 230px;gap:34px;margin:0 auto;padding:32px}.sidebar{align-self:start;position:sticky;top:24px}.eyebrow{font-size:11px;letter-spacing:1.8px;font-weight:700;color:var(--accent)}.side-intro h2{font-size:19px;margin:10px 0}.side-intro p{font-size:13px;color:var(--muted)}.progress-label{font-size:11px;display:flex;justify-content:space-between;margin-top:25px}progress{width:100%;height:5px;accent-color:var(--accent);margin:8px 0 20px;border:0}progress::-webkit-progress-bar{background:var(--line);border-radius:3px}progress::-webkit-progress-value{background:var(--accent);border-radius:3px}.week-label{font-size:11px;color:var(--muted);letter-spacing:1px;margin:13px 0 8px}.day-button{border:0;border-radius:11px;background:transparent;display:flex;text-align:left;gap:11px;width:100%;padding:9px 8px;align-items:center}.day-number{border:1px solid var(--line);font-size:11px;border-radius:8px;min-width:29px;height:29px;display:grid;place-items:center;background:var(--paper);font-variant-numeric:tabular-nums}.day-copy{font-size:12px;line-height:1.6}.day-copy small{font-size:10px;display:block}.day-button.active{background:#e5efe4}.day-button.active .day-number{background:var(--accent);color:white;border-color:var(--accent)}.day-button.done .day-number{border:2px solid var(--accent)}.rest-label{font-size:11px;color:var(--muted);padding:10px 8px;border-bottom:1px solid var(--line)}.side-foot{font-size:12px;margin-top:22px;color:var(--muted)}.side-foot p{font-size:11px;margin:6px 0}.status-dot{display:inline-block;width:6px;height:6px;border-radius:100%;background:var(--accent);margin-right:6px}main{min-width:0}.hero{padding:14px 0 25px;border-bottom:1px solid var(--line);margin-bottom:27px}.hero h1{font-size:clamp(30px,3.4vw,46px);line-height:1.25;letter-spacing:-1.7px;margin:15px 0 18px}.hero>p{color:var(--muted);max-width:610px}.hero-meta{display:flex;flex-wrap:wrap;gap:8px}.chip{font-size:11px;display:inline-block;border:1px solid var(--line);border-radius:30px;padding:3px 10px;background:var(--paper)}.chip.warm{border-color:#e8caa4;color:var(--orange);background:var(--warm)}.card,.lesson-section{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:27px;margin-bottom:24px}.section-heading{display:flex;align-items:baseline;justify-content:space-between;gap:15px;margin-bottom:22px}.section-heading h2{margin-bottom:0}.section-number{font-size:12px;color:var(--accent);margin-right:10px}.time-label{font-size:12px;color:var(--muted);white-space:nowrap}.lead{font-size:17px}.muted{color:var(--muted)}.objectives{padding-left:22px}.objectives li{padding:3px 0}.notice,.callout{padding:15px 18px;background:var(--soft);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;margin:18px 0}.callout p:last-child{margin-bottom:0}.callout.warm{background:var(--warm);border-left-color:#b87b32}.topic{padding:25px 0;border-top:1px solid var(--line);scroll-margin-top:20px}.topic:first-of-type{border-top:0;padding-top:8px}.topic-topline{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:12px;margin-bottom:12px;color:var(--muted)}.depth{font-size:11px;background:var(--soft);color:var(--accent);border-radius:5px;padding:2px 7px}.figure{margin:23px 0;padding:23px 18px;background:#f4f7f2;border:1px solid var(--line);border-radius:12px}.figure figcaption{font-size:12px;color:var(--muted);margin-top:15px}.flow{display:flex;align-items:center;justify-content:center;gap:13px}.endpoint{border:1px solid #c4d7c5;background:white;border-radius:11px;padding:15px;text-align:center;min-width:115px;flex:1}.endpoint strong{display:block}.endpoint span{font-size:12px;color:var(--muted)}.flow-middle{flex:1;text-align:center;font-size:12px;min-width:85px}.flow-arrow{display:block;color:var(--accent);font-size:24px;line-height:1.3}.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.mini-card{border:1px solid var(--line);border-radius:10px;padding:14px}.mini-card strong{display:block;margin-bottom:5px}.mini-card p{font-size:13px;margin-bottom:0}.step-list{counter-reset:steps;list-style:none;padding:0}.step-list li{counter-increment:steps;padding:0 0 15px 34px;position:relative}.step-list li::before{content:counter(steps);position:absolute;left:0;top:3px;border-radius:50%;width:22px;height:22px;background:var(--soft);display:grid;place-items:center;color:var(--accent);font-size:12px}.mini-check{margin:20px 0}.mini-check summary{color:var(--accent);font-weight:600}.mini-check p{font-size:14px;margin:12px 0 0}.topic-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-top:16px}.rating-group{display:flex;gap:5px;flex-wrap:wrap}.rating-group button{font-size:12px;padding:4px 9px}.rating-group button[aria-pressed="true"]{background:var(--accent);color:white;border-color:var(--accent)}.text-button{border:0;background:transparent;color:var(--accent);font-size:13px;padding:5px 2px;text-decoration:underline;text-underline-offset:4px}.layer-controls{display:flex;gap:6px;flex-wrap:wrap;margin:15px 0}.layer-button{font-size:13px}.layer-button[aria-pressed="true"]{background:var(--accent);color:white}.stack{display:grid;gap:6px;margin:18px 0}.stack-row{border:1px solid #c7d9ce;background:white;border-radius:8px;padding:11px 14px;display:grid;grid-template-columns:80px 1fr;gap:10px}.stack-row small{display:block}.stack-row.active{border:2px solid var(--accent);background:#e7f0e7}.stack-desc{min-height:105px;padding:16px;border-radius:9px;background:white;border:1px solid var(--line);font-size:14px}.stack-desc p{margin-bottom:0}.model-table,.data-table{border-collapse:collapse;width:100%;font-size:13px;line-height:1.7}.model-table th,.model-table td,.data-table th,.data-table td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}.model-table th,.data-table th{background:var(--soft)}.table-wrap{overflow:auto}.envelope{display:flex;align-items:center;min-height:100px;justify-content:center;gap:9px;flex-wrap:wrap}.packet{border:2px solid var(--accent);padding:13px 16px;border-radius:9px;background:#f4f8f2;font-size:13px;transition:border-color .15s}.packet[data-level="0"]{background:#fff4de;border-color:#b38943}.packet-label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px}.demo-caption{font-size:14px;min-height:52px;margin-top:14px}.demo-buttons{display:flex;gap:8px;flex-wrap:wrap}.address-map{display:grid;grid-template-columns:1fr 38px 1.4fr;align-items:center;gap:12px}.address-client{background:white;border:1px solid var(--line);padding:16px;border-radius:12px;font-size:13px;text-align:center}.address-server{background:white;border:2px solid var(--accent);border-radius:12px;padding:16px;font-size:13px}.service{border:1px solid var(--line);margin-top:8px;padding:9px;border-radius:8px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.service.active{background:var(--soft);border-color:var(--accent)}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em;background:#f0f3ed;padding:2px 5px;border-radius:4px;overflow-wrap:anywhere}.question{border-top:1px solid var(--line);padding:24px 0}.question:first-of-type{border-top:0}.question h3{font-size:18px}.question textarea,textarea{width:100%;border:1px solid #bccdc0;border-radius:9px;padding:12px;background:white;color:var(--ink);resize:vertical;line-height:1.65;font-size:14px}.question details{margin:14px 0}.question summary{color:var(--accent);cursor:pointer}.answer{font-size:14px;padding:15px;background:var(--soft);margin-top:12px;border-radius:9px}.answer p:last-child{margin-bottom:0}.answer ul{padding-left:20px}.inline-label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}.warmup-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}.warmup-grid>div{padding:14px;background:var(--bg);border-radius:10px;font-size:14px}.warmup-grid strong{display:block;margin-bottom:8px}.warmup-grid select{width:100%;font-size:12px;padding:5px}.study-tools{align-self:start;position:sticky;top:24px}.timer-card{border:1px solid var(--line);border-radius:15px;background:var(--paper);padding:20px}.timer-card h2{font-size:15px;margin:12px 0}.timer{font-size:39px;letter-spacing:-2px;line-height:1.3;font-weight:650;font-variant-numeric:tabular-nums}.timer-card>p{font-size:11px;color:var(--muted);margin:4px 0 16px}.timer-actions{display:flex;margin-bottom:20px}.timer-actions button{flex:1;font-size:13px}.primary{background:var(--accent);border-color:var(--accent);color:white}.primary:hover{background:#16513f;color:white}.timer-card label{font-size:11px;color:var(--muted);display:block}.timer-card select{margin-top:5px;width:100%;font-size:11px;padding:7px;border:1px solid var(--line);border-radius:7px;background:white;color:var(--ink)}.phase-times{font-size:10px;color:var(--muted);margin:10px 0;display:grid;grid-template-columns:1fr 1fr;gap:5px}.section-nav{display:grid;gap:12px;margin-top:28px}.section-nav>a{font-size:13px;text-decoration:none;border-left:2px solid var(--line);padding-left:12px}.section-nav>a:hover{border-color:var(--accent)}.feedback-trigger{width:100%;margin-top:25px;font-size:12px;padding:12px 8px}.source-map{margin:22px 0 0;border-top:1px solid var(--line);padding-top:18px;font-size:13px}.source-map summary{cursor:pointer;color:var(--muted)}.source-items{padding:12px 0;display:grid;gap:8px}.source-items a{display:flex;gap:10px;text-decoration:none;padding:9px;border:1px solid var(--line);border-radius:7px;font-size:12px}.source-items a span:first-child{font-weight:650;color:var(--accent);min-width:32px}.source-items a span:last-child{color:var(--ink)}.day-plan{display:grid;gap:12px}.plan-card h2{font-size:20px}.plan-top{display:flex;align-items:baseline;gap:12px;margin-bottom:12px}.plan-top small{white-space:nowrap}.plan-card h3{font-size:14px;margin-bottom:8px}.plan-card p,.plan-card ul{font-size:14px}.plan-card details{font-size:13px}.plan-card .open-day{margin-top:12px;font-size:12px}.roadmap-intro{padding:15px 0 25px}.roadmap-intro h1,#guide-view h1{font-size:34px;letter-spacing:-1px}.week-banner{padding:18px 0;font-size:13px;color:var(--muted)}.page-footer{padding:25px 0 10px;border-top:1px solid var(--line);margin-top:30px;font-size:12px;color:var(--muted)}.utility{display:flex;gap:20px;flex-wrap:wrap;margin:14px 0}.page-footer small{font-size:11px}.import-label{cursor:pointer}dialog{border:1px solid var(--line);border-radius:18px;max-width:600px;width:calc(100% - 32px);padding:28px;max-height:90vh;overflow:auto;color:var(--ink)}dialog::backdrop{background:#17352f77}dialog h2{margin:12px 0}dialog label{display:block;font-size:13px;margin:16px 0 7px}.dialog-close{float:right;border:0;font-size:24px;line-height:1;padding:2px 5px}.close-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.close-actions button{font-size:13px}.checklist{display:grid;gap:9px;margin:18px 0;font-size:14px}.checklist label{display:flex;align-items:flex-start;gap:10px}.checklist input{margin-top:7px;accent-color:var(--accent)}.completion-note{font-size:12px;color:var(--muted);min-height:20px;margin-top:10px}.skip{position:absolute;top:-60px;left:10px;background:white;padding:10px;z-index:9}.skip:focus{top:10px}#toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:var(--ink);color:white;border-radius:10px;padding:12px 20px;max-width:90vw;z-index:20;font-size:13px;opacity:0;pointer-events:none}#toast.show{opacity:1}[hidden]{display:none!important}section[id],article[id]{scroll-margin-top:20px}.guide-step{margin:18px 0}.guide-step h3{font-size:17px}.guide-step p{font-size:14px}.route-stats{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0}.route-stat{background:var(--paper);padding:12px 18px;border:1px solid var(--line);border-radius:10px}.route-stat strong{font-size:24px;display:block}.route-stat span{font-size:11px;color:var(--muted)}
+@media(min-width:1600px){.layout{gap:42px}}@media(max-width:1220px){.layout{grid-template-columns:200px minmax(0,1fr);gap:25px;padding:24px}.study-tools{grid-column:2;position:static;display:grid;grid-template-columns:1fr 1fr;gap:20px}.timer-card{grid-row:span 2}.section-nav{margin:0}.feedback-trigger{margin:0}.version{display:none}}@media(max-width:760px){.topbar{height:auto;min-height:72px;padding:15px 18px;flex-wrap:wrap;gap:12px}.topbar nav{gap:2px}.tab{font-size:12px;padding:7px 9px}.brand{font-size:14px}.brand-mark{width:30px;height:34px;font-size:22px}.brand-sub{font-size:9px}.layout{display:flex;flex-direction:column;padding:16px;gap:20px}.sidebar{position:static;width:100%}.side-intro,.side-foot,.progress-label,.sidebar progress,.rest-label,.week-label{display:none}#day-nav{display:flex;overflow:auto;gap:6px;padding:0 0 10px}.day-button{width:auto;min-width:72px;padding:7px;display:block;text-align:center}.day-copy{font-size:10px;max-width:70px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.day-copy small{display:none}.day-number{margin:0 auto 4px;width:27px;height:27px}.hero{padding-top:0}.hero h1{font-size:34px}.hero>p{font-size:14px}.card,.lesson-section{padding:20px 17px}.section-heading h2{font-size:22px}.section-heading{align-items:center}.time-label{font-size:10px}.three-col,.warmup-grid{grid-template-columns:1fr}.warmup-grid>div{display:flex;justify-content:space-between;align-items:center;gap:12px}.warmup-grid select{width:auto;max-width:145px}.warmup-grid strong{margin-bottom:0}.flow{gap:8px}.endpoint{min-width:90px;padding:12px 8px;font-size:13px}.endpoint span{font-size:10px}.flow-middle{min-width:60px;font-size:10px}.figure{padding:18px 12px}.address-map{grid-template-columns:1fr}.address-map>.flow-arrow{transform:rotate(90deg);text-align:center}.stack-row{grid-template-columns:68px 1fr;font-size:13px;padding:10px}.model-table,.data-table{font-size:11px;min-width:360px}.study-tools{display:block;width:100%}.timer-card{margin-bottom:20px}.timer-card .timer{font-size:32px}.timer-card .timer-actions{max-width:220px}.section-nav{display:none}.feedback-trigger{font-size:14px}.topic-actions{align-items:flex-start}.packet{padding:9px;font-size:11px}.version{display:none}.roadmap-intro h1,#guide-view h1{font-size:29px}.route-stats{gap:8px}.route-stat{flex:1;padding:10px 13px}.route-stat strong{font-size:20px}.plan-top{align-items:flex-start}.plan-card h2{font-size:18px}.topic h3{font-size:20px}.page-footer{margin-top:20px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}@media print{.topbar,.sidebar,.study-tools,.page-footer,.topic-actions,.rating-group,.demo-buttons,.layer-controls,.feedback-trigger,.question textarea,.close-actions,.inline-label,#toast{display:none!important}.layout{display:block;padding:0}main{max-width:none}.hero{padding-top:0}.lesson-section,.card{break-inside:auto;border:0;padding:10px 0}.figure,.question{break-inside:avoid}details>*{display:block!important}details{break-inside:avoid}body{background:white;color:black;font-size:12px}.hero h1{font-size:30px}.quiz-rating{display:none}}
+/* Keep the study clock within reach on laptops and phones. */
+@media screen and (max-width:1220px){.sidebar{grid-row:1 / span 2}.layout main{grid-column:2;grid-row:2}.study-tools{grid-column:2;grid-row:1;position:sticky;top:10px;z-index:5;display:block}.timer-card{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:12px 15px;margin-bottom:0;box-shadow:0 4px 15px #18352f08}.timer-card>.eyebrow,.timer-card>h2,.timer-card>.micro,.timer-card>label,.timer-card .phase-times,.study-tools>.section-nav,.study-tools>.feedback-trigger{display:none}.timer-card .timer{font-size:25px;letter-spacing:-1px}.timer-card>p{margin:0;font-size:10px;max-width:160px}.timer-card .timer-actions{margin:0}.timer-card .timer-actions button{padding:5px 10px;font-size:12px}.timer-card select{width:auto;max-width:190px;margin:0;font-size:11px}.layout{row-gap:18px}}
+@media screen and (max-width:760px){.sidebar{order:0}.study-tools{order:1;top:5px}.layout main{order:2}.timer-card{padding:9px 11px;gap:8px}.timer-card>p{display:none}.timer-card .timer{font-size:23px}.timer-card select{max-width:160px}.timer-card .timer-actions{margin-left:auto}}
+</style>
+</head>
+<body>
+  <a class="skip" href="#workspace">跳到课程正文</a>
+  <header class="topbar"><a class="brand" href="#" data-view="lesson"><span class="brand-mark">N</span><span>网络入门<span class="brand-sub">从问题，到理解</span></span></a><nav aria-label="主要导航"><button class="tab active" data-view="lesson">学习课件</button><button class="tab" data-view="roadmap">12天路线</button><button class="tab" data-view="guide">学习约定</button></nav><span class="version">本地课件 · v<span id="version"></span></span></header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="课程目录">
+      <div class="side-intro"><span class="eyebrow">YOUR LEARNING PATH</span><h2>两周，一张完整地图。</h2><p>每周六天 · 每天90分钟<br>第七天休息，不安排新课</p></div>
+      <div class="progress-label"><span>你标记的学习进度</span><b id="progress-label">0 / 12</b></div><progress id="course-progress" max="12" value="0" aria-label="已标记完成的学习日"></progress>
+      <div id="day-nav"></div>
+      <div class="side-foot"><span class="status-dot"></span>第1天可试学 · 其余为规划<p>按理解前进，不用追赶题号。</p></div>
+    </aside>
+    <main id="workspace" tabindex="-1">
+      <div id="storage-warning" class="notice" hidden>当前浏览器不能持久保存。你仍可学习，请使用“导出学习记录”保留记录。</div>
+      <div id="lesson-view">
+        <section class="hero"><div class="eyebrow" id="day-label"></div><h1 id="lesson-title"></h1><p id="lesson-description"></p><div class="hero-meta" id="lesson-meta"></div></section>
+        <div id="day-content"></div>
+      </div>
+      <section id="roadmap-view" hidden></section>
+      <section id="guide-view" hidden></section>
+      <footer class="page-footer"><p>覆盖范围 ≠ 已经掌握。时间是预算，理解靠你的回答检验。</p><div class="utility"><button class="text-button" id="export-data">导出学习记录</button><label class="text-button import-label" for="import-data">导入学习记录</label><input id="import-data" type="file" accept="application/json,.json" hidden><button class="text-button" id="print-page">打印 / 存为PDF</button></div><small id="storage-status">记录保存在当前浏览器中；会话与本地文件不会自动同步。</small></footer>
+    </main>
+    <aside class="study-tools" aria-label="学习辅助">
+      <div class="timer-card"><span class="eyebrow">TODAY'S PACE</span><h2>留出思考的时间</h2><div id="timer-display" class="timer" aria-live="off">00:00</div><p id="timer-hint">学习用时 / 预算90分钟</p><div class="timer-actions"><button id="timer-toggle" class="primary">开始计时</button></div><label for="phase-select">当前环节</label><select id="phase-select"><option value="recall">回忆 / 摸底 · 10分钟</option><option value="main">图文主线 · 55分钟</option><option value="quiz">理解自测 · 20分钟</option><option value="close">收尾记录 · 5分钟</option></select><div id="phase-times" class="phase-times"></div><p class="micro">切到后台自动暂停；回来后手动继续。未懂时可以停，不必赶进度。</p></div>
+      <nav id="section-nav" class="section-nav" aria-label="本课导航"><span class="eyebrow">IN THIS LESSON</span><a href="#d1-warmup">01 回忆检查</a><a href="#d1-main">02 今日主线</a><a href="#d1-quiz">03 理解自测</a><a href="#d1-close">04 收尾记录</a></nav>
+      <button id="feedback-open" class="feedback-trigger">我卡在这里，带回会话 →</button>
+    </aside>
+  </div>
+  <dialog id="feedback-dialog" aria-labelledby="feedback-heading"><form method="dialog"><button class="dialog-close" aria-label="关闭反馈">×</button></form><span class="eyebrow">ASK & IMPROVE</span><h2 id="feedback-heading">把问题说具体一点</h2><p id="feedback-context"></p><label for="feedback-note">你怎么理解？哪一步开始不确定？</label><textarea id="feedback-note" rows="4" placeholder="例如：我以为IP已经找到服务器了，为什么还要端口？"></textarea><label for="feedback-output">带回会话的文字</label><textarea id="feedback-output" rows="7" readonly></textarea><button id="copy-feedback" class="primary">复制反馈文字</button><p class="micro">复制后粘贴到会话中。我会先答疑，再主动提议是否补充课件。网页不会自动发消息。</p></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script id="course-data" type="application/json">{"id": "network-foundations-12", "version": "0.1.0", "checked_at": "2026-11-08", "title": "计算机网络 · 两周入门", "published_days": [1], "source_note": "原站6页正文编号1–104，含一条无编号补充题；第80题跨页重复，合并计入。", "days": [{"day": 1, "week": 1, "title": "先看懂网络这张地图", "ids": ["1", "30", "33", "49", "52", "67", "32"], "goals": ["客户端与服务器各在做什么", "分层如何分工、数据如何封装", "IP地址与端口各解决什么问题"], "why": "从熟悉的网页出发，搭好后面11天都会用到的骨架。", "exit": "能区分IP和端口；能解释为什么分层；能把常见职责放进五层框架。", "status": "sample", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 2, "week": 1, "title": "数据去哪里：寻址与DNS", "ids": ["78", "90", "31", "91", "3", "4", "17", "34", "18"], "goals": ["链路和跨网络转发的区别", "域名如何变成可用地址", "递归与迭代、缓存与分流"], "why": "有了分层地图，再学习“怎样找到目标”。UDP/TCP选择推迟至第3天。", "exit": "用一张步骤图解释DNS查询；认识Ping的用途与局限。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 3, "week": 1, "title": "怎样运送：TCP与UDP", "ids": ["50", "85", "86", "87", "88", "89", "45", "92", "5", "6"], "goals": ["可靠字节流与数据报", "TCP/UDP的选择条件", "MTU/MSS与大小限制的初识"], "why": "先理解运输服务，再回头回答DNS为什么使用不同运输方式。", "exit": "能按丢失容忍度、顺序和延迟说明选择；MTU细节先认识。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 4, "week": 1, "title": "先建立连接：TCP握手", "ids": ["47", "51", "55", "56", "57", "58", "59", "60"], "goals": ["序列号和确认号做什么", "三次握手怎样互相确认", "队列与SYN攻击的关系"], "why": "第3天知道TCP提供什么，今天解释连接如何开始。", "exit": "能画出三步交互并解释各步目的；字段只学必要部分。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 5, "week": 1, "title": "连接怎样结束：挥手与状态", "ids": ["48", "61", "62", "63", "64", "65", "68", "81", "103"], "goals": ["两个方向分别关闭", "TIME_WAIT为什么存在", "状态和应用程序动作的关系"], "why": "先理解握手，再用双向通信解释关闭，合并重复等待题。", "exit": "能解释主动和被动关闭的差异；初识CLOSE_WAIT问题。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 6, "week": 1, "title": "可靠到达与消息边界", "ids": ["84", "94", "8", "66", "S1"], "goals": ["丢失怎样被发现与重传", "为什么TCP不保留应用消息边界", "第一周把连接过程串起来"], "why": "先有序列号、确认和连接概念，才能理解重传与拆分消息。", "exit": "能追踪一次丢包与重传；能给连续字节设计简单边界；完成周回顾。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 7, "week": 2, "title": "快慢协调：窗口与拥塞", "ids": ["82", "93", "100", "101", "79", "80"], "goals": ["接收方忙与网络拥堵是两种问题", "窗口怎样控制在途数据", "经典拥塞算法的变化方向"], "why": "第一周休息后，用可靠传输和确认机制理解节奏控制。", "exit": "能区分两种控制；解释窗口变化原因。复杂计算列为选读。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 8, "week": 2, "title": "应用说什么：HTTP报文", "ids": ["53", "10", "23", "102", "11", "36", "37", "38", "39", "77"], "goals": ["请求和响应各含什么", "方法与状态码表达什么", "区分规范、实现限制与常见误解"], "why": "运输机制已知，现在观察运输的应用内容。", "exit": "能读一组简化HTTP报文；说明GET/POST并不自带加密。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 9, "week": 2, "title": "少做重复工作：复用与缓存", "ids": ["7", "12", "13", "14", "54", "9", "35", "46", "76"], "goals": ["连接复用与协议版本", "缓存的命中、过期和验证", "私有缓存与共享缓存"], "why": "在会读报文后，用首部解释连接和缓存策略。", "exit": "能判断一次缓存验证过程；连接数量等结论标明协议版本。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 10, "week": 2, "title": "安全地传：HTTPS与TLS", "ids": ["19", "20", "69", "70", "71", "72", "73", "75", "21", "22", "74"], "goals": ["窃听和身份冒充是不同风险", "两类密钥各有什么用途", "证书和TLS如何配合"], "why": "先解释加密、认证和证书，再讲HTTPS过程。", "exit": "能用流程解释机密性与身份认证；算法细节不作必学。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 11, "week": 2, "title": "记住用户：状态与基础安全", "ids": ["24", "25", "26", "27", "28", "40", "41", "42", "43", "29", "44", "95", "96", "97", "98", "99"], "goals": ["Cookie如何携带标识", "服务器Session如何关联用户", "识别几类常见安全风险"], "why": "9道状态题合并为一条主线；其余安全题仅作风险与防护的认识。", "exit": "用一次登录解释状态关联；能区分XSS和CSRF的大方向。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}, {"day": 12, "week": 2, "title": "把整条链路讲通", "ids": ["2", "15", "16", "83", "104"], "goals": ["从输入地址到显示网页的全过程", "把应用接口放回网络地图", "综合自测与薄弱点整理"], "why": "此时再学原站最前面的综合题，避免零基础背长流程。", "exit": "独立串联DNS、传输、HTTP/TLS和缓存；接口与端口容量只需认识。", "status": "planned", "budget": [10, 55, 20, 5], "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"}], "questions": {"1": {"label": "分层各自负责什么", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 1}, "2": {"label": "HTTP通信的大致过程", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 12}, "3": {"label": "DNS的用途", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 2}, "4": {"label": "DNS如何找到地址", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 2}, "5": {"label": "DNS查询与UDP", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 3}, "6": {"label": "DNS区域传送与TCP", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 3}, "7": {"label": "HTTP连接的复用方式", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 9}, "8": {"label": "TCP为什么需要消息边界", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 6}, "9": {"label": "缓存解决什么问题", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 9}, "10": {"label": "HTTP的方法", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 8}, "11": {"label": "GET与POST如何区分", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 8}, "12": {"label": "连接与请求的数量关系", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 9}, "13": {"label": "HTTP请求并发与版本差异", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 9}, "14": {"label": "浏览器连接数的适用条件", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 9}, "15": {"label": "网页访问的全链路概览", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 12}, "16": {"label": "网页访问的详细串联", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 12}, "17": {"label": "域名解析的逐步追踪", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 2}, "18": {"label": "DNS如何分配访问流量", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 2}, "19": {"label": "HTTP与HTTPS的差异", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 10}, "20": {"label": "TLS的用途", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html", "day": 10}, "21": {"label": "HTTPS安全通信的过程", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 10}, "22": {"label": "公钥的可信来源", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 10}, "23": {"label": "HTTP报文结构", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 8}, "24": {"label": "Cookie的含义", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "25": {"label": "Cookie的用途", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "26": {"label": "Session的整体认识", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "27": {"label": "Session如何运转", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "28": {"label": "登录状态两种机制的比较", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "29": {"label": "SQL注入的基本风险", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "30": {"label": "用图理解OSI分层", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 1}, "31": {"label": "RARP的历史用途", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 2}, "32": {"label": "端口的编号范围", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 1}, "33": {"label": "分层为什么能降低复杂度", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 1}, "34": {"label": "递归查询与迭代查询", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 2}, "35": {"label": "缓存的共享范围", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 9}, "36": {"label": "GET参数与编码位置", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 8}, "37": {"label": "GET长度限制来自哪里", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 8}, "38": {"label": "GET/POST与传输安全", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 8}, "39": {"label": "POST与数据包数量的误解", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 8}, "40": {"label": "认识服务器会话状态", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html", "day": 11}, "41": {"label": "一次Session使用过程", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 11}, "42": {"label": "登录状态方案的选择", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 11}, "43": {"label": "Cookie/Session比较与回顾", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 11}, "44": {"label": "DDoS的基本认识", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 11}, "45": {"label": "MTU与MSS的区别", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 3}, "46": {"label": "缓存的新鲜度与验证", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 9}, "47": {"label": "TCP报头的作用", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "48": {"label": "TCP状态的整体地图", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 5}, "49": {"label": "分层与协议的对应关系", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 1}, "50": {"label": "TCP提供的服务", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 3}, "51": {"label": "TCP关键字段与职责", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "52": {"label": "OSI各层的功能回顾", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 1}, "53": {"label": "常见应用协议的用途", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 8}, "54": {"label": "HTTP完成后连接的去留", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 9}, "55": {"label": "三次握手的过程", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "56": {"label": "为什么需要第三步确认", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "57": {"label": "半连接队列的作用", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "58": {"label": "初始序列号的选择", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "59": {"label": "握手时能否携带数据", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "60": {"label": "SYN攻击利用了什么", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html", "day": 4}, "61": {"label": "连接如何双向关闭", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "62": {"label": "关闭连接的步骤为何不同", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "63": {"label": "等待时间与MSL", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "64": {"label": "等待如何保护关闭过程", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "65": {"label": "TIME_WAIT与旧报文", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "66": {"label": "字节流的消息边界方案", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 6}, "67": {"label": "表示层和会话层的职责", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 1}, "68": {"label": "连接状态变化的全景图", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 5}, "69": {"label": "对称加密的特点", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "70": {"label": "非对称加密的特点", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "71": {"label": "HTTPS的整体认识", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "72": {"label": "明文HTTP的局限", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "73": {"label": "HTTPS组合使用加密机制", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "74": {"label": "TLS会话复用的认识", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "75": {"label": "证书在认证中的作用", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 10}, "76": {"label": "缓存的验证与控制", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 9}, "77": {"label": "请求大小限制的来源", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 8}, "78": {"label": "网络层协议的角色", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 2}, "79": {"label": "拥塞控制的四种经典机制", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html", "day": 7}, "80": {"label": "快速重传的触发依据", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 7}, "81": {"label": "关闭状态与程序行为", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 5}, "82": {"label": "流量控制的目标", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 7}, "83": {"label": "服务器Socket接口的顺序", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 12}, "84": {"label": "可靠传输如何协作", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 6}, "85": {"label": "UDP提供的服务", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "86": {"label": "TCP和UDP如何选择", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "87": {"label": "传输服务的关键特点", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "88": {"label": "TCP与上层应用的关系", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "89": {"label": "UDP与上层应用的关系", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "90": {"label": "链路层协议的角色", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 2}, "91": {"label": "Ping与ICMP", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 2}, "92": {"label": "UDP报文大小的取舍", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 3}, "93": {"label": "接收窗口怎样限制发送", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 7}, "94": {"label": "RTT/RTO与超时重传", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 6}, "95": {"label": "XSS的基本风险", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 11}, "96": {"label": "CSRF的基本风险", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 11}, "97": {"label": "CSRF的防护思路", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 11}, "98": {"label": "上传文件带来的风险", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 11}, "99": {"label": "文件上传的防护思路", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 11}, "100": {"label": "拥塞控制的目标", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 7}, "101": {"label": "流量控制和拥塞控制的区别", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html", "day": 7}, "102": {"label": "HTTP状态码的分类", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html", "day": 8}, "103": {"label": "CLOSE_WAIT堆积的诊断方向", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html", "day": 5}, "104": {"label": "端口号与连接数量的区别", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html", "day": 12}, "S1": {"label": "封包与应用消息边界的补充认识", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html", "day": 6}}, "references": [{"label": "原站：计算机网络第1页", "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html"}, {"label": "RFC 1122：Internet分层与封装", "url": "https://www.rfc-editor.org/rfc/rfc1122.html"}, {"label": "RFC 6335：端口号与分配范围", "url": "https://www.rfc-editor.org/rfc/rfc6335.html"}, {"label": "MDN：HTTP概览与版本", "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview"}]}</script>
+  <template id="lesson-01"><section class="card">
+  <span class="eyebrow">TODAY'S THREE ANCHORS</span><h2 style="margin-top:10px">今天先搭骨架，再放术语。</h2>
+  <p>你每天都在使用网络：打开网页、发消息、看视频。今天从“浏览器向另一台计算机要一份网页”出发，回答三个问题。</p>
+  <ol class="objectives"><li><strong>谁和谁在交流？</strong>能区分客户端、服务器和它们运行的程序。</li><li><strong>为什么要分层？</strong>能用分工解释分层，用套装结构解释封装。</li><li><strong>怎样找到目标？</strong>能区分 IP 地址和端口，不把它们当成同一件事。</li></ol>
+  <div class="callout"><strong>不要求今天记住所有协议。</strong><p>先理解每层解决什么问题。DNS、TCP、HTTP 今天只作为地图上的路标，后面会分别讲清。不会编程也能完成本课。</p></div>
+  <details class="source-map"><summary>查看本课原题映射与依据 · 7个编号条目</summary><div id="day-source-map" class="source-items"></div><p class="micro">原题1、30、52合并为分层主线；33解释分层目的；49放入协议位置；67补充OSI上层；32解释端口范围。覆盖这些条目不等于要求今天背熟所有细节。</p><div id="day-references"></div></details>
+</section>
+
+<section class="lesson-section" id="d1-warmup">
+  <div class="section-heading"><h2><span class="section-number">01</span>回忆检查</h2><span class="time-label">预算 10 分钟</span></div>
+  <p>第1天没有昨日回顾。先摸底：这些词你现在能解释到哪一步？选“不知道”完全正常，今天结束后再看是否有变化。</p>
+  <div class="warmup-grid"><div><strong>服务器</strong><select data-save="d1-warm-server" aria-label="服务器的熟悉程度"><option value="">请选择</option><option>完全不知道</option><option>见过这个词</option><option>能举例解释</option></select></div><div><strong>IP 地址</strong><select data-save="d1-warm-ip" aria-label="IP地址的熟悉程度"><option value="">请选择</option><option>完全不知道</option><option>见过这个词</option><option>能举例解释</option></select></div><div><strong>协议</strong><select data-save="d1-warm-protocol" aria-label="协议的熟悉程度"><option value="">请选择</option><option>完全不知道</option><option>见过这个词</option><option>能举例解释</option></select></div></div>
+  <label class="inline-label" for="warm-answer">用自己的话猜一猜：点开一个网页时，浏览器和远方的计算机可能交换了什么？</label>
+  <textarea id="warm-answer" data-save="d1-warm-answer" rows="3" placeholder="先写直觉，不查答案。例：我猜浏览器发出了……，对方返回了……"></textarea>
+  <p class="micro">建议：3分钟摸底、4分钟写猜想、3分钟看学习目标。这里不打分，答案留到收尾时比较。</p>
+</section>
+
+<section class="lesson-section" id="d1-main">
+  <div class="section-heading"><h2><span class="section-number">02</span>今日主线</h2><span class="time-label">预算 55 分钟</span></div>
+  <p class="muted">三段分别预留15、25、15分钟，已经包含看图、操作和停下来思考。选读内容可以留到以后。</p>
+
+  <article class="topic" id="d1-client-server" data-topic="客户端、服务器与协议">
+    <div class="topic-topline"><span>A / 谁在交流</span><span class="depth">理解 · 约15分钟</span></div>
+    <h3>网页不是凭空出现在屏幕上的。</h3>
+    <p>想象你打开一个课程网站。<strong>浏览器先提出请求，对方的服务程序处理请求，再返回内容。</strong>浏览器拿到描述页面的内容后，才把它显示出来。今天先看这条最简单的来回，暂不加入缓存等捷径。</p>
+    <figure class="figure"><div class="flow" role="img" aria-label="浏览器作为客户端发送网页请求，服务器的服务程序处理并返回网页内容"><div class="endpoint"><strong>你的浏览器</strong><span>运行在你的设备上<br>客户端程序</span></div><div class="flow-middle">想要课程首页<span class="flow-arrow">→</span><span class="flow-arrow">←</span>返回页面内容</div><div class="endpoint"><strong>网站服务程序</strong><span>运行在远方的设备上<br>服务器程序</span></div></div><figcaption>图1 · 请求与响应。中间实际可能经过多台网络设备，后面的课程再展开。</figcaption></figure>
+    <div class="three-col"><div class="mini-card"><strong>客户端</strong><p>在这次交互中发起请求的一方。浏览器是常见例子；手机App也可以是客户端。</p></div><div class="mini-card"><strong>服务器</strong><p>提供服务、接收并处理请求的一方。这个词有时指程序，有时指运行程序的计算机，要看上下文。</p></div><div class="mini-card"><strong>协议</strong><p>双方交流遵守的规则：消息怎么写、字段是什么意思、收到后怎样回应。</p></div></div>
+    <h4 style="margin-top:24px">例子：你说“给我首页”，对方得知道怎么读。</h4>
+    <p>如果你随意发出一串字，对方未必知道你要什么。协议就像约好的表格：哪一格写目标，哪一格写动作。后面学的 <strong>HTTP</strong> 就是一套用于Web通信的应用层规则；它不是网页内容本身，也不是浏览器这个软件。</p>
+    <p><strong>把“设备”和“程序”分开想。</strong>一台计算机可以同时运行多个程序，也可能同时扮演不同角色。例如，网站的服务程序接待你的请求时是服务器；它向另一项服务请求数据时，又扮演客户端。</p>
+    <div class="callout warm"><strong>类比能帮助理解，但角色没有固定身份。</strong><p>把客户端想成顾客、服务器想成服务台，只对应“请求与提供服务”的关系。不能据此推断服务器永远被动、永远不能主动通信。</p></div>
+    <details class="mini-check"><summary>停30秒：浏览器、计算机、HTTP，分别属于什么？想完再展开。</summary><p>浏览器是程序；计算机是运行程序的设备；HTTP是通信规则。程序使用规则交换数据，设备承载程序并连接网络。</p></details>
+    <div class="topic-actions"><div class="rating-group" data-topic-rating="d1-client-server"></div><button class="text-button" data-feedback="d1-client-server">这里还没懂 →</button></div>
+  </article>
+
+  <article class="topic" id="d1-layers" data-topic="分层模型与封装">
+    <div class="topic-topline"><span>B / 怎样分工</span><span class="depth">理解＋简单运用 · 约25分钟</span></div>
+    <h3>一次通信，需要好几种不同的能力。</h3>
+    <p>“把网页发过去”看似只有一件事，实际要解决：内容怎么表达、交给哪个程序、跨网络怎么走、相邻设备怎么传，以及最后怎样变成信号。<strong>把不同问题拆成不同层，就可以分别设计和改进。</strong></p>
+    <p>例如，从Wi-Fi换成网线，并不意味着网站要重新发明一套HTTP规则。上层使用下层提供的能力，而不是自己处理所有细节。这正是分层带来的价值。</p>
+    <figure class="figure"><span class="eyebrow">点一个职责，看它解决的问题</span><div class="layer-controls" role="group" aria-label="选择要了解的网络层"><button class="layer-button" data-layer="application" aria-pressed="true">应用</button><button class="layer-button" data-layer="transport" aria-pressed="false">传输</button><button class="layer-button" data-layer="network" aria-pressed="false">网络</button><button class="layer-button" data-layer="link" aria-pressed="false">链路</button><button class="layer-button" data-layer="physical" aria-pressed="false">物理</button></div>
+      <div class="stack" role="img" aria-label="五层教学模型从上到下为应用、传输、网络、数据链路和物理；发送时向下使用各层能力"><div class="stack-row active" data-stack="application"><strong>应用层</strong><span>交流什么，内容怎样表达<small>例：HTTP、DNS；今天先记住用途位置</small></span></div><div class="stack-row" data-stack="transport"><strong>传输层</strong><span>应用端点之间怎样传送<small>例：TCP、UDP；涉及端口</small></span></div><div class="stack-row" data-stack="network"><strong>网络层</strong><span>跨网络寻址与转发<small>例：IP；涉及IP地址</small></span></div><div class="stack-row" data-stack="link"><strong>链路层</strong><span>在当前链路上怎样交付<small>例：以太网、Wi-Fi相关机制</small></span></div><div class="stack-row" data-stack="physical"><strong>物理层</strong><span>比特怎样用信号承载<small>例：电信号、光信号、无线电信号</small></span></div></div>
+      <div id="layer-explanation" class="stack-desc" aria-live="polite"><strong>应用层：先约定“说的是什么”。</strong><p>浏览器表达“我要这份资源”，服务器表达“这是结果”。它们需要能理解彼此的消息，而不是只收到一串没有含义的比特。</p></div><figcaption>图2 · 本课采用五层教学模型。先记住问题的分工，不要求死记所有例子。</figcaption>
+    </figure>
+    <h4>为什么有的材料写七层，有的写四层？</h4>
+    <p>它们是观察同一类通信问题的不同框架，<strong>不是“数字越多越先进”，也不是每台设备内部都有七个实体抽屉。</strong>RFC 1122使用四层的Internet体系结构；五层是常见教学划分；OSI则提供七层参考模型。</p>
+    <div class="table-wrap"><table class="model-table"><caption class="micro" style="text-align:left;padding-bottom:8px">模型对照 · 用于学习理解，不表示标准之间严格一一实现</caption><thead><tr><th>五层教学框架</th><th>OSI七层中的对应职责</th><th>Internet四层中的大致位置</th></tr></thead><tbody><tr><td>应用</td><td>应用、表示、会话</td><td>应用</td></tr><tr><td>传输</td><td>传输</td><td>传输</td></tr><tr><td>网络</td><td>网络</td><td>互联网</td></tr><tr><td>链路＋物理</td><td>数据链路、物理</td><td>链路</td></tr></tbody></table></div>
+    <details class="mini-check"><summary>认识即可：OSI多出来的表示层、会话层在讲什么？</summary><p><strong>表示层</strong>关注数据的表示和转换，例如编码、压缩、加密等职责；<strong>会话层</strong>关注通信会话的建立、管理和终止。这是参考模型的职责划分，实际Internet协议不一定单独实现这两层。</p><p>注意：网站登录中的“Session”不是直接等同于OSI会话层；后者也不负责用端口把数据分给程序。端口属于传输层。</p></details>
+    <h4 style="margin-top:25px">数据经过各层时，会加上本层需要的信息。</h4>
+    <p>假设浏览器使用<strong>明文HTTP/1.1经TCP</strong>发送一小段请求。应用先形成请求数据；TCP加入传输需要的首部；IP再加入寻址需要的首部；链路层形成在当前链路传送的帧。这叫<strong>封装</strong>。首部就是放在前面的一组控制信息，不是给人读的标题。</p>
+    <figure class="figure"><div class="demo-buttons"><button id="encap-next" class="primary">给数据加一层包装</button><button id="encap-reset">重新演示</button><span id="encap-step" class="chip">0 / 3</span></div><div class="envelope" id="encap-visual" role="img" aria-label="只有应用请求数据，尚未添加TCP、IP和链路控制信息"><div class="packet" data-level="0">应用请求数据</div></div><p id="encap-description" class="demo-caption" aria-live="polite">起点：应用已经组织好要交流的内容。接下来每层只添加自己需要的信息。</p><figcaption>图3 · 概念演示，省略分段、链路尾部等细节。应用的一条消息不一定正好对应一个TCP报文段。</figcaption></figure>
+    <p>接收方向则逐层解释并处理控制信息，最终让应用拿到需要的数据，可以理解为<strong>解封装</strong>。把它想成“信纸外套信封”有助于看出嵌套关系，但网络数据可能被分段或重新组织，并不是一个永不拆开的包裹。</p>
+    <div class="callout"><strong>把四个常用叫法先对上位置。</strong><p>在这个TCP示例里：传输层常说“TCP报文段”，网络层说“IP数据报/包”，链路层说“帧”，物理传输涉及“比特”。“比特”是0或1这样的二进制信息单位。</p></div>
+    <details class="mini-check"><summary>边界说明：HTTP一定用TCP吗？</summary><p>不是。这里限定HTTP/1.1经TCP，帮助你看清一条简单路径。HTTP/3使用QUIC，QUIC运行在UDP之上。今天不展开QUIC，只要避免形成“所有HTTP都直接使用TCP”的错误规则。</p></details>
+    <details class="mini-check"><summary>停1分钟：Wi-Fi负责把信号传出去，HTTP负责表达请求。它们为何能同时服务一次访问？</summary><p>它们解决不同层次的问题。应用层组织请求，借助下层运输、寻址和链路能力传送。换掉一种接入方式，不必同时换掉应用消息的规则。</p></details>
+    <div class="topic-actions"><div class="rating-group" data-topic-rating="d1-layers"></div><button class="text-button" data-feedback="d1-layers">这里还没懂 →</button></div>
+  </article>
+
+  <article class="topic" id="d1-addresses" data-topic="IP地址与端口的分工">
+    <div class="topic-topline"><span>C / 交给谁</span><span class="depth">理解＋简单运用 · 约15分钟</span></div>
+    <h3>找到网络地址，还不等于选中了服务。</h3>
+    <p>同一台服务器可以同时提供不同服务。只知道一个IP地址，还不足以表达“我要和这里的哪项TCP或UDP服务通信”。<strong>IP用于网络层寻址；端口用于传输层，帮助定位通信端点。</strong></p>
+    <p>初学时可以暂把IP看成“到哪处地址”，端口看成“在这个地址上找哪个服务入口”。但真实网络里，一台设备可以有多个IP地址，多个程序的安排也有例外，所以“IP=一台电脑、端口=一个固定程序”只能是简化印象。</p>
+    <figure class="figure"><span class="eyebrow">同一个IP，不同的服务入口</span><div class="address-map" role="img" aria-label="客户端192.0.2.10连接服务器198.51.100.20，服务器提供TCP443和TCP8443两个示意服务端口"><div class="address-client"><strong>浏览器</strong><br><code>192.0.2.10</code><br><small>客户端IP</small></div><span class="flow-arrow">→</span><div class="address-server"><strong>同一个服务器IP</strong><br><code>198.51.100.20</code><div class="service active" data-service="443"><span>课程首页</span><code>TCP :443</code></div><div class="service" data-service="8443"><span>另一项Web服务</span><code>TCP :8443</code></div></div></div><div class="demo-buttons" style="margin-top:18px"><button data-port="443" aria-pressed="true">访问课程首页</button><button data-port="8443" aria-pressed="false">访问另一服务</button></div><p id="port-explanation" class="demo-caption" aria-live="polite">目标为TCP的 198.51.100.20:443。IP相同，端口用于区分这里的服务入口。</p><figcaption>图4 · 地址与服务均为教学示意。443是HTTPS常用端口；8443在本例中人为分配给另一服务，不是必须这样使用。</figcaption></figure>
+    <h4>把“楼房地址与房间号”类比用到正确的位置。</h4>
+    <p>IP像楼房地址、端口像房间号，这能帮助区分两级定位。但房间号本身没有全球唯一性：另一栋楼也能有“443号房间”。同样，<strong>不同IP可以使用相同端口号，TCP和UDP的端口空间也分别管理。</strong></p>
+    <p>一个服务还可能同时接待许多客户端。别把端口想成“只容一个人占用的座位”。连接如何区分，留到学过TCP后再展开。</p>
+    <div class="callout"><strong>今天只记住这个范围：0–65535。</strong><p>TCP/UDP端口号字段是16位，有2<sup>16</sup>＝65536种取值，因此编号从0到65535。端口0被保留；不能写成“1到65536”。不要求今天背全部知名端口。</p></div>
+    <details class="mini-check"><summary>选读：哪些范围常用于什么？</summary><p>0–1023是系统端口范围，1024–49151是用户端口范围，49152–65535是动态/私有范围。这里说的是IANA的分配分类，不是说每台操作系统都使用相同的临时端口范围，也不是说普通用户在所有系统上都能直接绑定任意端口。</p></details>
+    <h4 style="margin-top:24px">小练习：网站换了服务端口，IP没变。</h4>
+    <p>原来访问 <code>198.51.100.20:443</code>，现在服务只监听 <code>198.51.100.20:8443</code>。如果仍向443发起访问，“IP相同”能保证找到原来的服务吗？</p>
+    <details class="mini-check"><summary>先给出理由，再展开解释。</summary><p>不能。IP确定的是网络层目标；指定的传输协议与端口也必须匹配服务入口。就像到了正确楼房，却找错了房间。能否连通还涉及防火墙等条件，匹配地址和端口只是必要检查的一部分。</p></details>
+    <div class="topic-actions"><div class="rating-group" data-topic-rating="d1-addresses"></div><button class="text-button" data-feedback="d1-addresses">这里还没懂 →</button></div>
+  </article>
+  <div class="callout warm"><strong>把今天连成一句话。</strong><p>客户端和服务器的程序按协议交流；分层让消息表达、传输、寻址和链路各司其职；封装携带各层所需信息；IP与端口帮助把数据送向相应的通信端点。</p></div>
+</section>
+
+<section class="lesson-section" id="d1-quiz">
+  <div class="section-heading"><h2><span class="section-number">03</span>理解自测</h2><span class="time-label">预算 20 分钟</span></div>
+  <p>每题先花2–3分钟作答，再看解释并自评。能说出理由比术语完整更重要。答案保存在当前浏览器，不会自动批改或上传。</p>
+  <article class="question" data-quiz="d1-q1"><h3>1 / 找到服务器IP以后，为什么还需要端口？</h3><p>假设同一服务器提供两项Web服务。请用一句原因和一个例子回答。</p><div class="quiz-input"></div><details><summary>我已尝试作答，查看解释</summary><div class="answer"><p><strong>核心理由：</strong>IP用于网络层寻址；同一IP上可以有不同服务，需要结合传输协议与端口区分通信端点。例如同一个IP的TCP443提供课程首页，TCP8443提供另一服务。</p><p><strong>自评依据：</strong>说出“找地址”和“找入口”的区别，并给出例子算理解。“一个电脑只能有一个IP”或“端口在全球唯一”都是需要修正的说法。</p></div></details><div class="quiz-rating"></div></article>
+  <article class="question" data-quiz="d1-q2"><h3>2 / 把问题放回对应的层。</h3><p>A. 请求中怎样表达“我要首页”？<br>B. IP包怎样跨网络转发？<br>C. 如何用无线电信号承载比特？<br>D. 数据应交给哪个端口的通信端点？</p><div class="quiz-input"></div><details><summary>我已尝试作答，查看解释</summary><div class="answer"><p>A：应用层，组织有意义的消息。B：网络层，处理IP寻址与转发。C：物理层，承载信号。D：传输层，端口属于TCP/UDP等传输协议。</p><p><strong>易错点：</strong>“都和发送数据有关”不代表都属于同一层。判断时先问“具体在解决什么问题”。</p></div></details><div class="quiz-rating"></div></article>
+  <article class="question" data-quiz="d1-q3"><h3>3 / 分层的价值，能用换Wi-Fi的例子解释吗？</h3><p>一台电脑从Wi-Fi接入换成网线接入。网站是否必须因此把HTTP规则重新设计一次？说明理由。</p><div class="quiz-input"></div><details><summary>我已尝试作答，查看解释</summary><div class="answer"><p>通常不需要。接入方式改变主要影响更底层的能力；应用层仍可按HTTP规则组织请求。分层让上层使用下层提供的服务，减少彼此对具体实现的依赖。</p><p>这不表示换网络永远不会产生连接中断或地址变化；题目只是在问应用通信规则是否必须跟着重写。</p></div></details><div class="quiz-rating"></div></article>
+  <article class="question" data-quiz="d1-q4"><h3>4 / 封装只是在反复复制同一段内容吗？</h3><p>在本课的TCP示例中，应用已经形成请求数据。为什么还要加入TCP与IP等层的信息？请分别举出一种用途。</p><div class="quiz-input"></div><details><summary>我已尝试作答，查看解释</summary><div class="answer"><p>不是单纯重复。不同层加入不同职责需要的信息。例如TCP首部中有端口信息；IP首部中有源、目标IP地址信息。下层处理自己的控制信息，并承载上层数据。</p><p>今天不要求列全首部字段，也不要推出“一条请求恰好就是一个TCP段”。后者还会受分段和字节流机制影响。</p></div></details><div class="quiz-rating"></div></article>
+  <article class="question" data-quiz="d1-q5"><h3>5 / 七层、五层、四层，谁才是真的？</h3><p>朋友说：“我看到一本书写七层，这个课件写五层，所以一定有一个错了。”你会怎样回应？</p><div class="quiz-input"></div><details><summary>我已尝试作答，查看解释</summary><div class="answer"><p>要先看模型口径。OSI是七层参考模型；Internet体系结构常用四层描述；五层是常见教学划分。它们对职责的组合方式不同，不能只凭层数判断正误。</p><p><strong>理解到位的表现：</strong>能说出“解释框架不同”，并举一个合并例子，例如OSI上面的三层职责在教学对照中常归入应用层。不需要今天背出每个协议的精确归属争论。</p></div></details><div class="quiz-rating"></div></article>
+  <p id="quiz-summary" class="notice">自评尚未完成。看过解释不等于已经会独立回答。</p>
+</section>
+
+<section class="lesson-section" id="d1-close">
+  <div class="section-heading"><h2><span class="section-number">04</span>收尾记录</h2><span class="time-label">预算 5 分钟</span></div>
+  <p>合上解释，看看你能否完成下面三件事。这里记录你的判断，不会自动宣布“已经掌握”。</p>
+  <div class="checklist"><label><input type="checkbox" data-save="d1-exit-roles">用浏览器访问网站的例子区分程序、设备和协议。</label><label><input type="checkbox" data-save="d1-exit-layers">解释为什么分层，以及封装为什么需要不同控制信息。</label><label><input type="checkbox" data-save="d1-exit-addresses">用同IP不同端口的例子，区分IP与端口的职责。</label></div>
+  <label class="inline-label" for="exit-note">今天最清楚的一点，以及仍卡住的一点</label><textarea id="exit-note" data-save="d1-exit-note" rows="3" placeholder="例如：我现在知道端口不是IP的替代品；但我仍不清楚……"></textarea>
+  <div class="callout warm"><strong>超过90分钟，还没学懂怎么办？</strong><p>先停下来，保留未答完的题，把卡点带回会话。我们先补前提或换例子，再调整后续内容。不要为了完成题数跳过不懂的部分，也不挤占休息日。</p></div>
+  <div class="close-actions"><button id="mark-complete" class="primary">标记本日完成</button><button data-feedback="d1-close">整理本日反馈</button><button data-day="2">看看第2天规划 →</button></div><p id="completion-note" class="completion-note"></p>
+  <details class="source-map"><summary>下一学习日怎样回顾今天？</summary><p>第2天开头会让你不看答案解释：IP和端口的区别；换接入方式为什么不必重写HTTP；在五层地图中定位DNS。之后再进入“域名怎样找到地址”。它会引用今天的主讲位置，不重复整课。</p></details>
+</section>
+</template>
+  <script>(() => {
+  'use strict';
+  const course = JSON.parse(document.getElementById('course-data').textContent);
+  const lessonHTML = document.getElementById('lesson-01').innerHTML;
+  const $ = id => document.getElementById(id);
+  const KEY = 'network-foundations-12:learner:v1';
+  const phases = { recall: '回忆', main: '主线', quiz: '自测', close: '收尾' };
+  const fresh = () => ({ schema: 1, courseId: course.id, fields: {}, ratings: {}, completed: [], timing: { recall: 0, main: 0, quiz: 0, close: 0 } });
+  const allowedFields = new Set([...document.getElementById('lesson-01').content.querySelectorAll('[data-save]')].map(el => el.dataset.save));
+  for (let i = 1; i <= 5; i++) allowedFields.add(`d1-q${i}-answer`);
+  allowedFields.add('feedback-draft');
+  const allowedRatings = new Set(['d1-client-server', 'd1-layers', 'd1-addresses', ...Array.from({ length: 5 }, (_, i) => `d1-q${i + 1}`)]);
+  function cleanState(raw) {
+    if (!raw || raw.schema !== 1 || raw.courseId !== course.id) throw Error('这不是本课程的学习记录。');
+    const next = fresh();
+    for (const [k, v] of Object.entries(raw.fields || {})) if (allowedFields.has(k) && (typeof v === 'boolean' || typeof v === 'string' && v.length <= 20000)) next.fields[k] = v;
+    for (const [k, v] of Object.entries(raw.ratings || {})) if (allowedRatings.has(k) && ['understood', 'partial', 'review'].includes(v)) next.ratings[k] = v;
+    if (Array.isArray(raw.completed)) next.completed = [...new Set(raw.completed.filter(x => Number.isInteger(x) && x >= 1 && x <= 12))];
+    for (const k of Object.keys(phases)) if (Number.isFinite(raw.timing?.[k]) && raw.timing[k] >= 0 && raw.timing[k] < 31536000000) next.timing[k] = raw.timing[k];
+    return next;
+  }
+  let state = fresh(), persistent = true;
+  try { const raw = localStorage.getItem(KEY); if (raw) state = cleanState(JSON.parse(raw)); } catch { persistent = false; }
+  let currentDay = 1, currentView = 'lesson', running = false, startedAt = 0, phase = 'recall', encap = 0, feedbackTopic = '', toastTimeout;
+  const esc = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const formatTime = ms => { const seconds = Math.floor(ms / 1000); return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`; };
+  const totalTime = () => Object.values(state.timing).reduce((a, b) => a + b, 0);
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); persistent = true; } catch { persistent = false; }
+    $('storage-warning').hidden = persistent;
+  }
+  function toast(message) { $('toast').textContent = message; $('toast').classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => $('toast').classList.remove('show'), 4200); }
+  function renderNav() {
+    $('day-nav').innerHTML = course.days.map(day => `${day.day === 1 || day.day === 7 ? `<div class="week-label">WEEK ${day.week} · 六个学习日</div>` : ''}<button class="day-button ${currentDay === day.day && currentView === 'lesson' ? 'active' : ''} ${state.completed.includes(day.day) ? 'done' : ''}" data-day="${day.day}" ${currentDay === day.day && currentView === 'lesson' ? 'aria-current="page"' : ''}><span class="day-number">${state.completed.includes(day.day) ? '✓' : String(day.day).padStart(2, '0')}</span><span class="day-copy">${esc(day.title)}<small>${day.status === 'sample' ? '样稿 · 可以试学' : '规划 · 正文待制作'}</small></span></button>${day.day === 6 || day.day === 12 ? '<div class="rest-label">休息日 / 不安排必做学习</div>' : ''}`).join('');
+    $('progress-label').textContent = `${state.completed.length} / 12`;
+    $('course-progress').value = state.completed.length;
+  }
+  function sourceItems(ids) {
+    return ids.map(id => `<a href="${esc(course.questions[id].url)}" target="_blank" rel="noopener noreferrer"><span>${id === 'S1' ? '补充' : '#' + id}</span><span>${esc(course.questions[id].label)}</span></a>`).join('');
+  }
+  function planCard(day) {
+    return `<article class="card plan-card"><div class="plan-top"><small class="eyebrow">DAY ${String(day.day).padStart(2, '0')}</small><h2>${esc(day.title)}</h2></div><p>${esc(day.why)}</p><h3>今天的主线</h3><ul>${day.goals.map(x => `<li>${esc(x)}</li>`).join('')}</ul><div class="callout"><strong>能做到什么，才算达到本日目标</strong><p>${esc(day.exit)}</p></div><details><summary>${day.ids.length}个原题条目 · 查看编号与来源</summary><div class="source-items">${sourceItems(day.ids)}</div></details><button class="open-day" data-day="${day.day}">${day.day === 1 ? '打开第1天样稿' : '查看本日规划'} →</button></article>`;
+  }
+  function renderRoadmap() {
+    $('roadmap-view').innerHTML = `<div class="roadmap-intro"><span class="eyebrow">12 STUDY DAYS / 2 WEEKS</span><h1>先搭地图，再走完全程。</h1><p class="muted">先理解依赖，再串联机制。每周第七天完整休息；学习日不绑定具体日期。</p><div class="route-stats"><div class="route-stat"><strong>12</strong><span>个学习日 · 共18小时预算</span></div><div class="route-stat"><strong>105</strong><span>个原题条目 · 已全部映射</span></div><div class="route-stat"><strong>01</strong><span>天正文已制作 · 等待试学</span></div></div><div class="callout warm"><strong>这是初版安排，不是进度承诺。</strong><p>复杂主题减少新题；重复题合并解释。第11天条目较多，是因为9道状态题合并为一条主线，安全内容先认识。第1天实测后可调整分配。</p></div></div>${course.days.map(d => `${d.day === 1 || d.day === 7 ? `<div class="week-banner">第${d.week}周 / ${d.week === 1 ? '把运输过程讲清楚' : '把应用与全链路串起来'}</div>` : ''}${planCard(d)}${d.day === 6 || d.day === 12 ? '<div class="week-banner">休息一天 · 不布置补课和必做练习</div>' : ''}`).join('')}<div class="card"><h2>覆盖核对</h2><p>${esc(course.source_note)}</p><p>编号1–104各出现一次，补充题S1安排在第6天；80题的跨页重复不重复计算。知识点重复通过映射保留，正文不重复堆叠。</p><p class="micro">标题为课程化概括；点击原题来源可核对原站内容。</p></div>`;
+  }
+  function renderGuide() {
+    $('guide-view').innerHTML = `<div class="roadmap-intro"><span class="eyebrow">A COURSE THAT CAN IMPROVE</span><h1>让每一次“没懂”，都有去处。</h1><p class="muted">时间可校准，解释可改进。理解先于题数。</p></div><section class="card"><h2>90分钟怎样控制？</h2><div class="table-wrap"><table class="data-table"><thead><tr><th>环节</th><th>预算</th><th>包含什么</th></tr></thead><tbody><tr><td>回忆 / 摸底</td><td>10分钟</td><td>先回想，再核对</td></tr><tr><td>图文主线</td><td>55分钟</td><td>阅读、看图、演示、例子和停顿思考</td></tr><tr><td>理解自测</td><td>20分钟</td><td>独立作答、查看解释、自评</td></tr><tr><td>收尾记录</td><td>5分钟</td><td>总结与具体卡点</td></tr></tbody></table></div><p style="margin-top:18px">初版数字是设计预算，还没有你的实测依据。计时只在你点击开始后运行，切到后台暂停；计时不能证明理解，阅读速度也不能代替自测。</p><p>第1天后根据实际分段耗时和你的回答调整。超时先停、记录卡点，下次先补救并减少新内容。若仍无法兼顾两周和目标深度，明确讨论取舍，不把剩余任务塞进休息日。</p></section><section class="card"><h2>图文充分，结构简洁。</h2><p>每个核心概念都解释“为什么需要 → 如何运作 → 一个具体例子 → 常见误解 → 小检查”。图表达方向、层次和步骤；类比说明边界。必要的基础在第一次遇到时解释，不让你靠猜术语。</p><p>一个概念只保留一个主要讲解位置。后面回顾时换问题、用短提示和链接；有价值的补充写回相应位置，避免另加一大段重复FAQ。</p><p>原题全部映射；核心知识要求理解并用于简单情境，低频细节先认识。版本敏感或原文有误的说法，用RFC、IANA或官方文档核实。</p></section><section class="card"><h2>从会话答疑，到课件更新</h2><ol class="step-list"><li><strong>说出卡点。</strong>点击课件中的“这里还没懂”，补充自己的理解，复制文字回会话。</li><li><strong>先把疑问讲清。</strong>用不同解释、具体例子或图，再用一个变式问题检查。</li><li><strong>我主动提议具体改动。</strong>例如“在IP与端口处增加双向定位图，并修改一道自测，是否写回课件？”</li><li><strong>你同意后再更新。</strong>修改主要讲解位置、记录版本、保留进度；需要时联动次日回顾。</li></ol><div class="callout warm"><strong>记录持久保存，但不自动互通。</strong><p>网页的记录在当前浏览器；课程规则和维护记录在项目目录。静态网页不会发消息，也不会自动读取会话。复制反馈或导出记录后，才能在会话中据此更新。</p></div><p>新会话接续时可说：</p><p><code>继续项目中的 network-course 课程，先读 AGENTS.md、learner-state.json 和课程维护约定.md。</code></p></section><section class="card"><h2>第1天学完，反馈这三项就够了。</h2><ul><li>实际用了多久，主要在哪个环节超时？</li><li>哪一个位置没懂？你的理解是什么？</li><li>五道自测中，哪些能不看答案说出理由？</li></ul><p class="micro">不需要一次说得很完整，一句具体疑问就能开始答疑。</p></section>`;
+  }
+  function ratingsMarkup(id, quiz = false) {
+    const labels = quiz ? ['能独立解释', '只答对部分', '需要重学'] : ['已理解', '有点模糊', '需要补充'];
+    return ['understood', 'partial', 'review'].map((value, i) => `<button data-rate="${id}" data-value="${value}" aria-pressed="${state.ratings[id] === value}">${labels[i]}</button>`).join('');
+  }
+  function hydrateLesson() {
+    document.querySelectorAll('[data-topic-rating]').forEach(el => { el.innerHTML = ratingsMarkup(el.dataset.topicRating); });
+    document.querySelectorAll('[data-quiz]').forEach(el => {
+      const id = el.dataset.quiz;
+      el.querySelector('.quiz-input').innerHTML = `<label class="inline-label" for="${id}-answer">我的回答</label><textarea id="${id}-answer" data-save="${id}-answer" rows="3" placeholder="先写自己的理解，再展开解释。"></textarea>`;
+      el.querySelector('.quiz-rating').innerHTML = `<div class="rating-group">${ratingsMarkup(id, true)}</div>`;
+    });
+    document.querySelectorAll('[data-save]').forEach(el => {
+      const value = state.fields[el.dataset.save];
+      if (el.type === 'checkbox') el.checked = Boolean(value); else el.value = value == null ? '' : String(value);
+    });
+    $('day-source-map').innerHTML = sourceItems(course.days[0].ids);
+    $('day-references').innerHTML = `<p class="micro">本课重新组织讲解；技术边界核验于${course.checked_at}。</p><ul>${course.references.slice(1).map(r => `<li><a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">${esc(r.label)}</a></li>`).join('')}<li><a href="https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml" target="_blank" rel="noopener noreferrer">IANA：TCP/UDP端口0的保留状态</a></li><li><a href="https://www.rfc-editor.org/rfc/rfc9114.html#section-2" target="_blank" rel="noopener noreferrer">RFC 9114：HTTP/3与QUIC</a></li></ul>`;
+    encap = 0;
+    updateQuizSummary(); updateCompletion();
+  }
+  function showView(view) {
+    if (view !== 'lesson') pauseTimer();
+    currentView = view;
+    ['lesson', 'roadmap', 'guide'].forEach(v => { $(`${v}-view`).hidden = v !== view; });
+    document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.view === view));
+    document.querySelector('.study-tools').hidden = view !== 'lesson';
+    renderNav();
+  }
+  function openDay(number, scroll = true) {
+    pauseTimer(); currentDay = number;
+    const day = course.days.find(x => x.day === number);
+    showView('lesson');
+    $('day-label').textContent = `DAY ${String(number).padStart(2, '0')} / WEEK ${day.week}`;
+    $('lesson-title').textContent = day.title;
+    $('lesson-description').textContent = day.why;
+    $('lesson-meta').innerHTML = `<span class="chip">90分钟设计预算</span><span class="chip">${day.ids.length}个原题条目</span><span class="chip ${number === 1 ? 'warm' : ''}">${number === 1 ? '第1天样稿 · 待实测校准' : '仅规划 · 正文尚未制作'}</span>`;
+    if (number === 1) { $('day-content').innerHTML = lessonHTML; hydrateLesson(); }
+    else $('day-content').innerHTML = `<div class="notice"><strong>这一天目前只有规划。</strong><p>先试学第1天，根据真实耗时与卡点校准后再展开正文。下面是内容位置，不是已经完成的课件。</p></div>${planCard(day)}<div class="card"><h2>课前回顾安排</h2><p>${number === 2 ? '先不看答案解释IP与端口、分层的价值，再把DNS放进应用层地图。' : `回顾第${number - 1}天核心目标，并穿插较早的易错点。具体题目将在前序课件完成和答疑后制作。`}</p><button data-day="1">返回第1天样稿</button></div>`;
+    $('timer-toggle').disabled = number !== 1;
+    $('phase-select').disabled = number !== 1;
+    $('section-nav').hidden = number !== 1;
+    renderTimer();
+    if (scroll) { window.scrollTo(0, 0); $('workspace').focus({ preventScroll: true }); }
+  }
+  function updateQuizSummary() {
+    const el = $('quiz-summary'); if (!el) return;
+    const scores = Array.from({ length: 5 }, (_, i) => state.ratings[`d1-q${i + 1}`]);
+    el.textContent = `你的自评：${scores.filter(x => x === 'understood').length}题能独立解释，${scores.filter(x => x === 'partial').length}题部分理解，${scores.filter(x => x === 'review').length}题需重学，${scores.filter(x => !x).length}题尚未自评。此处不是自动评分。`;
+  }
+  function updateCompletion() {
+    const done = state.completed.includes(1);
+    if ($('mark-complete')) $('mark-complete').textContent = done ? '撤销本日完成标记' : '标记本日完成';
+    if ($('completion-note')) $('completion-note').textContent = done ? '已按你的选择标记完成；这不会自动判断掌握程度。' : '完成标记由你决定。未懂点和部分理解会继续保留。';
+  }
+  function tick() {
+    if (running) {
+      const now = Date.now();
+      state.timing[phase] += Math.max(0, now - startedAt);
+      startedAt = now;
+    }
+  }
+  function pauseTimer() { tick(); running = false; save(); renderTimer(); }
+  function renderTimer() {
+    if (!$('timer-display')) return;
+    $('timer-display').textContent = currentDay === 1 ? formatTime(totalTime()) : '—';
+    $('timer-toggle').textContent = running ? '暂停计时' : totalTime() > 0 ? '继续计时' : '开始计时';
+    $('timer-hint').textContent = currentDay !== 1 ? '正文尚未制作，暂不计时' : totalTime() >= 5400000 ? '已到90分钟预算 · 可以暂停并记录卡点' : '主动学习用时 / 预算90分钟';
+    $('phase-times').innerHTML = currentDay === 1 ? Object.entries(phases).map(([k, v]) => `<span>${v} ${formatTime(state.timing[k])}</span>`).join('') : '';
+  }
+  const layerInfo = {
+    application: ['应用层：先约定“说的是什么”。', '浏览器表达“我要这份资源”，服务器表达“这是结果”。它们需要能理解彼此的消息，而不是只收到一串没有含义的比特。'],
+    transport: ['传输层：为应用端点提供运输服务。', '不同运输规则提供不同能力。TCP面向可靠、有序的字节流；UDP提供数据报传输，本身不保证可靠到达。今天先记住端口在这一层，具体机制第3天再学。'],
+    network: ['网络层：跨网络寻找并转发到目标。', '数据可能经过多个网络。IP地址参与寻址，路由器根据转发信息决定下一步交到哪里。此处还不负责理解“我要首页”这句话。'],
+    link: ['链路层：处理当前这段链路上的交付。', '例如电脑与接入设备之间的以太网或Wi-Fi链路。先把它和“跨多个网络到达最终目标”区分；实际路径可包含多段不同链路。'],
+    physical: ['物理层：让比特有信号载体。', '数据最终要用实际信号传输，例如网线中的电信号、光纤中的光信号或无线电信号。不是一张抽象网页直接在空气里飞。']
+  };
+  function changeLayer(key) {
+    const info = layerInfo[key];
+    document.querySelectorAll('[data-layer]').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.layer === key)));
+    document.querySelectorAll('[data-stack]').forEach(el => el.classList.toggle('active', el.dataset.stack === key));
+    $('layer-explanation').innerHTML = `<strong>${info[0]}</strong><p>${info[1]}</p>`;
+  }
+  function renderEnvelope() {
+    const labels = ['应用请求数据', 'TCP首部 · 端口等信息', 'IP首部 · 源与目标地址', '链路控制信息 · 当前链路'];
+    let html = `<div class="packet" data-level="0">${labels[0]}</div>`;
+    for (let i = 1; i <= encap; i++) html = `<div class="packet"><span class="packet-label">${labels[i]}</span>${html}</div>`;
+    $('encap-visual').innerHTML = html;
+    $('encap-visual').setAttribute('aria-label', ['只有应用数据', 'TCP控制信息包住应用数据', 'IP控制信息包住TCP段', '链路控制信息承载IP数据报，内部有TCP信息和应用数据'][encap]);
+    $('encap-step').textContent = `${encap} / 3`;
+    $('encap-description').textContent = [
+      '起点：应用已经组织好要交流的内容。接下来每层只添加自己需要的信息。',
+      '传输层：TCP加入端口等控制信息。在这个简化示例里，形成承载应用数据的TCP段。',
+      '网络层：IP加入源与目标地址等信息，承载上层的TCP段。IP负责自己的寻址与转发问题。',
+      '链路层：形成适合当前链路传送的帧。接下来用物理信号承载比特；接收时再逐层处理。'
+    ][encap];
+    $('encap-next').disabled = encap === 3;
+  }
+  function openFeedback(topic) {
+    tick();
+    feedbackTopic = topic || '本日整体';
+    const element = $(topic);
+    $('feedback-context').textContent = `第${currentDay}天 · ${element?.dataset.topic || (topic === 'd1-close' ? '收尾与整体反馈' : '本日整体')} · v${course.version}`;
+    $('feedback-note').value = state.fields['feedback-draft'] || '';
+    makeFeedback();
+    $('feedback-dialog').showModal();
+    $('feedback-note').focus();
+  }
+  function makeFeedback() {
+    const ratings = Array.from({ length: 5 }, (_, i) => `Q${i + 1}=${{ understood: '能独立解释', partial: '部分理解', review: '需要重学' }[state.ratings[`d1-q${i + 1}`]] || '未自评'}`).join('，');
+    $('feedback-output').value = `课程：${course.title}\n位置：第${currentDay}天 / ${feedbackTopic} / v${course.version}\n我的疑问或当前理解：${$('feedback-note').value.trim() || '（请补充哪一步没懂）'}\n${currentDay === 1 ? `第1天主动计时：${formatTime(totalTime())}；${Object.entries(phases).map(([k,v]) => `${v}${formatTime(state.timing[k])}`).join('，')}\n自测自评：${ratings}\n` : ''}请先用适合新手的解释和例子讲清，再用一道小问题检查我的理解；如适合补进课件，请主动提出具体修改建议并询问是否更新HTML。`;
+  }
+  async function copyFeedback() {
+    try { await navigator.clipboard.writeText($('feedback-output').value); toast('已复制。请粘贴到本项目会话中。'); }
+    catch { $('feedback-output').focus(); $('feedback-output').select(); toast('浏览器未允许自动复制，请复制已选中的文字。'); }
+  }
+  function exportData() {
+    tick(); save();
+    const data = { ...state, exportedAt: new Date().toISOString(), courseVersion: course.version };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob), link = document.createElement('a');
+    link.href = url; link.download = 'network-learning-record.json'; link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast('已导出当前记录。导入可恢复；如需我查看，请在会话中提供记录。');
+  }
+  document.addEventListener('click', event => {
+    const target = event.target.closest('button, a[data-view]'); if (!target) return;
+    if (target.dataset.view) { event.preventDefault(); showView(target.dataset.view); window.scrollTo(0, 0); }
+    if (target.dataset.day) openDay(Number(target.dataset.day));
+    if (target.dataset.layer) changeLayer(target.dataset.layer);
+    if (target.dataset.port) {
+      const port = target.dataset.port;
+      document.querySelectorAll('[data-service]').forEach(el => el.classList.toggle('active', el.dataset.service === port));
+      document.querySelectorAll('[data-port]').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.port === port)));
+      $('port-explanation').textContent = `目标为TCP的 198.51.100.20:${port}。${port === '443' ? '现在选择课程首页。' : '现在选择另一项服务。'}IP没变，目标端口变了。`;
+    }
+    if (target.dataset.feedback) openFeedback(target.dataset.feedback);
+    if (target.dataset.rate) {
+      state.ratings[target.dataset.rate] = target.dataset.value;
+      document.querySelectorAll('[data-rate]').forEach(el => { if (el.dataset.rate === target.dataset.rate) el.setAttribute('aria-pressed', String(el.dataset.value === target.dataset.value)); });
+      save(); updateQuizSummary();
+    }
+    if (target.id === 'encap-next') { encap = Math.min(3, encap + 1); renderEnvelope(); }
+    if (target.id === 'encap-reset') { encap = 0; renderEnvelope(); }
+    if (target.id === 'feedback-open') openFeedback('本日整体');
+    if (target.id === 'copy-feedback') copyFeedback();
+    if (target.id === 'timer-toggle') {
+      if (running) pauseTimer();
+      else { running = true; startedAt = Date.now(); renderTimer(); }
+    }
+    if (target.id === 'mark-complete') {
+      if (state.completed.includes(1)) state.completed = state.completed.filter(x => x !== 1);
+      else {
+        const rated = Array.from({ length: 5 }, (_, i) => state.ratings[`d1-q${i + 1}`]).filter(Boolean).length;
+        if (rated < 5) { toast('请先完成5题自评，或把未完成处标为“需要重学”。'); return; }
+        state.completed.push(1); pauseTimer();
+      }
+      save(); renderNav(); updateCompletion();
+    }
+    if (target.id === 'export-data') exportData();
+    if (target.id === 'print-page') window.print();
+  });
+  function saveField(event) {
+    const el = event.target;
+    if (!el.dataset.save) return;
+    state.fields[el.dataset.save] = el.type === 'checkbox' ? el.checked : el.value;
+    save();
+  }
+  document.addEventListener('input', saveField);
+  document.addEventListener('change', saveField);
+  $('phase-select').addEventListener('change', event => { tick(); phase = event.target.value; save(); renderTimer(); });
+  $('feedback-note').addEventListener('input', () => { state.fields['feedback-draft'] = $('feedback-note').value; save(); makeFeedback(); });
+  $('import-data').addEventListener('change', async event => {
+    const file = event.target.files[0]; if (!file) return;
+    try {
+      if (file.size > 1000000) throw Error('记录文件过大，请选择本课件导出的JSON。');
+      const imported = cleanState(JSON.parse(await file.text()));
+      if (!window.confirm('导入将替换当前浏览器的本课程记录。建议先导出备份。继续吗？')) return;
+      pauseTimer(); state = imported; save(); openDay(currentDay, false); toast('学习记录已恢复。计时保持暂停。');
+    } catch (error) { toast(`未导入：${error.message}`); }
+    finally { event.target.value = ''; }
+  });
+  document.addEventListener('visibilitychange', () => { if (document.hidden && running) pauseTimer(); });
+  window.addEventListener('pagehide', pauseTimer);
+  let ticks = 0;
+  setInterval(() => { if (running) { tick(); renderTimer(); if (++ticks % 10 === 0) save(); } }, 1000);
+  $('version').textContent = course.version;
+  $('storage-warning').hidden = persistent;
+  renderRoadmap(); renderGuide(); openDay(1, false);
+})();
+</script>
+</body>
+</html>

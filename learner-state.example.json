@@ -1,0 +1,18 @@
+{
+  "course_id": "network-foundations-12",
+  "updated_at": null,
+  "preferences": {
+    "level": "零基础",
+    "study_days": 12,
+    "minutes_per_day": 90,
+    "days_per_week": 6,
+    "rest_days_per_week": 1,
+    "start_date": null,
+    "format": "统一本地HTML模板，充分图文与例子，避免冗余",
+    "clarification_updates": "先答疑，再主动提议具体HTML补充；用户同意后更新"
+  },
+  "reported_progress": [],
+  "reported_difficulties": [],
+  "pending_changes": [],
+  "next_step": "试学第1天，反馈实际用时、卡点和独立作答情况，校准后续课件"
+}

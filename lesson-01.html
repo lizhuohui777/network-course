@@ -1,0 +1,97 @@
+<section class="card">
+  <span class="eyebrow">TODAY'S THREE ANCHORS</span><h2 style="margin-top:10px">今天先搭骨架，再放术语。</h2>
+  <p>你每天都在使用网络：打开网页、发消息、看视频。今天从“浏览器向另一台计算机要一份网页”出发，回答三个问题。</p>
+  <ol class="objectives"><li><strong>谁和谁在交流？</strong>能区分客户端、服务器和它们运行的程序。</li><li><strong>为什么要分层？</strong>能用分工解释分层，用套装结构解释封装。</li><li><strong>怎样找到目标？</strong>能区分 IP 地址和端口，不把它们当成同一件事。</li></ol>
+  <div class="callout"><strong>不要求今天记住所有协议。</strong><p>先理解每层解决什么问题。DNS、TCP、HTTP 今天只作为地图上的路标，后面会分别讲清。不会编程也能完成本课。</p></div>
+  <details class="source-map"><summary>查看本课原题映射与依据 · 7个编号条目</summary><div id="day-source-map" class="source-items"></div><p class="micro">原题1、30、52合并为分层主线；33解释分层目的；49放入协议位置；67补充OSI上层；32解释端口范围。覆盖这些条目不等于要求今天背熟所有细节。</p><div id="day-references"></div></details>
+</section>
+
+<section class="lesson-section" id="d1-warmup">
+  <div class="section-heading"><h2><span class="section-number">01</span>回忆检查</h2><span class="time-label">预算 10 分钟</span></div>
+  <p>第1天没有昨日回顾。先摸底：这些词你现在能解释到哪一步？选“不知道”完全正常，今天结束后再看是否有变化。</p>
+  <div class="warmup-grid"><div><strong>服务器</strong><select data-save="d1-warm-server" aria-label="服务器的熟悉程度"><option value="">请选择</option><option>完全不知道</option><option>见过这个词</option><option>能举例解释</option></select></div><div><strong>IP 地址</strong><select data-save="d1-warm-ip" aria-label="IP地址的熟悉程度"><option value="">请选择</option><option>完全不知道</option><option>见过这个词</option><option>能举例解释</option></select></div><div><strong>协议</strong><select data-save="d1-warm-protocol" aria-label="协议的熟悉程度"><option value="">请选择</option><option>完全不知道</option><option>见过这个词</option><option>能举例解释</option></select></div></div>
+  <label class="inline-label" for="warm-answer">用自己的话猜一猜：点开一个网页时，浏览器和远方的计算机可能交换了什么？</label>
+  <textarea id="warm-answer" data-save="d1-warm-answer" rows="3" placeholder="先写直觉，不查答案。例：我猜浏览器发出了……，对方返回了……"></textarea>
+  <p class="micro">建议：3分钟摸底、4分钟写猜想、3分钟看学习目标。这里不打分，答案留到收尾时比较。</p>
+</section>
+
+<section class="lesson-section" id="d1-main">
+  <div class="section-heading"><h2><span class="section-number">02</span>今日主线</h2><span class="time-label">预算 55 分钟</span></div>
+  <p class="muted">三段分别预留15、25、15分钟，已经包含看图、操作和停下来思考。选读内容可以留到以后。</p>
+
+  <article class="topic" id="d1-client-server" data-topic="客户端、服务器与协议">
+    <div class="topic-topline"><span>A / 谁在交流</span><span class="depth">理解 · 约15分钟</span></div>
+    <h3>网页不是凭空出现在屏幕上的。</h3>
+    <p>想象你打开一个课程网站。<strong>浏览器先提出请求，对方的服务程序处理请求，再返回内容。</strong>浏览器拿到描述页面的内容后，才把它显示出来。今天先看这条最简单的来回，暂不加入缓存等捷径。</p>
+    <figure class="figure"><div class="flow" role="img" aria-label="浏览器作为客户端发送网页请求，服务器的服务程序处理并返回网页内容"><div class="endpoint"><strong>你的浏览器</strong><span>运行在你的设备上<br>客户端程序</span></div><div class="flow-middle">想要课程首页<span class="flow-arrow">→</span><span class="flow-arrow">←</span>返回页面内容</div><div class="endpoint"><strong>网站服务程序</strong><span>运行在远方的设备上<br>服务器程序</span></div></div><figcaption>图1 · 请求与响应。中间实际可能经过多台网络设备，后面的课程再展开。</figcaption></figure>
+    <div class="three-col"><div class="mini-card"><strong>客户端</strong><p>在这次交互中发起请求的一方。浏览器是常见例子；手机App也可以是客户端。</p></div><div class="mini-card"><strong>服务器</strong><p>提供服务、接收并处理请求的一方。这个词有时指程序，有时指运行程序的计算机，要看上下文。</p></div><div class="mini-card"><strong>协议</strong><p>双方交流遵守的规则：消息怎么写、字段是什么意思、收到后怎样回应。</p></div></div>
+    <h4 style="margin-top:24px">例子：你说“给我首页”，对方得知道怎么读。</h4>
+    <p>如果你随意发出一串字，对方未必知道你要什么。协议就像约好的表格：哪一格写目标，哪一格写动作。后面学的 <strong>HTTP</strong> 就是一套用于Web通信的应用层规则；它不是网页内容本身，也不是浏览器这个软件。</p>
+    <p><strong>把“设备”和“程序”分开想。</strong>一台计算机可以同时运行多个程序，也可能同时扮演不同角色。例如，网站的服务程序接待你的请求时是服务器；它向另一项服务请求数据时，又扮演客户端。</p>
+    <div class="callout warm"><strong>类比能帮助理解，但角色没有固定身份。</strong><p>把客户端想成顾客、服务器想成服务台，只对应“请求与提供服务”的关系。不能据此推断服务器永远被动、永远不能主动通信。</p></div>
+    <details class="mini-check"><summary>停30秒：浏览器、计算机、HTTP，分别属于什么？想完再展开。</summary><p>浏览器是程序；计算机是运行程序的设备；HTTP是通信规则。程序使用规则交换数据，设备承载程序并连接网络。</p></details>
+    <div class="topic-actions"><div class="rating-group" data-topic-rating="d1-client-server"></div><button class="text-button" data-feedback="d1-client-server">这里还没懂 →</button></div>
+  </article>
+
+  <article class="topic" id="d1-layers" data-topic="分层模型与封装">
+    <div class="topic-topline"><span>B / 怎样分工</span><span class="depth">理解＋简单运用 · 约25分钟</span></div>
+    <h3>一次通信，需要好几种不同的能力。</h3>
+    <p>“把网页发过去”看似只有一件事，实际要解决：内容怎么表达、交给哪个程序、跨网络怎么走、相邻设备怎么传，以及最后怎样变成信号。<strong>把不同问题拆成不同层，就可以分别设计和改进。</strong></p>
+    <p>例如，从Wi-Fi换成网线，并不意味着网站要重新发明一套HTTP规则。上层使用下层提供的能力，而不是自己处理所有细节。这正是分层带来的价值。</p>
+    <figure class="figure"><span class="eyebrow">点一个职责，看它解决的问题</span><div class="layer-controls" role="group" aria-label="选择要了解的网络层"><button class="layer-button" data-layer="application" aria-pressed="true">应用</button><button class="layer-button" data-layer="transport" aria-pressed="false">传输</button><button class="layer-button" data-layer="network" aria-pressed="false">网络</button><button class="layer-button" data-layer="link" aria-pressed="false">链路</button><button class="layer-button" data-layer="physical" aria-pressed="false">物理</button></div>
+      <div class="stack" role="img" aria-label="五层教学模型从上到下为应用、传输、网络、数据链路和物理；发送时向下使用各层能力"><div class="stack-row active" data-stack="application"><strong>应用层</strong><span>交流什么，内容怎样表达<small>例：HTTP、DNS；今天先记住用途位置</small></span></div><div class="stack-row" data-stack="transport"><strong>传输层</strong><span>应用端点之间怎样传送<small>例：TCP、UDP；涉及端口</small></span></div><div class="stack-row" data-stack="network"><strong>网络层</strong><span>跨网络寻址与转发<small>例：IP；涉及IP地址</small></span></div><div class="stack-row" data-stack="link"><strong>链路层</strong><span>在当前链路上怎样交付<small>例：以太网、Wi-Fi相关机制</small></span></div><div class="stack-row" data-stack="physical"><strong>物理层</strong><span>比特怎样用信号承载<small>例：电信号、光信号、无线电信号</small></span></div></div>
+      <div id="layer-explanation" class="stack-desc" aria-live="polite"><strong>应用层：先约定“说的是什么”。</strong><p>浏览器表达“我要这份资源”，服务器表达“这是结果”。它们需要能理解彼此的消息，而不是只收到一串没有含义的比特。</p></div><figcaption>图2 · 本课采用五层教学模型。先记住问题的分工，不要求死记所有例子。</figcaption>
+    </figure>
+    <h4>为什么有的材料写七层，有的写四层？</h4>
+    <p>它们是观察同一类通信问题的不同框架，<strong>不是“数字越多越先进”，也不是每台设备内部都有七个实体抽屉。</strong>RFC 1122使用四层的Internet体系结构；五层是常见教学划分；OSI则提供七层参考模型。</p>
+    <div class="table-wrap"><table class="model-table"><caption class="micro" style="text-align:left;padding-bottom:8px">模型对照 · 用于学习理解，不表示标准之间严格一一实现</caption><thead><tr><th>五层教学框架</th><th>OSI七层中的对应职责</th><th>Internet四层中的大致位置</th></tr></thead><tbody><tr><td>应用</td><td>应用、表示、会话</td><td>应用</td></tr><tr><td>传输</td><td>传输</td><td>传输</td></tr><tr><td>网络</td><td>网络</td><td>互联网</td></tr><tr><td>链路＋物理</td><td>数据链路、物理</td><td>链路</td></tr></tbody></table></div>
+    <details class="mini-check"><summary>认识即可：OSI多出来的表示层、会话层在讲什么？</summary><p><strong>表示层</strong>关注数据的表示和转换，例如编码、压缩、加密等职责；<strong>会话层</strong>关注通信会话的建立、管理和终止。这是参考模型的职责划分，实际Internet协议不一定单独实现这两层。</p><p>注意：网站登录中的“Session”不是直接等同于OSI会话层；后者也不负责用端口把数据分给程序。端口属于传输层。</p></details>
+    <h4 style="margin-top:25px">数据经过各层时，会加上本层需要的信息。</h4>
+    <p>假设浏览器使用<strong>明文HTTP/1.1经TCP</strong>发送一小段请求。应用先形成请求数据；TCP加入传输需要的首部；IP再加入寻址需要的首部；链路层形成在当前链路传送的帧。这叫<strong>封装</strong>。首部就是放在前面的一组控制信息，不是给人读的标题。</p>
+    <figure class="figure"><div class="demo-buttons"><button id="encap-next" class="primary">给数据加一层包装</button><button id="encap-reset">重新演示</button><span id="encap-step" class="chip">0 / 3</span></div><div class="envelope" id="encap-visual" role="img" aria-label="只有应用请求数据，尚未添加TCP、IP和链路控制信息"><div class="packet" data-level="0">应用请求数据</div></div><p id="encap-description" class="demo-caption" aria-live="polite">起点：应用已经组织好要交流的内容。接下来每层只添加自己需要的信息。</p><figcaption>图3 · 概念演示，省略分段、链路尾部等细节。应用的一条消息不一定正好对应一个TCP报文段。</figcaption></figure>
+    <p>接收方向则逐层解释并处理控制信息，最终让应用拿到需要的数据，可以理解为<strong>解封装</strong>。把它想成“信纸外套信封”有助于看出嵌套关系，但网络数据可能被分段或重新组织，并不是一个永不拆开的包裹。</p>
+    <div class="callout"><strong>把四个常用叫法先对上位置。</strong><p>在这个TCP示例里：传输层常说“TCP报文段”，网络层说“IP数据报/包”，链路层说“帧”，物理传输涉及“比特”。“比特”是0或1这样的二进制信息单位。</p></div>
+    <details class="mini-check"><summary>边界说明：HTTP一定用TCP吗？</summary><p>不是。这里限定HTTP/1.1经TCP，帮助你看清一条简单路径。HTTP/3使用QUIC，QUIC运行在UDP之上。今天不展开QUIC，只要避免形成“所有HTTP都直接使用TCP”的错误规则。</p></details>
+    <details class="mini-check"><summary>停1分钟：Wi-Fi负责把信号传出去，HTTP负责表达请求。它们为何能同时服务一次访问？</summary><p>它们解决不同层次的问题。应用层组织请求，借助下层运输、寻址和链路能力传送。换掉一种接入方式，不必同时换掉应用消息的规则。</p></details>
+    <div class="topic-actions"><div class="rating-group" data-topic-rating="d1-layers"></div><button class="text-button" data-feedback="d1-layers">这里还没懂 →</button></div>
+  </article>
+
+  <article class="topic" id="d1-addresses" data-topic="IP地址与端口的分工">
+    <div class="topic-topline"><span>C / 交给谁</span><span class="depth">理解＋简单运用 · 约15分钟</span></div>
+    <h3>找到网络地址，还不等于选中了服务。</h3>
+    <p>同一台服务器可以同时提供不同服务。只知道一个IP地址，还不足以表达“我要和这里的哪项TCP或UDP服务通信”。<strong>IP用于网络层寻址；端口用于传输层，帮助定位通信端点。</strong></p>
+    <p>初学时可以暂把IP看成“到哪处地址”，端口看成“在这个地址上找哪个服务入口”。但真实网络里，一台设备可以有多个IP地址，多个程序的安排也有例外，所以“IP=一台电脑、端口=一个固定程序”只能是简化印象。</p>
+    <figure class="figure"><span class="eyebrow">同一个IP，不同的服务入口</span><div class="address-map" role="img" aria-label="客户端192.0.2.10连接服务器198.51.100.20，服务器提供TCP443和TCP8443两个示意服务端口"><div class="address-client"><strong>浏览器</strong><br><code>192.0.2.10</code><br><small>客户端IP</small></div><span class="flow-arrow">→</span><div class="address-server"><strong>同一个服务器IP</strong><br><code>198.51.100.20</code><div class="service active" data-service="443"><span>课程首页</span><code>TCP :443</code></div><div class="service" data-service="8443"><span>另一项Web服务</span><code>TCP :8443</code></div></div></div><div class="demo-buttons" style="margin-top:18px"><button data-port="443" aria-pressed="true">访问课程首页</button><button data-port="8443" aria-pressed="false">访问另一服务</button></div><p id="port-explanation" class="demo-caption" aria-live="polite">目标为TCP的 198.51.100.20:443。IP相同，端口用于区分这里的服务入口。</p><figcaption>图4 · 地址与服务均为教学示意。443是HTTPS常用端口；8443在本例中人为分配给另一服务，不是必须这样使用。</figcaption></figure>
+    <h4>把“楼房地址与房间号”类比用到正确的位置。</h4>
+    <p>IP像楼房地址、端口像房间号，这能帮助区分两级定位。但房间号本身没有全球唯一性：另一栋楼也能有“443号房间”。同样，<strong>不同IP可以使用相同端口号，TCP和UDP的端口空间也分别管理。</strong></p>
+    <p>一个服务还可能同时接待许多客户端。别把端口想成“只容一个人占用的座位”。连接如何区分，留到学过TCP后再展开。</p>
+    <div class="callout"><strong>今天只记住这个范围：0–65535。</strong><p>TCP/UDP端口号字段是16位，有2<sup>16</sup>＝65536种取值，因此编号从0到65535。端口0被保留；不能写成“1到65536”。不要求今天背全部知名端口。</p></div>
+    <details class="mini-check"><summary>选读：哪些范围常用于什么？</summary><p>0–1023是系统端口范围，1024–49151是用户端口范围，49152–65535是动态/私有范围。这里说的是IANA的分配分类，不是说每台操作系统都使用相同的临时端口范围，也不是说普通用户在所有系统上都能直接绑定任意端口。</p></details>
+    <h4 style="margin-top:24px">小练习：网站换了服务端口，IP没变。</h4>
+    <p>原来访问 <code>198.51.100.20:443</code>，现在服务只监听 <code>198.51.100.20:8443</code>。如果仍向443发起访问，“IP相同”能保证找到原来的服务吗？</p>
+    <details class="mini-check"><summary>先给出理由，再展开解释。</summary><p>不能。IP确定的是网络层目标；指定的传输协议与端口也必须匹配服务入口。就像到了正确楼房，却找错了房间。能否连通还涉及防火墙等条件，匹配地址和端口只是必要检查的一部分。</p></details>
+    <div class="topic-actions"><div class="rating-group" data-topic-rating="d1-addresses"></div><button class="text-button" data-feedback="d1-addresses">这里还没懂 →</button></div>
+  </article>
+  <div class="callout warm"><strong>把今天连成一句话。</strong><p>客户端和服务器的程序按协议交流；分层让消息表达、传输、寻址和链路各司其职；封装携带各层所需信息；IP与端口帮助把数据送向相应的通信端点。</p></div>
+</section>
+
+<section class="lesson-section" id="d1-quiz">
+  <div class="section-heading"><h2><span class="section-number">03</span>理解自测</h2><span class="time-label">预算 20 分钟</span></div>
+  <p>每题先花2–3分钟作答，再看解释并自评。能说出理由比术语完整更重要。答案保存在当前浏览器，不会自动批改或上传。</p>
+  <article class="question" data-quiz="d1-q1"><h3>1 / 找到服务器IP以后，为什么还需要端口？</h3><p>假设同一服务器提供两项Web服务。请用一句原因和一个例子回答。</p><div class="quiz-input"></div><details><summary>我已尝试作答，查看解释</summary><div class="answer"><p><strong>核心理由：</strong>IP用于网络层寻址；同一IP上可以有不同服务，需要结合传输协议与端口区分通信端点。例如同一个IP的TCP443提供课程首页，TCP8443提供另一服务。</p><p><strong>自评依据：</strong>说出“找地址”和“找入口”的区别，并给出例子算理解。“一个电脑只能有一个IP”或“端口在全球唯一”都是需要修正的说法。</p></div></details><div class="quiz-rating"></div></article>
+  <article class="question" data-quiz="d1-q2"><h3>2 / 把问题放回对应的层。</h3><p>A. 请求中怎样表达“我要首页”？<br>B. IP包怎样跨网络转发？<br>C. 如何用无线电信号承载比特？<br>D. 数据应交给哪个端口的通信端点？</p><div class="quiz-input"></div><details><summary>我已尝试作答，查看解释</summary><div class="answer"><p>A：应用层，组织有意义的消息。B：网络层，处理IP寻址与转发。C：物理层，承载信号。D：传输层，端口属于TCP/UDP等传输协议。</p><p><strong>易错点：</strong>“都和发送数据有关”不代表都属于同一层。判断时先问“具体在解决什么问题”。</p></div></details><div class="quiz-rating"></div></article>
+  <article class="question" data-quiz="d1-q3"><h3>3 / 分层的价值，能用换Wi-Fi的例子解释吗？</h3><p>一台电脑从Wi-Fi接入换成网线接入。网站是否必须因此把HTTP规则重新设计一次？说明理由。</p><div class="quiz-input"></div><details><summary>我已尝试作答，查看解释</summary><div class="answer"><p>通常不需要。接入方式改变主要影响更底层的能力；应用层仍可按HTTP规则组织请求。分层让上层使用下层提供的服务，减少彼此对具体实现的依赖。</p><p>这不表示换网络永远不会产生连接中断或地址变化；题目只是在问应用通信规则是否必须跟着重写。</p></div></details><div class="quiz-rating"></div></article>
+  <article class="question" data-quiz="d1-q4"><h3>4 / 封装只是在反复复制同一段内容吗？</h3><p>在本课的TCP示例中，应用已经形成请求数据。为什么还要加入TCP与IP等层的信息？请分别举出一种用途。</p><div class="quiz-input"></div><details><summary>我已尝试作答，查看解释</summary><div class="answer"><p>不是单纯重复。不同层加入不同职责需要的信息。例如TCP首部中有端口信息；IP首部中有源、目标IP地址信息。下层处理自己的控制信息，并承载上层数据。</p><p>今天不要求列全首部字段，也不要推出“一条请求恰好就是一个TCP段”。后者还会受分段和字节流机制影响。</p></div></details><div class="quiz-rating"></div></article>
+  <article class="question" data-quiz="d1-q5"><h3>5 / 七层、五层、四层，谁才是真的？</h3><p>朋友说：“我看到一本书写七层，这个课件写五层，所以一定有一个错了。”你会怎样回应？</p><div class="quiz-input"></div><details><summary>我已尝试作答，查看解释</summary><div class="answer"><p>要先看模型口径。OSI是七层参考模型；Internet体系结构常用四层描述；五层是常见教学划分。它们对职责的组合方式不同，不能只凭层数判断正误。</p><p><strong>理解到位的表现：</strong>能说出“解释框架不同”，并举一个合并例子，例如OSI上面的三层职责在教学对照中常归入应用层。不需要今天背出每个协议的精确归属争论。</p></div></details><div class="quiz-rating"></div></article>
+  <p id="quiz-summary" class="notice">自评尚未完成。看过解释不等于已经会独立回答。</p>
+</section>
+
+<section class="lesson-section" id="d1-close">
+  <div class="section-heading"><h2><span class="section-number">04</span>收尾记录</h2><span class="time-label">预算 5 分钟</span></div>
+  <p>合上解释，看看你能否完成下面三件事。这里记录你的判断，不会自动宣布“已经掌握”。</p>
+  <div class="checklist"><label><input type="checkbox" data-save="d1-exit-roles">用浏览器访问网站的例子区分程序、设备和协议。</label><label><input type="checkbox" data-save="d1-exit-layers">解释为什么分层，以及封装为什么需要不同控制信息。</label><label><input type="checkbox" data-save="d1-exit-addresses">用同IP不同端口的例子，区分IP与端口的职责。</label></div>
+  <label class="inline-label" for="exit-note">今天最清楚的一点，以及仍卡住的一点</label><textarea id="exit-note" data-save="d1-exit-note" rows="3" placeholder="例如：我现在知道端口不是IP的替代品；但我仍不清楚……"></textarea>
+  <div class="callout warm"><strong>超过90分钟，还没学懂怎么办？</strong><p>先停下来，保留未答完的题，把卡点带回会话。我们先补前提或换例子，再调整后续内容。不要为了完成题数跳过不懂的部分，也不挤占休息日。</p></div>
+  <div class="close-actions"><button id="mark-complete" class="primary">标记本日完成</button><button data-feedback="d1-close">整理本日反馈</button><button data-day="2">看看第2天规划 →</button></div><p id="completion-note" class="completion-note"></p>
+  <details class="source-map"><summary>下一学习日怎样回顾今天？</summary><p>第2天开头会让你不看答案解释：IP和端口的区别；换接入方式为什么不必重写HTTP；在五层地图中定位DNS。之后再进入“域名怎样找到地址”。它会引用今天的主讲位置，不重复整课。</p></details>
+</section>

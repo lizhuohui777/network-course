@@ -1,0 +1,926 @@
+{
+  "id": "network-foundations-12",
+  "version": "0.1.0",
+  "checked_at": "2026-11-08",
+  "title": "计算机网络 · 两周入门",
+  "published_days": [
+    1
+  ],
+  "source_note": "原站6页正文编号1–104，含一条无编号补充题；第80题跨页重复，合并计入。",
+  "days": [
+    {
+      "day": 1,
+      "week": 1,
+      "title": "先看懂网络这张地图",
+      "ids": [
+        "1",
+        "30",
+        "33",
+        "49",
+        "52",
+        "67",
+        "32"
+      ],
+      "goals": [
+        "客户端与服务器各在做什么",
+        "分层如何分工、数据如何封装",
+        "IP地址与端口各解决什么问题"
+      ],
+      "why": "从熟悉的网页出发，搭好后面11天都会用到的骨架。",
+      "exit": "能区分IP和端口；能解释为什么分层；能把常见职责放进五层框架。",
+      "status": "sample",
+      "budget": [
+        10,
+        55,
+        20,
+        5
+      ],
+      "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"
+    },
+    {
+      "day": 2,
+      "week": 1,
+      "title": "数据去哪里：寻址与DNS",
+      "ids": [
+        "78",
+        "90",
+        "31",
+        "91",
+        "3",
+        "4",
+        "17",
+        "34",
+        "18"
+      ],
+      "goals": [
+        "链路和跨网络转发的区别",
+        "域名如何变成可用地址",
+        "递归与迭代、缓存与分流"
+      ],
+      "why": "有了分层地图，再学习“怎样找到目标”。UDP/TCP选择推迟至第3天。",
+      "exit": "用一张步骤图解释DNS查询；认识Ping的用途与局限。",
+      "status": "planned",
+      "budget": [
+        10,
+        55,
+        20,
+        5
+      ],
+      "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"
+    },
+    {
+      "day": 3,
+      "week": 1,
+      "title": "怎样运送：TCP与UDP",
+      "ids": [
+        "50",
+        "85",
+        "86",
+        "87",
+        "88",
+        "89",
+        "45",
+        "92",
+        "5",
+        "6"
+      ],
+      "goals": [
+        "可靠字节流与数据报",
+        "TCP/UDP的选择条件",
+        "MTU/MSS与大小限制的初识"
+      ],
+      "why": "先理解运输服务，再回头回答DNS为什么使用不同运输方式。",
+      "exit": "能按丢失容忍度、顺序和延迟说明选择；MTU细节先认识。",
+      "status": "planned",
+      "budget": [
+        10,
+        55,
+        20,
+        5
+      ],
+      "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"
+    },
+    {
+      "day": 4,
+      "week": 1,
+      "title": "先建立连接：TCP握手",
+      "ids": [
+        "47",
+        "51",
+        "55",
+        "56",
+        "57",
+        "58",
+        "59",
+        "60"
+      ],
+      "goals": [
+        "序列号和确认号做什么",
+        "三次握手怎样互相确认",
+        "队列与SYN攻击的关系"
+      ],
+      "why": "第3天知道TCP提供什么，今天解释连接如何开始。",
+      "exit": "能画出三步交互并解释各步目的；字段只学必要部分。",
+      "status": "planned",
+      "budget": [
+        10,
+        55,
+        20,
+        5
+      ],
+      "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"
+    },
+    {
+      "day": 5,
+      "week": 1,
+      "title": "连接怎样结束：挥手与状态",
+      "ids": [
+        "48",
+        "61",
+        "62",
+        "63",
+        "64",
+        "65",
+        "68",
+        "81",
+        "103"
+      ],
+      "goals": [
+        "两个方向分别关闭",
+        "TIME_WAIT为什么存在",
+        "状态和应用程序动作的关系"
+      ],
+      "why": "先理解握手，再用双向通信解释关闭，合并重复等待题。",
+      "exit": "能解释主动和被动关闭的差异；初识CLOSE_WAIT问题。",
+      "status": "planned",
+      "budget": [
+        10,
+        55,
+        20,
+        5
+      ],
+      "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"
+    },
+    {
+      "day": 6,
+      "week": 1,
+      "title": "可靠到达与消息边界",
+      "ids": [
+        "84",
+        "94",
+        "8",
+        "66",
+        "S1"
+      ],
+      "goals": [
+        "丢失怎样被发现与重传",
+        "为什么TCP不保留应用消息边界",
+        "第一周把连接过程串起来"
+      ],
+      "why": "先有序列号、确认和连接概念，才能理解重传与拆分消息。",
+      "exit": "能追踪一次丢包与重传；能给连续字节设计简单边界；完成周回顾。",
+      "status": "planned",
+      "budget": [
+        10,
+        55,
+        20,
+        5
+      ],
+      "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"
+    },
+    {
+      "day": 7,
+      "week": 2,
+      "title": "快慢协调：窗口与拥塞",
+      "ids": [
+        "82",
+        "93",
+        "100",
+        "101",
+        "79",
+        "80"
+      ],
+      "goals": [
+        "接收方忙与网络拥堵是两种问题",
+        "窗口怎样控制在途数据",
+        "经典拥塞算法的变化方向"
+      ],
+      "why": "第一周休息后，用可靠传输和确认机制理解节奏控制。",
+      "exit": "能区分两种控制；解释窗口变化原因。复杂计算列为选读。",
+      "status": "planned",
+      "budget": [
+        10,
+        55,
+        20,
+        5
+      ],
+      "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"
+    },
+    {
+      "day": 8,
+      "week": 2,
+      "title": "应用说什么：HTTP报文",
+      "ids": [
+        "53",
+        "10",
+        "23",
+        "102",
+        "11",
+        "36",
+        "37",
+        "38",
+        "39",
+        "77"
+      ],
+      "goals": [
+        "请求和响应各含什么",
+        "方法与状态码表达什么",
+        "区分规范、实现限制与常见误解"
+      ],
+      "why": "运输机制已知，现在观察运输的应用内容。",
+      "exit": "能读一组简化HTTP报文；说明GET/POST并不自带加密。",
+      "status": "planned",
+      "budget": [
+        10,
+        55,
+        20,
+        5
+      ],
+      "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"
+    },
+    {
+      "day": 9,
+      "week": 2,
+      "title": "少做重复工作：复用与缓存",
+      "ids": [
+        "7",
+        "12",
+        "13",
+        "14",
+        "54",
+        "9",
+        "35",
+        "46",
+        "76"
+      ],
+      "goals": [
+        "连接复用与协议版本",
+        "缓存的命中、过期和验证",
+        "私有缓存与共享缓存"
+      ],
+      "why": "在会读报文后，用首部解释连接和缓存策略。",
+      "exit": "能判断一次缓存验证过程；连接数量等结论标明协议版本。",
+      "status": "planned",
+      "budget": [
+        10,
+        55,
+        20,
+        5
+      ],
+      "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"
+    },
+    {
+      "day": 10,
+      "week": 2,
+      "title": "安全地传：HTTPS与TLS",
+      "ids": [
+        "19",
+        "20",
+        "69",
+        "70",
+        "71",
+        "72",
+        "73",
+        "75",
+        "21",
+        "22",
+        "74"
+      ],
+      "goals": [
+        "窃听和身份冒充是不同风险",
+        "两类密钥各有什么用途",
+        "证书和TLS如何配合"
+      ],
+      "why": "先解释加密、认证和证书，再讲HTTPS过程。",
+      "exit": "能用流程解释机密性与身份认证；算法细节不作必学。",
+      "status": "planned",
+      "budget": [
+        10,
+        55,
+        20,
+        5
+      ],
+      "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"
+    },
+    {
+      "day": 11,
+      "week": 2,
+      "title": "记住用户：状态与基础安全",
+      "ids": [
+        "24",
+        "25",
+        "26",
+        "27",
+        "28",
+        "40",
+        "41",
+        "42",
+        "43",
+        "29",
+        "44",
+        "95",
+        "96",
+        "97",
+        "98",
+        "99"
+      ],
+      "goals": [
+        "Cookie如何携带标识",
+        "服务器Session如何关联用户",
+        "识别几类常见安全风险"
+      ],
+      "why": "9道状态题合并为一条主线；其余安全题仅作风险与防护的认识。",
+      "exit": "用一次登录解释状态关联；能区分XSS和CSRF的大方向。",
+      "status": "planned",
+      "budget": [
+        10,
+        55,
+        20,
+        5
+      ],
+      "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"
+    },
+    {
+      "day": 12,
+      "week": 2,
+      "title": "把整条链路讲通",
+      "ids": [
+        "2",
+        "15",
+        "16",
+        "83",
+        "104"
+      ],
+      "goals": [
+        "从输入地址到显示网页的全过程",
+        "把应用接口放回网络地图",
+        "综合自测与薄弱点整理"
+      ],
+      "why": "此时再学原站最前面的综合题，避免零基础背长流程。",
+      "exit": "独立串联DNS、传输、HTTP/TLS和缓存；接口与端口容量只需认识。",
+      "status": "planned",
+      "budget": [
+        10,
+        55,
+        20,
+        5
+      ],
+      "depth_note": "原题全部有位置；核心达到理解/简单运用，低频内容先认识。"
+    }
+  ],
+  "questions": {
+    "1": {
+      "label": "分层各自负责什么",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 1
+    },
+    "2": {
+      "label": "HTTP通信的大致过程",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 12
+    },
+    "3": {
+      "label": "DNS的用途",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 2
+    },
+    "4": {
+      "label": "DNS如何找到地址",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 2
+    },
+    "5": {
+      "label": "DNS查询与UDP",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 3
+    },
+    "6": {
+      "label": "DNS区域传送与TCP",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 3
+    },
+    "7": {
+      "label": "HTTP连接的复用方式",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 9
+    },
+    "8": {
+      "label": "TCP为什么需要消息边界",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 6
+    },
+    "9": {
+      "label": "缓存解决什么问题",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 9
+    },
+    "10": {
+      "label": "HTTP的方法",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 8
+    },
+    "11": {
+      "label": "GET与POST如何区分",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 8
+    },
+    "12": {
+      "label": "连接与请求的数量关系",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 9
+    },
+    "13": {
+      "label": "HTTP请求并发与版本差异",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 9
+    },
+    "14": {
+      "label": "浏览器连接数的适用条件",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 9
+    },
+    "15": {
+      "label": "网页访问的全链路概览",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 12
+    },
+    "16": {
+      "label": "网页访问的详细串联",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 12
+    },
+    "17": {
+      "label": "域名解析的逐步追踪",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 2
+    },
+    "18": {
+      "label": "DNS如何分配访问流量",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 2
+    },
+    "19": {
+      "label": "HTTP与HTTPS的差异",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 10
+    },
+    "20": {
+      "label": "TLS的用途",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html",
+      "day": 10
+    },
+    "21": {
+      "label": "HTTPS安全通信的过程",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 10
+    },
+    "22": {
+      "label": "公钥的可信来源",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 10
+    },
+    "23": {
+      "label": "HTTP报文结构",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 8
+    },
+    "24": {
+      "label": "Cookie的含义",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 11
+    },
+    "25": {
+      "label": "Cookie的用途",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 11
+    },
+    "26": {
+      "label": "Session的整体认识",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 11
+    },
+    "27": {
+      "label": "Session如何运转",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 11
+    },
+    "28": {
+      "label": "登录状态两种机制的比较",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 11
+    },
+    "29": {
+      "label": "SQL注入的基本风险",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 11
+    },
+    "30": {
+      "label": "用图理解OSI分层",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 1
+    },
+    "31": {
+      "label": "RARP的历史用途",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 2
+    },
+    "32": {
+      "label": "端口的编号范围",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 1
+    },
+    "33": {
+      "label": "分层为什么能降低复杂度",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 1
+    },
+    "34": {
+      "label": "递归查询与迭代查询",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 2
+    },
+    "35": {
+      "label": "缓存的共享范围",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 9
+    },
+    "36": {
+      "label": "GET参数与编码位置",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 8
+    },
+    "37": {
+      "label": "GET长度限制来自哪里",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 8
+    },
+    "38": {
+      "label": "GET/POST与传输安全",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 8
+    },
+    "39": {
+      "label": "POST与数据包数量的误解",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 8
+    },
+    "40": {
+      "label": "认识服务器会话状态",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-02-net.html",
+      "day": 11
+    },
+    "41": {
+      "label": "一次Session使用过程",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 11
+    },
+    "42": {
+      "label": "登录状态方案的选择",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 11
+    },
+    "43": {
+      "label": "Cookie/Session比较与回顾",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 11
+    },
+    "44": {
+      "label": "DDoS的基本认识",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 11
+    },
+    "45": {
+      "label": "MTU与MSS的区别",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 3
+    },
+    "46": {
+      "label": "缓存的新鲜度与验证",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 9
+    },
+    "47": {
+      "label": "TCP报头的作用",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 4
+    },
+    "48": {
+      "label": "TCP状态的整体地图",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 5
+    },
+    "49": {
+      "label": "分层与协议的对应关系",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 1
+    },
+    "50": {
+      "label": "TCP提供的服务",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 3
+    },
+    "51": {
+      "label": "TCP关键字段与职责",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 4
+    },
+    "52": {
+      "label": "OSI各层的功能回顾",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 1
+    },
+    "53": {
+      "label": "常见应用协议的用途",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 8
+    },
+    "54": {
+      "label": "HTTP完成后连接的去留",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 9
+    },
+    "55": {
+      "label": "三次握手的过程",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 4
+    },
+    "56": {
+      "label": "为什么需要第三步确认",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 4
+    },
+    "57": {
+      "label": "半连接队列的作用",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 4
+    },
+    "58": {
+      "label": "初始序列号的选择",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 4
+    },
+    "59": {
+      "label": "握手时能否携带数据",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 4
+    },
+    "60": {
+      "label": "SYN攻击利用了什么",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-03-net.html",
+      "day": 4
+    },
+    "61": {
+      "label": "连接如何双向关闭",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 5
+    },
+    "62": {
+      "label": "关闭连接的步骤为何不同",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 5
+    },
+    "63": {
+      "label": "等待时间与MSL",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 5
+    },
+    "64": {
+      "label": "等待如何保护关闭过程",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 5
+    },
+    "65": {
+      "label": "TIME_WAIT与旧报文",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 5
+    },
+    "66": {
+      "label": "字节流的消息边界方案",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 6
+    },
+    "67": {
+      "label": "表示层和会话层的职责",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 1
+    },
+    "68": {
+      "label": "连接状态变化的全景图",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 5
+    },
+    "69": {
+      "label": "对称加密的特点",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 10
+    },
+    "70": {
+      "label": "非对称加密的特点",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 10
+    },
+    "71": {
+      "label": "HTTPS的整体认识",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 10
+    },
+    "72": {
+      "label": "明文HTTP的局限",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 10
+    },
+    "73": {
+      "label": "HTTPS组合使用加密机制",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 10
+    },
+    "74": {
+      "label": "TLS会话复用的认识",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 10
+    },
+    "75": {
+      "label": "证书在认证中的作用",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 10
+    },
+    "76": {
+      "label": "缓存的验证与控制",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 9
+    },
+    "77": {
+      "label": "请求大小限制的来源",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 8
+    },
+    "78": {
+      "label": "网络层协议的角色",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 2
+    },
+    "79": {
+      "label": "拥塞控制的四种经典机制",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-04-net.html",
+      "day": 7
+    },
+    "80": {
+      "label": "快速重传的触发依据",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 7
+    },
+    "81": {
+      "label": "关闭状态与程序行为",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 5
+    },
+    "82": {
+      "label": "流量控制的目标",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 7
+    },
+    "83": {
+      "label": "服务器Socket接口的顺序",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 12
+    },
+    "84": {
+      "label": "可靠传输如何协作",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 6
+    },
+    "85": {
+      "label": "UDP提供的服务",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 3
+    },
+    "86": {
+      "label": "TCP和UDP如何选择",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 3
+    },
+    "87": {
+      "label": "传输服务的关键特点",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 3
+    },
+    "88": {
+      "label": "TCP与上层应用的关系",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 3
+    },
+    "89": {
+      "label": "UDP与上层应用的关系",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 3
+    },
+    "90": {
+      "label": "链路层协议的角色",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 2
+    },
+    "91": {
+      "label": "Ping与ICMP",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 2
+    },
+    "92": {
+      "label": "UDP报文大小的取舍",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 3
+    },
+    "93": {
+      "label": "接收窗口怎样限制发送",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 7
+    },
+    "94": {
+      "label": "RTT/RTO与超时重传",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 6
+    },
+    "95": {
+      "label": "XSS的基本风险",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 11
+    },
+    "96": {
+      "label": "CSRF的基本风险",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 11
+    },
+    "97": {
+      "label": "CSRF的防护思路",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 11
+    },
+    "98": {
+      "label": "上传文件带来的风险",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 11
+    },
+    "99": {
+      "label": "文件上传的防护思路",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 11
+    },
+    "100": {
+      "label": "拥塞控制的目标",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 7
+    },
+    "101": {
+      "label": "流量控制和拥塞控制的区别",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html",
+      "day": 7
+    },
+    "102": {
+      "label": "HTTP状态码的分类",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html",
+      "day": 8
+    },
+    "103": {
+      "label": "CLOSE_WAIT堆积的诊断方向",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html",
+      "day": 5
+    },
+    "104": {
+      "label": "端口号与连接数量的区别",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-06-net.html",
+      "day": 12
+    },
+    "S1": {
+      "label": "封包与应用消息边界的补充认识",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-05-net.html",
+      "day": 6
+    }
+  },
+  "references": [
+    {
+      "label": "原站：计算机网络第1页",
+      "url": "https://interviewguide.cn/notes/03-hunting_job/02-interview/03-01-net.html"
+    },
+    {
+      "label": "RFC 1122：Internet分层与封装",
+      "url": "https://www.rfc-editor.org/rfc/rfc1122.html"
+    },
+    {
+      "label": "RFC 6335：端口号与分配范围",
+      "url": "https://www.rfc-editor.org/rfc/rfc6335.html"
+    },
+    {
+      "label": "MDN：HTTP概览与版本",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview"
+    }
+  ]
+}

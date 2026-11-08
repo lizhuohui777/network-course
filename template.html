@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>网络入门 · 12个学习日</title>
+  <style>/* STYLES */</style>
+</head>
+<body>
+  <a class="skip" href="#workspace">跳到课程正文</a>
+  <header class="topbar"><a class="brand" href="#" data-view="lesson"><span class="brand-mark">N</span><span>网络入门<span class="brand-sub">从问题，到理解</span></span></a><nav aria-label="主要导航"><button class="tab active" data-view="lesson">学习课件</button><button class="tab" data-view="roadmap">12天路线</button><button class="tab" data-view="guide">学习约定</button></nav><span class="version">本地课件 · v<span id="version"></span></span></header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="课程目录">
+      <div class="side-intro"><span class="eyebrow">YOUR LEARNING PATH</span><h2>两周，一张完整地图。</h2><p>每周六天 · 每天90分钟<br>第七天休息，不安排新课</p></div>
+      <div class="progress-label"><span>你标记的学习进度</span><b id="progress-label">0 / 12</b></div><progress id="course-progress" max="12" value="0" aria-label="已标记完成的学习日"></progress>
+      <div id="day-nav"></div>
+      <div class="side-foot"><span class="status-dot"></span>第1天可试学 · 其余为规划<p>按理解前进，不用追赶题号。</p></div>
+    </aside>
+    <main id="workspace" tabindex="-1">
+      <div id="storage-warning" class="notice" hidden>当前浏览器不能持久保存。你仍可学习，请使用“导出学习记录”保留记录。</div>
+      <div id="lesson-view">
+        <section class="hero"><div class="eyebrow" id="day-label"></div><h1 id="lesson-title"></h1><p id="lesson-description"></p><div class="hero-meta" id="lesson-meta"></div></section>
+        <div id="day-content"></div>
+      </div>
+      <section id="roadmap-view" hidden></section>
+      <section id="guide-view" hidden></section>
+      <footer class="page-footer"><p>覆盖范围 ≠ 已经掌握。时间是预算，理解靠你的回答检验。</p><div class="utility"><button class="text-button" id="export-data">导出学习记录</button><label class="text-button import-label" for="import-data">导入学习记录</label><input id="import-data" type="file" accept="application/json,.json" hidden><button class="text-button" id="print-page">打印 / 存为PDF</button></div><small id="storage-status">记录保存在当前浏览器中；会话与本地文件不会自动同步。</small></footer>
+    </main>
+    <aside class="study-tools" aria-label="学习辅助">
+      <div class="timer-card"><span class="eyebrow">TODAY'S PACE</span><h2>留出思考的时间</h2><div id="timer-display" class="timer" aria-live="off">00:00</div><p id="timer-hint">学习用时 / 预算90分钟</p><div class="timer-actions"><button id="timer-toggle" class="primary">开始计时</button></div><label for="phase-select">当前环节</label><select id="phase-select"><option value="recall">回忆 / 摸底 · 10分钟</option><option value="main">图文主线 · 55分钟</option><option value="quiz">理解自测 · 20分钟</option><option value="close">收尾记录 · 5分钟</option></select><div id="phase-times" class="phase-times"></div><p class="micro">切到后台自动暂停；回来后手动继续。未懂时可以停，不必赶进度。</p></div>
+      <nav id="section-nav" class="section-nav" aria-label="本课导航"><span class="eyebrow">IN THIS LESSON</span><a href="#d1-warmup">01 回忆检查</a><a href="#d1-main">02 今日主线</a><a href="#d1-quiz">03 理解自测</a><a href="#d1-close">04 收尾记录</a></nav>
+      <button id="feedback-open" class="feedback-trigger">我卡在这里，带回会话 →</button>
+    </aside>
+  </div>
+  <dialog id="feedback-dialog" aria-labelledby="feedback-heading"><form method="dialog"><button class="dialog-close" aria-label="关闭反馈">×</button></form><span class="eyebrow">ASK & IMPROVE</span><h2 id="feedback-heading">把问题说具体一点</h2><p id="feedback-context"></p><label for="feedback-note">你怎么理解？哪一步开始不确定？</label><textarea id="feedback-note" rows="4" placeholder="例如：我以为IP已经找到服务器了，为什么还要端口？"></textarea><label for="feedback-output">带回会话的文字</label><textarea id="feedback-output" rows="7" readonly></textarea><button id="copy-feedback" class="primary">复制反馈文字</button><p class="micro">复制后粘贴到会话中。我会先答疑，再主动提议是否补充课件。网页不会自动发消息。</p></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script id="course-data" type="application/json">/* COURSE_DATA */</script>
+  <template id="lesson-01">/* LESSON_01 */</template>
+  <script>/* APP */</script>
+</body>
+</html>
