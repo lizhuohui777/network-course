@@ -15,3 +15,5 @@ The deliverable is local HTML. Publish or connect an external account only if th
 Keep private learner records and local archives out of Git using `.gitignore`. Prepare local version history as needed; create a GitHub repository or push only when the user requests that step.
 
 Communicate in Chinese by default. Lead with the outcome, number multi-step instructions, and give one small next action when work remains open. Keep explanations beginner-friendly and expand when asked.
+
+For learner-facing copy, read the attention rules in `课程维护约定.md`. Lessons and the roadmap should show subject matter, examples, meaningful technical qualifications, exercises and necessary controls. Keep production rationale, coverage audits, calibration promises, repeated pacing reminders and implementation instructions in project documentation. Preserve explanatory depth while removing distracting commentary; do not reduce the knowledge to slogans or an outline.
