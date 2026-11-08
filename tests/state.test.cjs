@@ -39,3 +39,11 @@ test('import cannot unlock a hidden chapter through current day or invalid field
   assert.equal(clean.day, 1); assert.deepEqual(clean.fields, { 'd1-topic-note': '保留' });
   assert.equal(state.canOpen(NaN, clean), false); assert.equal(state.canOpen(13, clean), false);
 });
+
+test('long text is rejected explicitly instead of silently disappearing', () => {
+  const record = state.create(catalog.courseId);
+  record.fields['d1-exit-note'] = '字'.repeat(20000);
+  assert.equal(state.normalize(record, catalog, 'study').fields['d1-exit-note'].length, 20000);
+  record.fields['d1-exit-note'] += '字';
+  assert.throws(() => state.normalize(record, catalog, 'study'), /20000/);
+});

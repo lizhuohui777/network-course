@@ -56,7 +56,7 @@
     <p id="feedback-intro" class="feedback-intro">只需写下你的问题。复制时会自动附上当前课程位置，方便我接着讲。</p>
     <p id="feedback-context"></p>
     <label for="feedback-note">哪里没懂？写一句话就可以。</label>
-    <textarea id="feedback-note" rows="4" aria-describedby="feedback-error" placeholder="例如：我理解的是……，但不明白为什么……"></textarea>
+    <textarea id="feedback-note" rows="4" maxlength="20000" aria-describedby="feedback-error" placeholder="例如：我理解的是……，但不明白为什么……"></textarea>
     <p id="feedback-error" role="alert" hidden>先写下你的问题，再复制。</p>
     <details id="feedback-preview" class="feedback-preview"><summary>查看将复制的内容（自动生成，无需填写）</summary><label for="feedback-output" class="sr-only">自动整理的问题与课程位置</label><textarea id="feedback-output" rows="6" readonly></textarea></details>
     <button id="copy-feedback" class="primary">复制问题与课程位置</button>

@@ -171,7 +171,8 @@
   function feedbackText() {
     const topic = topics().find(item => item.id === feedbackTopic);
     const ids = topic ? topic.sources : dayInfo().ids;
-    return [`课程：${course.title} v${course.version}`, `位置：第${day}天 · ${topic?.title || dayInfo().title}`, `我的问题：${$('feedback-note').value.trim()}`, '关联原题：', ...ids.map(id => `#${id} ${course.questions[id].label} ${course.questions[id].url}`), ...(topic ? [`本节内容：${topicText(topic.id)}`, `我的笔记：${state.fields[noteKey(topic.id)] || '（未写）'}`] : []), '请先用适合初学者的解释和例子讲清，再用一道小问题检查我的理解；需要修改课件时，先提出具体建议。'].join('\n\n');
+    const sections = topic ? [topic] : topics();
+    return [`课程：${course.title} v${course.version}`, `位置：第${day}天 · ${topic?.title || dayInfo().title}`, `我的问题：${$('feedback-note').value.trim()}`, '关联原题：', ...ids.map(id => `#${id} ${course.questions[id].label} ${course.questions[id].url}`), ...sections.flatMap(section => [`知识点：${section.title}\n${topicText(section.id)}`, `我的笔记：${state.fields[noteKey(section.id)] || '（未写）'}`]), '请先用适合初学者的解释和例子讲清，再用一道小问题检查我的理解；需要修改课件时，先提出具体建议。'].join('\n\n');
   }
   function openFeedback(id) {
     feedbackTopic = id;
@@ -193,7 +194,11 @@
     const lines = [`# ${course.title}：第${day}天`, `版本 ${course.version}；${dayInfo().title}`, '请作为零基础计算机网络导师，基于下面的课件继续答疑。先解释疑问，再提出是否更新课件。不要因我阅读过内容就认定已掌握。', '## 原题', ...dayInfo().ids.map(id => `- #${id} ${course.questions[id].label}：${course.questions[id].url}`), '## 本课知识'];
     for (const topic of topics()) lines.push(`### ${topic.title}`, topicText(topic.id), `我的笔记：${state.fields[noteKey(topic.id)] || '（未写）'}`);
     lines.push('## 我的作答');
-    document.querySelectorAll('[data-quiz]').forEach(el => lines.push(el.querySelector('h3').textContent, state.fields[`${el.dataset.quiz}-answer`] || '（未作答）'));
+    document.querySelectorAll('[data-quiz]').forEach(el => {
+      const prompt = el.cloneNode(true);
+      prompt.querySelectorAll('details,.quiz-input,.quiz-rating').forEach(node => node.remove());
+      lines.push(prompt.textContent.replace(/\s+/g, ' ').trim(), state.fields[`${el.dataset.quiz}-answer`] || '（未作答）');
+    });
     download(lines.join('\n\n'), `network-course-day-${day}-handoff.md`, 'text/markdown;charset=utf-8');
   }
   const layerInfo = {

@@ -23,7 +23,7 @@ small,.micro{font-size:13px;color:var(--muted)}
 .tab.active{background:var(--soft);color:var(--accent);font-weight:650}
 .version{font-size:12px;color:var(--muted)}
 .layout{width:100%;max-width:1800px;display:grid;grid-template-columns:220px minmax(0,1fr) 230px;gap:28px;margin:0 auto;padding:32px}
-.sidebar{align-self:start;position:sticky;top:24px}
+.sidebar{align-self:start;position:sticky;top:24px;max-height:calc(100vh - 48px);overflow-y:auto}
 .eyebrow{font-size:11px;letter-spacing:1.8px;font-weight:700;color:var(--accent)}
 .side-intro h2{font-size:19px;margin:10px 0}
 .side-intro p{font-size:13px;color:var(--muted)}
@@ -195,7 +195,7 @@ section[id],article[id]{scroll-margin-top:20px}
 .brand{font-size:14px}
 .brand-mark{width:30px;height:34px;font-size:22px}
 .layout{display:flex;flex-direction:column;padding:16px;gap:20px}
-.sidebar{position:static;width:100%}
+.sidebar{position:static;width:100%;max-height:none;overflow:visible}
 .side-intro,.side-foot,.progress-label,.sidebar progress,.rest-label,.week-label{display:none}
 #day-nav{display:flex;overflow:auto;gap:6px;padding:0 0 10px}
 .day-button{width:auto;min-width:72px;padding:7px;display:block;text-align:center}

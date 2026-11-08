@@ -23,6 +23,7 @@
     if (!Array.isArray(raw.completed) || raw.completed.some((day, i) => day !== i + 1) || raw.completed.length > TOTAL_DAYS) throw Error('学习进度不连续，无法导入。');
     next.completed = mode === 'study' ? [...raw.completed] : [];
     for (const [key, value] of Object.entries(raw.fields || {})) {
+      if (catalog.fieldKeys.has(key) && typeof value === 'string' && value.length > 20000) throw Error('一项笔记或答案超过20000字，请先缩短或分开保存；原记录不会被导入覆盖。');
       if (catalog.fieldKeys.has(key) && typeof value === catalog.fieldTypes.get(key) && (typeof value === 'boolean' || value.length <= 20000)) next.fields[key] = value;
     }
     for (const [key, value] of Object.entries(raw.ratings || {})) if (catalog.ratingKeys.has(key) && ['understood', 'partial', 'review'].includes(value)) next.ratings[key] = value;

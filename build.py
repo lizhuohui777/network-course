@@ -48,7 +48,7 @@ def validate(course):
     for day in course['days']:
         n = day['day']
         path = ROOT / 'lessons' / f'lesson-{n:02}.html'
-        html = path.read_text()
+        html = path.read_text(encoding='utf-8')
         parser = LessonInspector()
         parser.feed(html)
         assert not parser.forbidden, (path, 'executable lesson content')
@@ -72,7 +72,7 @@ def validate(course):
 
 
 def assemble(course, lessons, mode):
-    html = (ROOT / 'template.html').read_text()
+    html = (ROOT / 'template.html').read_text(encoding='utf-8')
     for block in ('REDIRECT', 'NOTICE'):
         start, end = f'<!-- SOURCE_ONLY_{block}_START -->', f'<!-- SOURCE_ONLY_{block}_END -->'
         assert html.count(start) == html.count(end) == 1
@@ -82,11 +82,11 @@ def assemble(course, lessons, mode):
     assert 'http-equiv="refresh"' not in html
     replacements = {
         '/* MODE */': mode,
-        '/* STYLES */': (ROOT / 'style.css').read_text(),
+        '/* STYLES */': (ROOT / 'style.css').read_text(encoding='utf-8'),
         '/* COURSE_DATA */': json.dumps(course, ensure_ascii=False).replace('<', '\\u003c'),
         '<!-- LESSON_TEMPLATES -->': lessons,
-        '/* STATE */': (ROOT / 'state.js').read_text(),
-        '/* APP */': (ROOT / 'app.js').read_text(),
+        '/* STATE */': (ROOT / 'state.js').read_text(encoding='utf-8'),
+        '/* APP */': (ROOT / 'app.js').read_text(encoding='utf-8'),
     }
     for marker, text in replacements.items():
         assert html.count(marker) == 1, marker
@@ -98,15 +98,15 @@ def main():
     args = argparse.ArgumentParser()
     args.add_argument('--check', action='store_true', help='Fail if generated pages are stale')
     options = args.parse_args()
-    course = json.loads((ROOT / 'curriculum.json').read_text())
+    course = json.loads((ROOT / 'curriculum.json').read_text(encoding='utf-8'))
     lessons = validate(course)
     for filename, mode in [('index.html', 'study'), ('review.html', 'review')]:
         html = assemble(course, lessons, mode)
         path = ROOT / filename
         if options.check:
-            assert path.exists() and path.read_text() == html, f'{filename} needs rebuilding'
+            assert path.exists() and path.read_text(encoding='utf-8') == html, f'{filename} needs rebuilding'
         else:
-            path.write_text(html)
+            path.write_text(html, encoding='utf-8')
         print(f'{filename}: 12 lessons, 105 source entries, {len(html.encode()):,} bytes')
 
 

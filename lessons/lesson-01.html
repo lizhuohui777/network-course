@@ -9,7 +9,7 @@
   <p>这些词你现在能解释吗？</p>
   <div class="warmup-grid"><div><strong>服务器</strong><select data-save="d1-warm-server" aria-label="服务器的熟悉程度"><option value="">请选择</option><option>完全不知道</option><option>见过这个词</option><option>能举例解释</option></select></div><div><strong>IP 地址</strong><select data-save="d1-warm-ip" aria-label="IP地址的熟悉程度"><option value="">请选择</option><option>完全不知道</option><option>见过这个词</option><option>能举例解释</option></select></div><div><strong>协议</strong><select data-save="d1-warm-protocol" aria-label="协议的熟悉程度"><option value="">请选择</option><option>完全不知道</option><option>见过这个词</option><option>能举例解释</option></select></div></div>
   <label class="inline-label" for="warm-answer">用自己的话猜一猜：点开一个网页时，浏览器和远方的计算机可能交换了什么？</label>
-  <textarea id="warm-answer" data-save="d1-warm-answer" rows="3" placeholder="先写直觉，不查答案。例：我猜浏览器发出了……，对方返回了……"></textarea>
+  <textarea id="warm-answer" data-save="d1-warm-answer" rows="3" placeholder="先写直觉，不查答案。例：我猜浏览器发出了……，对方返回了……" maxlength="20000"></textarea>
 </section>
 
 <section class="lesson-section lesson-main" id="d1-main" data-phase="main">
@@ -84,7 +84,7 @@
   <div class="section-heading"><h2><span class="section-number">04</span>收尾记录</h2></div>
   <p>不看正文，你能解释下面三件事吗？</p>
   <div class="checklist"><label><input type="checkbox" data-save="d1-exit-roles">用浏览器访问网站的例子区分程序、设备和协议。</label><label><input type="checkbox" data-save="d1-exit-layers">解释为什么分层，以及封装为什么需要不同控制信息。</label><label><input type="checkbox" data-save="d1-exit-addresses">用同IP不同端口的例子，区分IP与端口的职责。</label></div>
-  <label class="inline-label" for="exit-note">今天最清楚的一点，以及仍卡住的一点</label><textarea id="exit-note" data-save="d1-exit-note" rows="3" placeholder="例如：我现在知道端口不是IP的替代品；但我仍不清楚……"></textarea>
+  <label class="inline-label" for="exit-note">今天最清楚的一点，以及仍卡住的一点</label><textarea id="exit-note" data-save="d1-exit-note" rows="3" placeholder="例如：我现在知道端口不是IP的替代品；但我仍不清楚……" maxlength="20000"></textarea>
   <div class="close-actions"><button id="mark-complete" class="primary">标记本日完成</button><button data-feedback="d1-close">整理本日反馈</button><div id="next-lesson"></div></div><p id="completion-note" class="completion-note"></p>
 </section>
 
