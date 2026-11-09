@@ -20,10 +20,12 @@
     <p>想象你打开一个课程网站。<strong>浏览器先提出请求，对方的服务程序处理请求，再返回内容。</strong>浏览器拿到描述页面的内容后，才把它显示出来。</p>
     <figure class="figure"><div class="flow" role="img" aria-label="浏览器作为客户端发送网页请求，服务器的服务程序处理并返回网页内容"><div class="endpoint"><strong>你的浏览器</strong><span>运行在你的设备上<br>客户端程序</span></div><div class="flow-middle">想要课程首页<span class="flow-arrow">→</span><span class="flow-arrow">←</span>返回页面内容</div><div class="endpoint"><strong>网站服务程序</strong><span>运行在远方的设备上<br>服务器程序</span></div></div><figcaption>图1 · 请求与响应。中间可能经过多台网络设备。</figcaption></figure>
     <div class="three-col"><div class="mini-card"><strong>客户端</strong><p>在这次交互中发起请求的一方。浏览器是常见例子；手机App也可以是客户端。</p></div><div class="mini-card"><strong>服务器</strong><p>提供服务、接收并处理请求的一方。这个词有时指程序，有时指运行程序的计算机，要看上下文。</p></div><div class="mini-card"><strong>协议</strong><p>双方交流遵守的规则：消息怎么写、字段是什么意思、收到后怎样回应。</p></div></div>
-    <p>浏览器既要表达“我要哪份内容”，也要借助网络把数据传出去。把表达消息、运送数据和传送信号等职责分开，就是分层。这样从Wi-Fi换成网线，通常也不必重新设计HTTP的消息规则。</p>
+    <p>浏览器既要表达“我要哪份内容”，也要借助网络把数据传出去。先看双方怎样理解请求；下一节再把表达消息、运送数据和传送信号等职责分开。</p>
     <h4 style="margin-top:24px">例子：你说“给我首页”，对方得知道怎么读。</h4>
-    <p>如果你随意发出一串字，对方未必知道你要什么。协议就像约好的表格：哪一格写目标，哪一格写动作。<strong>HTTP</strong> 就是一套用于Web通信的应用层规则；它不是网页内容本身，也不是浏览器这个软件。</p>
+    <p>如果你随意发出一串字，对方未必知道你要什么。协议就像约好的表格：哪一格写目标，哪一格写动作。<strong>HTTP</strong> 就是一套用于网站请求与响应的通信规则；它不是网页内容本身，也不是浏览器这个软件。</p>
     <p><strong>把“设备”和“程序”分开想。</strong>一台计算机可以同时运行多个程序，也可能同时扮演不同角色。例如，网站的服务程序接待你的请求时是服务器；它向另一项服务请求数据时，又扮演客户端。</p>
+<!-- EXAMPLE:d1-client-server -->
+
     <div class="callout warm"><strong>类比能帮助理解，但角色没有固定身份。</strong><p>把客户端想成顾客、服务器想成服务台，只对应“请求与提供服务”的关系。不能据此推断服务器永远被动、永远不能主动通信。</p></div>
     <details class="mini-check"><summary>练习：浏览器、计算机、HTTP，分别属于什么？</summary><p>浏览器是程序；计算机是运行程序的设备；HTTP是通信规则。程序使用规则交换数据，设备承载程序并连接网络。</p></details>
     <div class="topic-actions"><div class="rating-group" data-topic-rating="d1-client-server"></div><button class="text-button" data-feedback="d1-client-server">这里还没懂 →</button></div>
@@ -31,34 +33,47 @@
 
   <article class="topic" id="d1-layers" data-sources="1,30,49,52,67" data-topic="分层模型与封装">
     <div class="topic-heading"><span class="topic-number">02</span><h3>分层模型与封装</h3><button class="topic-note-button" data-note="d1-layers" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
-    <p>“把网页发过去”看似只有一件事，实际要解决：内容怎么表达、交给哪个程序、跨网络怎么走、相邻设备怎么传，以及最后怎样变成信号。<strong>把不同问题拆成不同层，就可以分别设计和改进。</strong></p>
-
-    <figure class="figure"><span class="eyebrow">点一个职责，看它解决的问题</span><div class="layer-controls" role="group" aria-label="选择要了解的网络层"><button class="layer-button" data-layer="application" aria-pressed="true">应用</button><button class="layer-button" data-layer="transport" aria-pressed="false">传输</button><button class="layer-button" data-layer="network" aria-pressed="false">网络</button><button class="layer-button" data-layer="link" aria-pressed="false">链路</button><button class="layer-button" data-layer="physical" aria-pressed="false">物理</button></div>
-      <div class="stack" role="img" aria-label="五层教学模型从上到下为应用、传输、网络、数据链路和物理；发送时向下使用各层能力"><div class="stack-row active" data-stack="application"><strong>应用层</strong><span>交流什么，内容怎样表达<small>例：HTTP、DNS</small></span></div><div class="stack-row" data-stack="transport"><strong>传输层</strong><span>应用端点之间怎样传送<small>例：TCP、UDP；涉及端口</small></span></div><div class="stack-row" data-stack="network"><strong>网络层</strong><span>跨网络寻址与转发<small>例：IP；涉及IP地址</small></span></div><div class="stack-row" data-stack="link"><strong>链路层</strong><span>在当前链路上怎样交付<small>例：以太网、Wi-Fi相关机制</small></span></div><div class="stack-row" data-stack="physical"><strong>物理层</strong><span>比特怎样用信号承载<small>例：电信号、光信号、无线电信号</small></span></div></div>
-      <div id="layer-explanation" class="stack-desc" aria-live="polite"><strong>应用层：先约定“说的是什么”。</strong><p>浏览器表达“我要这份资源”，服务器表达“这是结果”。它们需要能理解彼此的消息，而不是只收到一串没有含义的比特。</p></div><figcaption>图2 · 五层教学模型</figcaption>
+    <p>接着上一节：浏览器想向课程网站请求首页。<strong>把“我要什么”表达清楚，和把这些数据送到远方，是两件事。</strong>就像写好一封信，还需要填写地址、安排运输；信里的内容不会自己到达收件人手里。</p>
+    <h4>一次发送，需要解决哪些不同问题？</h4>
+    <p>浏览器要表达请求；两端程序需要传递数据；目标在远方时，还需要跨网络转发。每一步又要先交给相邻设备，最后通过信号传出去。<strong>把这些职责分开处理，就是分层。</strong>“层”表示职责，并不是电脑里真的摆着五个盒子。</p>
+    <figure class="figure"><span class="eyebrow">点一个层，看看它解决什么问题</span><div class="layer-controls" role="group" aria-label="选择要了解的网络层"><button class="layer-button" data-layer="application" aria-pressed="true">应用</button><button class="layer-button" data-layer="transport" aria-pressed="false">传输</button><button class="layer-button" data-layer="network" aria-pressed="false">网络</button><button class="layer-button" data-layer="link" aria-pressed="false">链路</button><button class="layer-button" data-layer="physical" aria-pressed="false">物理</button></div>
+      <div class="stack" role="img" aria-label="五层教学模型：应用层表达请求；传输层提供程序之间的数据传输；网络层跨网络寻址转发；链路层负责当前链路交付；物理层用信号承载信息"><div class="stack-row active" data-stack="application"><strong>应用层</strong><span>怎样表达“我要首页”，对方怎样回答？</span></div><div class="stack-row" data-stack="transport"><strong>传输层</strong><span>两端程序之间，需要怎样的数据传输服务？</span></div><div class="stack-row" data-stack="network"><strong>网络层</strong><span>目标在远方，数据怎样跨网络转发？</span></div><div class="stack-row" data-stack="link"><strong>链路层</strong><span>当前这一步，怎样交给相邻设备？</span></div><div class="stack-row" data-stack="physical"><strong>物理层</strong><span>怎样用电、光或无线电信号传出去？</span></div></div>
+      <div id="layer-explanation" class="stack-desc" aria-live="polite"><strong>应用层：表达请求和响应的含义。</strong><p>浏览器需要说清“我要课程首页”，网站需要按双方约定的规则回答。它们交流的内容由这一层解释。</p></div><figcaption>五层教学模型。上层使用下层提供的能力，共同完成通信。</figcaption>
     </figure>
-    <h4>为什么有的材料写七层，有的写四层？</h4>
-    <p>它们是观察同一类通信问题的不同框架，<strong>不是“数字越多越先进”，也不是每台设备内部都有七个实体抽屉。</strong>RFC 1122使用四层的Internet体系结构；五层是常见教学划分；OSI则提供七层参考模型。</p>
-    <div class="table-wrap"><table class="model-table"><caption class="micro" style="text-align:left;padding-bottom:8px">模型职责对照（并非严格一一对应）</caption><thead><tr><th>五层教学框架</th><th>OSI七层中的对应职责</th><th>Internet四层中的大致位置</th></tr></thead><tbody><tr><td>应用</td><td>应用、表示、会话</td><td>应用</td></tr><tr><td>传输</td><td>传输</td><td>传输</td></tr><tr><td>网络</td><td>网络</td><td>互联网</td></tr><tr><td>链路＋物理</td><td>数据链路、物理</td><td>链路</td></tr></tbody></table></div>
-    <details class="mini-check"><summary>表示层和会话层做什么？</summary><p><strong>表示层</strong>关注数据的表示和转换，例如编码、压缩、加密等职责；<strong>会话层</strong>关注通信会话的建立、管理和终止。这是参考模型的职责划分，实际Internet协议不一定单独实现这两层。</p><p>注意：网站登录中的“Session”不是直接等同于OSI会话层；后者也不负责用端口把数据分给程序。端口属于传输层。</p></details>
-    <h4 style="margin-top:25px">数据经过各层时，会加上本层需要的信息。</h4>
-    <p>假设浏览器使用<strong>明文HTTP/1.1经TCP</strong>发送一小段请求。应用先形成请求数据；TCP加入传输需要的首部；IP再加入寻址需要的首部；链路层形成在当前链路传送的帧。这叫<strong>封装</strong>。首部就是放在前面的一组控制信息，不是给人读的标题。</p>
+    <h4>HTTP、TCP和IP分别放在哪里？</h4>
+    <p>上一节认识的<strong>HTTP</strong>，约定网页请求与响应怎样表达，属于应用层。例如，浏览器按HTTP规则表达“我要首页”，网站按同一套规则回答。</p>
+    <p><strong>TCP</strong>是本例选用的传输层协议，为两端程序提供<strong>可靠、有序的字节流</strong>。比特是0或1这样的二进制信息单位，8个比特组成1个字节；字节流就是连续的字节序列。此时可以先理解为：TCP组织这些数据的传递，处理丢失和乱序，让接收程序按顺序取得数据。长期中断仍可能使通信失败；收到数据也不代表网站已经处理完业务。</p>
+    <p><strong>IP</strong>是网络层协议，提供寻址与转发规则。IP地址帮助标明数据从哪里来、要去哪里；连接不同网络的设备叫<strong>路由器</strong>，它依据路由规则继续转发数据。</p>
+    <p>相邻设备之间用于传送数据的通信连接称为<strong>链路</strong>。链路层负责当前这一步的交付；物理层把信息用信号承载。Wi-Fi同时涉及链路与无线信号等机制，不能把一种接入技术机械地看成只做一层的工作。</p>
+    <div class="callout"><strong>这些协议怎样配合？</strong><p>HTTP表达请求，TCP提供本例需要的数据传输服务，IP负责跨网络寻址与转发，再借助各段链路与信号传输。HTTP有不同版本；下面选用HTTP/1.1这一种版本，经TCP传输，观察一次未加密请求的封装过程。</p></div>
+    <h4>为什么还要给请求加上控制信息？</h4>
+    <p>只有“我要首页”的内容，网络设备还不知道要送往哪里，TCP也缺少组织传输所需的信息。各层把自己需要的控制信息加到承载的数据中，这叫<strong>封装</strong>。放在数据前面的控制字段集合叫<strong>首部</strong>。</p>
+    <p>例如，IP首部包含源、目的IP地址；TCP首部包含区分通信入口等信息，入口使用的编号叫<strong>端口</strong>，下一节会具体解释。加入TCP首部后的传输单位叫<strong>TCP报文段</strong>，IP层承载它形成<strong>IP包</strong>，链路层再把IP包放进当前链路使用的<strong>帧</strong>。它们是不同层次的数据单位。</p>
+    <p>接收端沿相反方向处理各层控制信息，最后让应用程序取得数据，叫<strong>解封装</strong>。这里的控制信息是给协议处理使用的，不是要显示在网页里的正文。</p>
+    <!-- EXAMPLE:d1-layers -->
+    <p>实际传输还可能分段、重组，应用的一条消息并不一定对应一个TCP报文段。图中选取的是完整收到本例所需数据的简化情况。</p>
+    <details class="mini-check"><summary>用嵌套图再看一遍封装</summary>
     <figure class="figure"><div class="demo-buttons"><button id="encap-next" class="primary">给数据加一层包装</button><button id="encap-reset">重新演示</button><span id="encap-step" class="chip">0 / 3</span></div><div class="envelope" id="encap-visual" role="img" aria-label="只有应用请求数据，尚未添加TCP、IP和链路控制信息"><div class="packet" data-level="0">应用请求数据</div></div><p id="encap-description" class="demo-caption" aria-live="polite">起点：应用已经组织好要交流的内容。接下来每层只添加自己需要的信息。</p><figcaption>图3 · 概念演示，省略分段、链路尾部等细节。应用的一条消息不一定正好对应一个TCP报文段。</figcaption></figure>
-    <p>接收方向则逐层解释并处理控制信息，最终让应用拿到需要的数据，可以理解为<strong>解封装</strong>。把它想成“信纸外套信封”有助于看出嵌套关系，但网络数据可能被分段或重新组织，并不是一个永不拆开的包裹。</p>
-    <div class="callout"><strong>把四个常用叫法先对上位置。</strong><p>在这个TCP示例里：传输层常说“TCP报文段”，网络层说“IP数据报/包”，链路层说“帧”，物理传输涉及“比特”。“比特”是0或1这样的二进制信息单位。</p></div>
-    <details class="mini-check"><summary>HTTP一定用TCP吗？</summary><p>不是。HTTP/1.1通常使用TCP；HTTP/3使用QUIC，QUIC运行在UDP之上。</p></details>
-    <details class="mini-check"><summary>练习：Wi-Fi和HTTP为何能同时服务一次访问？</summary><p>它们解决不同层次的问题。应用层组织请求，借助下层运输、寻址和链路能力传送。换掉一种接入方式，不必同时换掉应用消息的规则。</p></details>
+    </details>
+    <details class="mini-check"><summary>练习：从Wi-Fi换成网线，为什么通常不必重写HTTP规则？</summary><p>接入方式主要改变链路和信号传送的方式；HTTP表达请求与响应的规则仍可使用。分层让不同职责可以分别变化。这不保证切换网络时原来的连接一定不中断。</p></details>
+    <details class="mini-check"><summary>为什么有的材料写七层，有的写四层？</summary>
+      <p>它们是对通信职责的不同划分：这里采用五层教学模型；OSI是七层参考模型；RFC 1122描述的Internet体系结构则分为四层。层数不同，不代表哪个数字越大就越先进。</p>
+      <div class="table-wrap"><table class="model-table"><caption class="micro" style="text-align:left;padding-bottom:8px">模型职责对照（并非严格一一对应）</caption><thead><tr><th>五层教学框架</th><th>OSI七层中的对应职责</th><th>Internet四层中的大致位置</th></tr></thead><tbody><tr><td>应用</td><td>应用、表示、会话</td><td>应用</td></tr><tr><td>传输</td><td>传输</td><td>传输</td></tr><tr><td>网络</td><td>网络</td><td>互联网</td></tr><tr><td>链路＋物理</td><td>数据链路、物理</td><td>链路</td></tr></tbody></table></div>
+      <p><strong>表示层</strong>关注数据表示和转换，例如编码、压缩、加密等职责；<strong>会话层</strong>关注通信会话的建立、管理和终止。它们是参考模型中的职责划分，实际Internet协议不一定把这两层单独实现。网站登录状态与OSI会话层也不能直接画等号；端口属于传输层。</p>
+    </details>
     <div class="topic-actions"><div class="rating-group" data-topic-rating="d1-layers"></div><button class="text-button" data-feedback="d1-layers">这里还没懂 →</button></div>
   </article>
 
   <article class="topic" id="d1-addresses" data-sources="32" data-topic="IP地址与端口的分工">
     <div class="topic-heading"><span class="topic-number">03</span><h3>IP地址与端口的分工</h3><button class="topic-note-button" data-note="d1-addresses" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
-    <p>同一台服务器可以同时提供不同服务。只知道一个IP地址，还不足以表达“我要和这里的哪项TCP或UDP服务通信”。<strong>IP用于网络层寻址；端口用于传输层，帮助定位通信端点。</strong></p>
+    <p>同一台服务器可以同时提供不同服务。只知道一个IP地址，还不足以表达“我要和这里的哪项服务通信”。<strong>IP用于网络层寻址；端口用于传输层，帮助定位通信端点。</strong></p>
     <p>初学时可以暂把IP看成“到哪处地址”，端口看成“在这个地址上找哪个服务入口”。但真实网络里，一台设备可以有多个IP地址，多个程序的安排也有例外，所以“IP=一台电脑、端口=一个固定程序”只能是简化印象。</p>
     <figure class="figure"><span class="eyebrow">同一个IP，不同的服务入口</span><div class="address-map" role="img" aria-label="客户端192.0.2.10连接服务器198.51.100.20，服务器提供TCP443和TCP8443两个示意服务端口"><div class="address-client"><strong>浏览器</strong><br><code>192.0.2.10</code><br><small>客户端IP</small></div><span class="flow-arrow">→</span><div class="address-server"><strong>同一个服务器IP</strong><br><code>198.51.100.20</code><div class="service active" data-service="443"><span>课程首页</span><code>TCP :443</code></div><div class="service" data-service="8443"><span>另一项Web服务</span><code>TCP :8443</code></div></div></div><div class="demo-buttons" style="margin-top:18px"><button data-port="443" aria-pressed="true">访问课程首页</button><button data-port="8443" aria-pressed="false">访问另一服务</button></div><p id="port-explanation" class="demo-caption" aria-live="polite">目标为TCP的 198.51.100.20:443。IP相同，端口用于区分这里的服务入口。</p><figcaption>图4 · 地址与服务均为教学示意。443是HTTPS常用端口；8443在本例中人为分配给另一服务，不是必须这样使用。</figcaption></figure>
     <h4>把“楼房地址与房间号”类比用到正确的位置。</h4>
-    <p>IP像楼房地址、端口像房间号，这能帮助区分两级定位。但房间号本身没有全球唯一性：另一栋楼也能有“443号房间”。同样，<strong>不同IP可以使用相同端口号，TCP和UDP的端口空间也分别管理。</strong></p>
-    <p>一个服务还可能同时接待许多客户端。别把端口想成“只容一个人占用的座位”。</p>
+    <p>IP像楼房地址、端口像房间号，这能帮助区分两级定位。但房间号本身没有全球唯一性：另一栋楼也能有“443号房间”。同样，<strong>不同IP可以使用相同端口号。TCP和UDP是两种传输层协议：TCP提供前面介绍的可靠、有序字节流；UDP按一份份有边界的数据报传送，本身不保证到达和顺序。两者的端口空间分别管理，第3天会比较它们。</strong></p>
+<!-- EXAMPLE:d1-addresses -->
+
+    <p>一个服务还可能同时接待许多客户端。程序等待某个端口上的通信，称为<strong>监听</strong>；同一监听入口可以接待多个客户端。别把端口想成“只容一个人占用的座位”。</p>
     <div class="callout"><strong>端口号的范围：0–65535</strong><p>TCP/UDP端口号字段是16位，有2<sup>16</sup>＝65536种取值，因此编号从0到65535。端口0被保留；不能写成“1到65536”。</p></div>
     <details class="mini-check"><summary>端口范围怎样划分？</summary><p>0–1023是系统端口范围，1024–49151是用户端口范围，49152–65535是动态/私有范围。这里说的是IANA的分配分类，不是说每台操作系统都使用相同的临时端口范围，也不是说普通用户在所有系统上都能直接绑定任意端口。</p></details>
     <h4 style="margin-top:24px">小练习：网站换了服务端口，IP没变。</h4>

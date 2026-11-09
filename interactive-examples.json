@@ -132,8 +132,8 @@
             "values": []
           },
           {
-            "title": "结果分两段返回",
-            "text": "数据服务先把结果给网站；网站再组织面向浏览器的响应。程序可以在不同交互中承担不同角色。",
+            "title": "数据服务把结果交回网站",
+            "text": "数据服务先把课程数据交回网站，网站据此组织面向浏览器的响应。浏览器此时还在等待网站回答，两次交互的角色不同。",
             "active": [
               "d",
               "w"
@@ -151,6 +151,26 @@
               "w": "组织网页响应"
             },
             "values": []
+          },
+          {
+            "title": "网站再响应浏览器",
+            "text": "网站把组织好的课程列表返回浏览器。数据服务服务于网站，网站再服务于浏览器；一份页面可以经过多次这样的程序间交互。",
+            "active": [
+              "w",
+              "b"
+            ],
+            "flows": [
+              {
+                "from": "w",
+                "to": "b",
+                "label": "返回课程列表",
+                "tone": "normal"
+              }
+            ],
+            "states": {
+              "b": "收到课程列表"
+            },
+            "values": []
           }
         ]
       }
@@ -161,242 +181,244 @@
     "limit": "图中的箭头表示逻辑消息，省略实际网络中的分段、设备与传输过程。"
   },
   "d1-layers": {
-    "title": "一份请求怎样加上不同层的信息？",
-    "intro": "要取首页、找通信端点、跨网络、交给下一跳和发送信号，是不同的问题。逐步包上各层控制信息，观察新增信息各自有什么用途。",
-    "terms": "首部是放在数据前面的控制字段集合。封装表示下层把上层数据当作自己承载的内容；分层是职责划分，不是计算机里真实摆放的抽屉。",
+    "title": "同一份请求，发送时怎样封装，接收时怎样处理？",
+    "intro": "先沿发送方向逐层加入控制信息，再切换到接收方向，观察应用怎样取得请求数据。",
+    "terms": "首部用于协议控制，应用数据用于表达请求。下层可以把上层的数据连同其控制信息一起承载；链路帧还可能有尾部信息，图中没有画出。",
     "diagram": {
       "kind": "blocks",
       "rows": [
         {
-          "label": "应用内容",
+          "label": "本步的数据结构",
           "cells": [
             {
-              "id": "r0c0",
-              "text": "请求首页"
-            }
-          ]
-        },
-        {
-          "label": "外层信息",
-          "cells": [
-            {
-              "id": "r1c0",
-              "text": "尚未添加"
+              "id": "app",
+              "text": "HTTP请求数据"
             }
           ]
         }
       ],
-      "scaleNote": "结构示意，区块宽度不表示字节比例。"
+      "scaleNote": "区块只表示控制信息与数据的排列关系，宽度不代表字节比例；省略分段、选项与链路尾部。"
     },
     "cases": [
       {
-        "label": "明文HTTP/1.1经TCP",
-        "assumption": "仅画概念封装，假设请求很小；省略选项、链路尾部与分段。",
+        "label": "发送方向：封装",
+        "assumption": "HTTP/1.1经TCP发送一小段未加密请求；本图省略分段等细节。",
         "steps": [
           {
-            "title": "应用先表达需要",
-            "text": "浏览器先组织“请求首页”的应用消息。它说明业务意图，尚未单凭这句话解决跨网络交付。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "应用先形成请求",
+            "text": "浏览器先按HTTP规则组织请求，表达“我要首页”。此时只有应用要交流的内容，还没有本图中的TCP、IP和链路控制信息。",
+            "active": [
+              "app"
+            ],
             "rows": [
               {
-                "label": "应用内容",
+                "label": "本步的数据结构",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "GET / HTTP/1.1"
+                    "id": "app",
+                    "text": "HTTP请求数据"
                   }
                 ]
               }
-            ]
+            ],
+            "values": []
           },
           {
-            "title": "TCP加入端点等控制信息",
-            "text": "传输层使用端口区分通信端点。图中把TCP控制信息与应用内容并列显示，表示后者被TCP承载。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "TCP加入传输控制信息",
+            "text": "TCP为本例的数据传输加入首部，形成TCP报文段。HTTP请求作为被承载的数据，不会因为多了首部就变成另一份业务请求。",
+            "active": [
+              "tcp"
+            ],
             "rows": [
               {
-                "label": "TCP报文段",
+                "label": "本步的数据结构",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "TCP首部：端口等"
+                    "id": "tcp",
+                    "text": "TCP首部 · 传输控制信息"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "应用请求"
+                    "id": "app",
+                    "text": "HTTP请求数据"
                   }
                 ]
               }
-            ]
+            ],
+            "values": []
           },
           {
-            "title": "IP再加入跨网络地址",
-            "text": "路由器需要依据IP地址转发。IP首部在TCP首部外层，目的IP和目标端口分别解决不同层次的定位。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "IP加入源与目的地址等信息",
+            "text": "IP层把TCP报文段作为自己的数据，加入IP首部。目的IP帮助路由器判断应当往哪里继续转发。",
+            "active": [
+              "ip"
+            ],
             "rows": [
               {
-                "label": "IP包",
+                "label": "本步的数据结构",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "IP首部：地址"
+                    "id": "ip",
+                    "text": "IP首部 · 源与目的地址"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "TCP首部"
+                    "id": "tcp",
+                    "text": "TCP首部 · 传输控制信息"
                   },
                   {
-                    "id": "r0c2",
-                    "text": "应用请求"
+                    "id": "app",
+                    "text": "HTTP请求数据"
                   }
                 ]
               }
-            ]
+            ],
+            "values": []
           },
           {
-            "title": "链路封装后变成信号",
-            "text": "链路层组织当前链路上的帧，再借助物理信号传输。接收时逐层处理控制信息，最终交给对应应用。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "链路层形成帧，再用信号发送",
+            "text": "链路层为当前这一步的交付组织帧，图中显示其控制信息与所承载的IP包。物理层再用信号承载信息；信号不是又一块附加首部。",
+            "active": [
+              "link"
+            ],
             "rows": [
               {
-                "label": "当前链路的帧",
+                "label": "本步的数据结构",
                 "cells": [
                   {
-                    "id": "r0c0",
+                    "id": "link",
                     "text": "链路控制信息"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "IP首部"
+                    "id": "ip",
+                    "text": "IP首部 · 源与目的地址"
                   },
                   {
-                    "id": "r0c2",
-                    "text": "TCP首部"
+                    "id": "tcp",
+                    "text": "TCP首部 · 传输控制信息"
                   },
                   {
-                    "id": "r0c3",
-                    "text": "应用请求"
-                  }
-                ]
-              },
-              {
-                "label": "物理传输",
-                "cells": [
-                  {
-                    "id": "r1c0",
-                    "text": "以比特信息调制信号"
+                    "id": "app",
+                    "text": "HTTP请求数据"
                   }
                 ]
               }
-            ]
+            ],
+            "values": []
           }
         ]
       },
       {
-        "label": "换成HTTP/3",
-        "assumption": "比较职责与承载选择，不展开QUIC协议细节。",
+        "label": "接收方向：解封装",
+        "assumption": "从目的设备接收链路帧开始；假设本例请求所需字节已完整、有序到达，省略中间路由器。",
         "steps": [
           {
-            "title": "应用意图仍然存在",
-            "text": "HTTP/3仍然表达请求与响应，但不沿用HTTP/1.1的线格式。应用规则与承载方式都要说明版本。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "收到帧，处理链路控制信息",
+            "text": "目的设备从信号中恢复出帧，链路层按规则检查并处理它，再把其中的IP包交给网络层。图中先显示接收时的各层信息。",
+            "active": [
+              "link"
+            ],
             "rows": [
               {
-                "label": "应用",
+                "label": "本步的数据结构",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "HTTP/3请求"
+                    "id": "link",
+                    "text": "链路控制信息"
+                  },
+                  {
+                    "id": "ip",
+                    "text": "IP首部 · 源与目的地址"
+                  },
+                  {
+                    "id": "tcp",
+                    "text": "TCP首部 · 传输控制信息"
+                  },
+                  {
+                    "id": "app",
+                    "text": "HTTP请求数据"
                   }
                 ]
               }
-            ]
+            ],
+            "values": []
           },
           {
-            "title": "下层改用QUIC与UDP",
-            "text": "HTTP/3运行在QUIC上，QUIC使用UDP传送。不能把“所有HTTP下方都是TCP”写成固定规律。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "IP处理网络层信息",
+            "text": "网络层检查这个IP包，把其中承载的TCP报文段交给TCP处理。链路控制信息已经完成当前链路的任务，不作为应用正文向上传递。",
+            "active": [
+              "ip"
+            ],
             "rows": [
               {
-                "label": "示意承载关系",
+                "label": "本步的数据结构",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "HTTP/3"
+                    "id": "ip",
+                    "text": "IP首部 · 源与目的地址"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "QUIC"
+                    "id": "tcp",
+                    "text": "TCP首部 · 传输控制信息"
                   },
                   {
-                    "id": "r0c2",
-                    "text": "UDP"
-                  },
-                  {
-                    "id": "r0c3",
-                    "text": "IP"
+                    "id": "app",
+                    "text": "HTTP请求数据"
                   }
                 ]
               }
-            ]
+            ],
+            "values": []
           },
           {
-            "title": "分层帮助分别理解变化",
-            "text": "无论使用哪一种承载，都仍要解决地址、链路和信号等问题。参考模型帮助分工，不要求每个实际协议严格对应一个框。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "TCP处理传输控制信息",
+            "text": "TCP依据自己的控制信息处理接收数据。在本例所需字节完整、有序的条件下，将请求字节交给对应应用；TCP首部不属于HTTP请求正文。",
+            "active": [
+              "tcp"
+            ],
             "rows": [
               {
-                "label": "职责",
+                "label": "本步的数据结构",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "表达消息"
+                    "id": "tcp",
+                    "text": "TCP首部 · 传输控制信息"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "运输端点"
-                  },
-                  {
-                    "id": "r0c2",
-                    "text": "跨网络寻址"
-                  },
-                  {
-                    "id": "r0c3",
-                    "text": "链路与信号"
+                    "id": "app",
+                    "text": "HTTP请求数据"
                   }
                 ]
               }
-            ]
+            ],
+            "values": []
+          },
+          {
+            "title": "应用按HTTP规则解释请求",
+            "text": "网站应用得到HTTP请求数据，按HTTP规则理解它，再决定返回什么响应。前面各层完成传输，不替网站判断业务处理结果。",
+            "active": [
+              "app"
+            ],
+            "rows": [
+              {
+                "label": "本步的数据结构",
+                "cells": [
+                  {
+                    "id": "app",
+                    "text": "HTTP请求数据"
+                  }
+                ]
+              }
+            ],
+            "values": []
           }
         ]
       }
     ],
     "references": [
       "https://www.rfc-editor.org/rfc/rfc1122",
-      "https://www.rfc-editor.org/rfc/rfc9114#section-2"
+      "https://www.rfc-editor.org/rfc/rfc9293",
+      "https://www.rfc-editor.org/rfc/rfc9112"
     ],
-    "limit": "各块宽度不代表字节比例；HTTP/3承载关系为教学分解，不表示每个协议恰占一层。"
+    "limit": "仅示意目的设备两端的协议处理，未画中间路由、地址转换、分段与重组。模型分层不是要求所有实际协议严格对应一个独立模块。"
   },
   "d1-addresses": {
     "title": "到了同一台服务器，怎样选服务入口？",
@@ -3901,7 +3923,7 @@
     "cases": [
       {
         "label": "长度前缀",
-        "assumption": "示意协议用1字节无符号长度，后接ASCII正文；长度上限与含义由双方约定。",
+        "assumption": "本例协议用1字节无符号长度，正文采用ASCII，上限100字节；0x05表示长度5，不额外发送字符0和x。",
         "steps": [
           {
             "title": "先收到长度5与HE",
@@ -4804,7 +4826,7 @@
           "cells": [
             {
               "id": "r0c0",
-              "text": "首次5001"
+              "text": "首次1101"
             }
           ]
         },
@@ -4825,7 +4847,7 @@
         "assumption": "假设满足RFC5681重复ACK条件，发送方有未确认数据。",
         "steps": [
           {
-            "title": "第一次收到5001",
+            "title": "第一次收到1101",
             "text": "这是当前累计确认值的首次出现，本例重复计数为0。这个首次确认是随后统计重复次数的基准。",
             "active": [],
             "flows": [],
@@ -4837,7 +4859,7 @@
                 "cells": [
                   {
                     "id": "r0c0",
-                    "text": "5001"
+                    "text": "1101"
                   }
                 ]
               },
@@ -4853,7 +4875,7 @@
             ]
           },
           {
-            "title": "又收到两个5001",
+            "title": "又收到两个1101",
             "text": "现在总共三个相同ACK，但后两个才是重复，因此重复计数为2，尚未达到本例触发阈值。",
             "active": [],
             "flows": [],
@@ -4865,15 +4887,15 @@
                 "cells": [
                   {
                     "id": "r0c0",
-                    "text": "5001"
+                    "text": "1101"
                   },
                   {
                     "id": "r0c1",
-                    "text": "5001"
+                    "text": "1101"
                   },
                   {
                     "id": "r0c2",
-                    "text": "5001"
+                    "text": "1101"
                   }
                 ]
               },
@@ -4889,8 +4911,8 @@
             ]
           },
           {
-            "title": "再收到一个5001",
-            "text": "累计出现四个5001，其中三个是重复ACK。经典快速重传可据此重传推断缺失的段，不必等RTO。",
+            "title": "再收到一个1101",
+            "text": "累计出现四个1101，其中三个是重复ACK。经典快速重传可据此重传推断缺失的段，不必等RTO。",
             "active": [],
             "flows": [],
             "states": {},
@@ -4901,19 +4923,19 @@
                 "cells": [
                   {
                     "id": "r0c0",
-                    "text": "5001"
+                    "text": "1101"
                   },
                   {
                     "id": "r0c1",
-                    "text": "5001"
+                    "text": "1101"
                   },
                   {
                     "id": "r0c2",
-                    "text": "5001"
+                    "text": "1101"
                   },
                   {
                     "id": "r0c3",
-                    "text": "5001"
+                    "text": "1101"
                   }
                 ]
               },
@@ -5013,8 +5035,8 @@
     "limit": "仅示意经典Reno路径；多重丢失、NewReno、SACK和现代丢失检测各有额外规则。"
   },
   "d8-message": {
-    "title": "把一份请求拆成方法、目标、字段和内容",
-    "intro": "浏览器发出的消息有结构，服务器的回答也有结构。逐行读一个HTTP/1.1示例，再把它和HTTP/2的编码分开。",
+    "title": "一份请求和它的响应，分别怎样组织？",
+    "intro": "先读客户端请求，再切换到服务端响应。两者都按HTTP/1.1的结构表达，这里不混入其他版本的帧格式。",
     "terms": "请求方法表达动作语义；请求目标指定资源；首部字段补充描述；空行分开首部与可选内容。响应状态码表达这次请求的结果。",
     "diagram": {
       "kind": "blocks",
@@ -5089,7 +5111,7 @@
                   },
                   {
                     "id": "r1c1",
-                    "text": "Accept: text/html"
+                    "text": "Accept: text/plain"
                   }
                 ]
               }
@@ -5116,24 +5138,7 @@
                   },
                   {
                     "id": "r0c2",
-                    "text": "空行"
-                  }
-                ]
-              },
-              {
-                "label": "响应示例",
-                "cells": [
-                  {
-                    "id": "r1c0",
-                    "text": "HTTP/1.1 200 OK"
-                  },
-                  {
-                    "id": "r1c1",
-                    "text": "Content-Type: text/html"
-                  },
-                  {
-                    "id": "r1c2",
-                    "text": "HTML内容"
+                    "text": "空行（本例没有请求内容）"
                   }
                 ]
               }
@@ -5142,104 +5147,101 @@
         ]
       },
       {
-        "label": "HTTP/2表达同样请求语义",
-        "assumption": "示意字段与二进制帧，不把它画成HTTP/1.1原始文本线上格式。",
+        "label": "HTTP/1.1文本响应",
+        "assumption": "本例返回普通文本Hello，共5个ASCII字节，无额外换行；省略连接和传输细节。",
         "steps": [
           {
-            "title": "请求意图可以相同",
-            "text": "仍是GET /books?q=tcp，但HTTP/2不使用相同的文本请求行作为线上帧格式。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "状态行先说明结果",
+            "text": "HTTP/1.1 200 OK包含协议版本与状态码。200表示本次请求按相应语义成功，不代表图片等其他请求也都成功。",
             "rows": [
               {
-                "label": "请求语义",
+                "label": "状态行",
                 "cells": [
                   {
                     "id": "r0c0",
-                    "text": "方法GET"
+                    "text": "HTTP/1.1"
                   },
                   {
                     "id": "r0c1",
-                    "text": "资源/books?q=tcp"
+                    "text": "200"
+                  },
+                  {
+                    "id": "r0c2",
+                    "text": "OK"
                   }
                 ]
               }
-            ]
+            ],
+            "active": [],
+            "values": []
           },
           {
-            "title": "用伪首部和帧组织",
-            "text": "HTTP/2以:method、:path等字段表达请求控制信息，通过帧和流编号组织消息。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "字段描述返回内容",
+            "text": "Content-Type说明内容类型与字符编码；Content-Length按字节计数。这里正文是普通文本Hello，正好5字节。",
             "rows": [
               {
-                "label": "字段示意",
+                "label": "状态行",
                 "cells": [
                   {
                     "id": "r0c0",
-                    "text": ":method GET"
-                  },
-                  {
-                    "id": "r0c1",
-                    "text": ":path /books?q=tcp"
+                    "text": "HTTP/1.1 200 OK"
                   }
                 ]
               },
               {
-                "label": "承载",
+                "label": "响应字段",
                 "cells": [
                   {
                     "id": "r1c0",
-                    "text": "HEADERS帧"
+                    "text": "Content-Type: text/plain; charset=utf-8"
                   },
                   {
                     "id": "r1c1",
-                    "text": "可选DATA帧"
+                    "text": "Content-Length: 5"
                   }
                 ]
               }
-            ]
+            ],
+            "active": [],
+            "values": []
           },
           {
-            "title": "语义与编码分别理解",
-            "text": "HTTP方法、状态码有共同语义；字段压缩与消息编码等由版本规定。不能直接把所有版本抓包都当可读文本。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "空行之后才是正文",
+            "text": "字段后的空行结束字段部分，随后是Hello这5个字节。客户端按HTTP消息规则处理，不能把一次TCP读取结束当成整条响应结束。",
             "rows": [
               {
-                "label": "区分",
+                "label": "完整结构",
                 "cells": [
                   {
                     "id": "r0c0",
-                    "text": "请求含义"
+                    "text": "状态行"
                   },
                   {
                     "id": "r0c1",
-                    "text": "字段表达"
+                    "text": "响应字段"
                   },
                   {
                     "id": "r0c2",
-                    "text": "帧与承载"
+                    "text": "空行"
+                  },
+                  {
+                    "id": "r0c3",
+                    "text": "Hello（5字节）"
                   }
                 ]
               }
-            ]
+            ],
+            "active": [],
+            "values": []
           }
         ]
       }
     ],
     "references": [
-      "https://www.rfc-editor.org/rfc/rfc9110",
-      "https://www.rfc-editor.org/rfc/rfc9112#section-2.1",
-      "https://www.rfc-editor.org/rfc/rfc9113#section-8"
+      "https://www.rfc-editor.org/rfc/rfc9112",
+      "https://www.rfc-editor.org/rfc/rfc9110"
     ],
-    "limit": "结构图省略CRLF、字段压缩及帧长度，不按字节比例绘制。"
+    "limit": "仅画HTTP/1.1结构，省略每行末尾的CRLF字符与完整消息定界规则；区块不按字节比例绘制。"
   },
   "d8-methods": {
     "title": "同一请求重发两次，会产生几份业务结果？",
@@ -6611,7 +6613,7 @@
       }
     ],
     "references": [
-      "https://www.rfc-editor.org/rfc/rfc8446#section-1",
+      "https://www.rfc-editor.org/info/rfc9846/",
       "https://www.rfc-editor.org/rfc/rfc9110#section-4.2.2"
     ],
     "limit": "只画保护边界，不展示真实密钥或凭据；元信息暴露还受DNS、ECH等配置影响。"
@@ -6768,8 +6770,7 @@
       }
     ],
     "references": [
-      "https://www.rfc-editor.org/rfc/rfc8446#section-4.4.3",
-      "https://www.rfc-editor.org/rfc/rfc8446#section-7.1"
+      "https://www.rfc-editor.org/info/rfc9846/"
     ],
     "limit": "概念层演示不展示密码数学、不生成真实密钥；不能把它当作完整TLS线序抓包。"
   },
@@ -6907,7 +6908,7 @@
     ],
     "references": [
       "https://www.rfc-editor.org/rfc/rfc9525",
-      "https://www.rfc-editor.org/rfc/rfc8446#section-4.4.2"
+      "https://www.rfc-editor.org/info/rfc9846/"
     ],
     "limit": "身份验证示例，省略完整证书路径、吊销与浏览器政策；不引导绕过证书错误。"
   },
@@ -7067,8 +7068,7 @@
       }
     ],
     "references": [
-      "https://www.rfc-editor.org/rfc/rfc8446#section-2",
-      "https://www.rfc-editor.org/rfc/rfc8446#section-8"
+      "https://www.rfc-editor.org/info/rfc9846/"
     ],
     "limit": "按协议职责分步骤而非逐条列全线序；不把0-RTT画成所有恢复连接都必有的步骤。"
   },

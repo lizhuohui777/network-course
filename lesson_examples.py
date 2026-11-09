@@ -57,20 +57,25 @@ def figure(topic_id, example):
 <div class="ex-canvas" tabindex="0" aria-label="机制示意图，可在窄窗口横向滚动"></div>
 <div class="ex-explanation" aria-live="polite" aria-atomic="true"><strong class="ex-step-title">{escape(first['steps'][0]['title'])}</strong><p class="ex-step-text">{escape(first['steps'][0]['text'])}</p><div class="ex-values"></div></div>
 <details class="ex-transcript"><summary>展开本例全部步骤</summary><ol class="ex-all-steps"></ol></details>
-<figcaption><details><summary>图示条件与参考</summary><p>{escape(example['limit'])}</p><ul>{refs}</ul></details></figcaption>
-</figure><p class="example-terms">{escape(example['terms'])}</p>'''
+<figcaption><details><summary>图示条件与参考</summary><p>{escape(example['terms'])}</p><p>{escape(example['limit'])}</p><ul>{refs}</ul></details></figcaption>
+</figure>'''
 
 
 def enrich(html, examples):
-    pattern = r'(<article\b[^>]*\bid="([^"]+)"[^>]*\bdata-topic="[^"]+"[^>]*>.*?<div\b[^>]*\bdata-topic-sources[^>]*></div>)'
+    pattern = r'(<article\b[^>]*\bid="([^"]+)"[^>]*\bdata-topic="[^"]+"[^>]*>)(.*?)(</article>)'
     seen = set()
     def attach(match):
         topic_id = match[2]
         if topic_id not in examples:
-            return match[1]
+            return match[0]
         seen.add(topic_id)
-        return match[1] + '\n' + figure(topic_id, examples[topic_id])
+        body = match[3]
+        marker = f'<!-- EXAMPLE:{topic_id} -->'
+        assert body.count(marker) == 1, (topic_id, 'need one authored example position after prerequisites')
+        body = body.replace(marker, figure(topic_id, examples[topic_id]))
+        return match[1] + body + match[4]
     enriched = re.sub(pattern, attach, html, flags=re.S)
     expected = {key for key in examples if f'id="{key}"' in html}
     assert seen == expected, ('missing example attachment', expected-seen)
+    assert '<!-- EXAMPLE:' not in enriched, 'Unresolved or misplaced example marker'
     return enriched

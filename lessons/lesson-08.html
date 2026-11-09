@@ -3,18 +3,22 @@
 <section class="lesson-section lesson-main" id="d8-main" data-phase="main"><div class="section-heading"><h2><span class="section-number">02</span>今日主线</h2></div>
 <article class="topic" id="d8-message" data-topic="应用协议与HTTP报文结构" data-sources="53,23"><div class="topic-heading"><span class="topic-number">01</span><h3>应用协议与HTTP报文结构</h3><button class="topic-note-button" data-note="d8-message" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
 <p>TCP解决字节运输，却不知道这些字节是在取网页、寄邮件还是查询域名。应用协议规定“字节代表什么、双方接下来怎样做”。HTTP常用于访问和操作Web资源；DNS查询域名相关记录；SMTP负责邮件传递，IMAP常用于访问与管理邮箱；FTP提供文件传输。这些协议的职责不同，不能只凭某种数据是文件就断言必须使用FTP，HTTP也能传送文件。</p>
-<p><strong>HTTP以请求和响应表达交互。</strong>请求由客户端提出，指向一个资源并说明想执行的操作；响应给出结果状态、描述信息和可能的内容。资源不一定是磁盘上的静态文件，也可以是由程序动态产生的课程列表。下面观察可读的HTTP/1.1格式；HTTP/2和HTTP/3保留方法、状态等语义，但在线路上使用不同的二进制帧，不应把这张文字图当作所有版本的原始格式。</p>
-<figure class="figure"><div class="stack"><div class="stack-row"><strong>请求行</strong><span><code>GET /lessons/8?view=full HTTP/1.1</code><br>方法、请求目标、协议版本</span></div><div class="stack-row"><strong>请求字段</strong><span><code>Host: learn.example</code><br><code>Accept: text/html</code></span></div><div class="stack-row"><strong>空行与内容</strong><span>空行结束字段部分；本例没有请求内容。</span></div></div><figcaption>图1 · 请求目标含路径与查询部分；Host表达目标主机信息。本例是直接向源站发送的HTTP/1.1请求。</figcaption></figure>
-<p>请求行中的GET是方法；<code>/lessons/8</code>是路径，<code>view=full</code>是查询参数。Host帮助同一个服务入口区分要访问的站点。Accept表达客户端可接受的响应媒体类型；它不保证服务器一定能提供。字段常称为“首部字段”，作用是携带控制信息和内容描述，不全是给人阅读的普通说明。</p>
+<p><strong>HTTP以请求和响应表达交互。</strong>请求由客户端提出，指向一个资源并说明想执行的操作；响应给出结果状态、描述信息和可能的内容。资源不一定是磁盘上的静态文件，也可以是由程序动态产生的课程列表。下面只观察可读的HTTP/1.1格式。其他版本使用不同的消息编码，第9天再比较；这里的文本结构不代表所有HTTP版本的线上格式。</p>
+<figure class="figure"><div class="stack"><div class="stack-row"><strong>请求行</strong><span><code>GET /books?q=tcp HTTP/1.1</code><br>方法、请求目标、协议版本</span></div><div class="stack-row"><strong>请求字段</strong><span><code>Host: learn.example</code><br><code>Accept: text/plain</code></span></div><div class="stack-row"><strong>空行与内容</strong><span>空行结束字段部分；本例没有请求内容。</span></div></div><figcaption>图1 · 请求目标含路径与查询部分；Host表达目标主机信息。本例是直接向源站发送的HTTP/1.1请求。</figcaption></figure>
+<p>请求行中的GET是方法；<code>/books</code>是路径，<code>q=tcp</code>是查询参数。Host帮助同一个服务入口区分要访问的站点。Accept表达客户端可接受的响应媒体类型；它不保证服务器一定能提供。字段常称为“首部字段”，作用是携带控制信息和内容描述，不全是给人阅读的普通说明。</p>
 <figure class="figure"><div class="stack"><div class="stack-row"><strong>状态行</strong><span><code>HTTP/1.1 200 OK</code></span></div><div class="stack-row"><strong>响应字段</strong><span><code>Content-Type: text/plain; charset=utf-8</code><br><code>Content-Length: 5</code></span></div><div class="stack-row"><strong>空行后内容</strong><span><code>Hello</code>，本例恰好5个ASCII字节，无额外换行。</span></div></div><figcaption>图2 · Content-Type说明表示的类型；Content-Length以字节计数，不以屏幕上看到的字数计数。</figcaption></figure>
 <p>空行很关键：没有它，接收方无法按此格式判断字段结束。也不能把TCP一次读取结束当作HTTP消息结束。HTTP/1.1根据方法、状态、Content-Length或分块传输等规则判断消息范围；有些响应本来就不带内容。服务器发完一条响应后，连接还可以继续使用，下一课会展开。</p>
-<p>推演一次访问：浏览器先形成GET请求；服务器按路径找到课程内容，返回200、类型字段和内容；浏览器根据类型解释收到的数据。200只表示这个HTTP请求按服务语义成功，不保证页面依赖的所有图片和脚本也成功。页面可能还需另外发出多个请求。</p>
+<!-- EXAMPLE:d8-message -->
+
+<p>推演一次访问：浏览器先形成GET请求；服务器按路径找到课程内容，返回200、类型字段和内容；浏览器根据类型解释收到的数据。例如HTML是描述网页结构的文本格式，浏览器据此组织页面；本例响应使用的text/plain则表示普通文本。200只表示这个HTTP请求按服务语义成功，不保证页面依赖的所有图片和脚本也成功。页面可能还需另外发出多个请求。</p>
 <details class="mini-check"><summary>小检查：Content-Length: 5是否表示五个汉字？</summary><p>不是，它以字节为单位。UTF-8汉字通常占多个字节；本图使用ASCII的Hello，才正好是5字节。</p></details></article>
 <article class="topic" id="d8-methods" data-topic="方法表达意图与重复执行的含义" data-sources="10,11"><div class="topic-heading"><span class="topic-number">02</span><h3>方法表达意图与重复执行的含义</h3><button class="topic-note-button" data-note="d8-methods" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
 <p>同一个目标地址可以接受不同操作。查看课程和创建课程，都可能围绕<code>/lessons</code>这个资源，但意图不同。<strong>GET请求获取目标资源的当前表示；POST请求目标资源按自身语义处理所提交的内容。</strong>创建记录是POST的常见用途，但POST并不只等于“新增”，也可用于提交计算或启动某种处理。</p>
 <div class="table-wrap"><table class="data-table"><caption>常见方法与约定语义</caption><thead><tr><th>方法</th><th>主要意图</th><th>按规范的属性</th></tr></thead><tbody><tr><td>GET</td><td>获取表示</td><td>安全、幂等</td></tr><tr><td>HEAD</td><td>获取类似GET的响应信息，不取响应内容</td><td>安全、幂等</td></tr><tr><td>POST</td><td>让目标处理提交的内容</td><td>不保证安全或幂等</td></tr><tr><td>PUT</td><td>用提交的表示创建或替换目标状态</td><td>幂等，不是安全方法</td></tr><tr><td>DELETE</td><td>删除目标资源的关联</td><td>幂等，不是安全方法</td></tr></tbody></table></div>
 <p>这里的<strong>安全方法</strong>有专门含义：客户端请求的语义应当是读取，未要求改变服务器状态。它不表示传输已加密，也不表示网页内容可信。GET时服务器仍可能记访问日志等附带结果；这些附带行为不改变GET的读取意图。若用GET链接触发“删除订单”，是服务设计违反了安全方法约定，爬虫或预取都可能误触发。</p>
 <p><strong>幂等</strong>表示执行多次与执行一次的预期服务器效果相同，并不要求每次返回一样的状态码。例如DELETE第一次删除成功，第二次返回404，目标“已被移除”的预期效果仍相同。POST创建订单则可能每次新增一单，因此网络故障后不能盲目重试。应用可以使用业务幂等标识防重复，但那是额外设计，不能倒推POST天然幂等。</p>
+<!-- EXAMPLE:d8-methods -->
+
 <p>具体比较：搜索课程时，<code>GET /lessons?tag=tcp</code>适合表达读取，地址也便于保存；提交一段新笔记时，POST可以在请求内容中携带文本。两种方法都能带查询参数，POST也可以同时使用查询参数与内容。GET请求内容没有普遍定义的语义，通用客户端不应依赖它，服务和中间设备也可能拒绝；不能由“HTTP有内容部分”推断所有方法都应随意放内容。</p>
 <details class="mini-check"><summary>小检查：DELETE第二次返回404，是否证明它不幂等？</summary><p>不能。幂等比较预期状态效果，不要求响应逐字一致。两次操作后目标都处于已删除状态，仍可符合幂等语义。</p></details></article>
 <article class="topic" id="d8-status" data-topic="状态码描述这一请求的结果" data-sources="102"><div class="topic-heading"><span class="topic-number">03</span><h3>状态码描述这一请求的结果</h3><button class="topic-note-button" data-note="d8-status" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
@@ -23,11 +27,15 @@
 <p>推演三个场景：取已有课程得到200；创建一条笔记成功可以得到201，并通过Location指出新资源；请求未找到的课程得到404。这些码给客户端一个统一入口，但服务器仍需正确使用它们。HTTP层返回200、内容里却写业务失败，是存在的实现约定；排查时应同时看协议结果与业务内容。</p>
 <p>401与403也不能简单记成“401未登录、403已登录”。401表示缺少有效认证凭据，响应应带认证挑战；403表示服务理解请求但拒绝执行，原因可能是权限或策略，并不保证请求者已经登录。404也可能出于隐藏资源存在性的策略，并不证明磁盘上没有同名文件。</p>
 <p>304尤其容易误解。它通常表示条件请求确认缓存的表示仍可使用，不携带新的表示内容；它不是让浏览器跳去另一个地址的普通重定向。502与504则都涉及网关或代理：前者是上游响应无效，后者是没及时等到上游响应。看到5xx可以缩小检查方向，但不能只凭号码确定是哪一台机器或哪行代码坏了。</p>
+<!-- EXAMPLE:d8-status -->
+
 <details class="mini-check"><summary>小检查：一张页面的HTML返回200，图片返回404，整页请求都成功了吗？</summary><p>没有。每个HTTP请求有自己的结果，HTML与图片是不同请求。需要分别检查，不能用首页的200概括所有资源。</p></details></article>
 <article class="topic" id="d8-myths" data-topic="参数、大小、安全与包数的四个误区" data-sources="36,37,38,39,77"><div class="topic-heading"><span class="topic-number">04</span><h3>参数、大小、安全与包数的四个误区</h3><button class="topic-note-button" data-note="d8-myths" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
-<p>GET本身没有规定查询必须写成<code>?name=Li&amp;page=2</code>。问号后的query是URI的一部分，<code>键=值</code>、用<code>&amp;</code>分隔，是应用常用的解析约定。应用也可以约定<code>?red,blue</code>这样的写法，只要客户端和服务器对含义达成一致并遵守URI语法。具体服务要求怎样写参数，应看它的接口约定；不能把一种框架的解析习惯当成GET的固定格式。</p><p><strong>第一，编码不等于加密。</strong>查询参数是URI的一部分，特殊字符需要按URI规则编码。例如空格可写为<code>%20</code>，<code>name=Li%20Ming</code>仍能被解码为Li Ming。表单的某种编码还用加号表示空格，但不能推广成所有URI中的加号都表示空格。非ASCII字符通常先依约定转成字节，再用百分号表示；这并不会隐藏原文。</p>
+<p>GET本身没有规定查询必须写成<code>?name=Li&amp;page=2</code>。URI是标识资源的字符串，常见的网址URL属于其中一种。问号后的query是URI中的查询部分，<code>键=值</code>、用<code>&amp;</code>分隔，是应用常用的解析约定。应用也可以约定<code>?red,blue</code>这样的写法，只要客户端和服务器对含义达成一致并遵守URI语法。具体服务要求怎样写参数，应看它的接口约定；不能把一种框架的解析习惯当成GET的固定格式。</p><p><strong>第一，编码不等于加密。</strong>查询参数是URI的一部分，特殊字符需要按URI规则编码。例如空格可写为<code>%20</code>，<code>name=Li%20Ming</code>仍能被解码为Li Ming。表单的某种编码还用加号表示空格，但不能推广成所有URI中的加号都表示空格。非ASCII字符通常先依约定转成字节，再用百分号表示；这并不会隐藏原文。</p>
 <p><strong>第二，HTTP没有“GET一律最多2KB、POST无限大”的统一方法限制。</strong>浏览器、服务器、代理和网关可以限制请求目标、字段总量或内容大小。某条路径能接受的大小由沿途各组件共同决定。URI太长可能得到414，内容太大可能得到413；把请求换成POST也不保证穿过所有大小限制。限制是配置与实现条件，不是GET这个词自带的固定字节数。</p>
-<p><strong>第三，POST不自动获得传输保密性。</strong>使用明文HTTP时，GET的查询与POST的内容都可能被链路上的观察者读取；HTTPS通过TLS保护传输。把密码移到POST内容中有助于减少URL出现在历史、书签和某些日志里的机会，但服务器仍能读取，日志也可能记录内容。HTTPS同样不能代替权限检查。判断“安全”前必须说明是在谈方法语义、传输保密还是业务授权。</p>
+<p><strong>第三，POST不自动获得传输保密性。</strong>使用明文HTTP时，GET的查询与POST的内容都可能被链路上的观察者读取；HTTPS为HTTP增加传输加密和完整性等保护；其中使用的TLS协议在第10天展开。把密码移到POST内容中有助于减少URL出现在历史、书签和某些日志里的机会，但服务器仍能读取，日志也可能记录内容。HTTPS同样不能代替权限检查。判断“安全”前必须说明是在谈方法语义、传输保密还是业务授权。</p>
+<!-- EXAMPLE:d8-myths -->
+
 <p><strong>第四，GET不是固定一个TCP包，POST也不是固定两个。</strong>HTTP请求可能很短，也可能需要多个TCP段；字段与内容能否一起到达，取决于字节数量、缓冲、TLS、MSS和发送时机等。接收端读到的边界又可能不同。某些客户端会先发字段，用<code>Expect: 100-continue</code>等待许可后再发较大内容，这也是特定交互，不是所有POST的必经过程。</p>
 <p>用一个反例检验：上传一张3MB图片用POST，显然不可能普遍塞进“两个TCP包”；一个较长的GET请求也可能分成多段。若使用HTTP/3，底层是QUIC而不是TCP，按“方法决定TCP包数”的提问本身就失去了适用前提。可靠的分析顺序是：先看方法意图，再看消息大小和具体协议栈。</p>
 <details class="mini-check"><summary>小检查：把密码从URL搬进POST内容，就可以不用HTTPS了吗？</summary><p>不可以。位置改变不能加密传输；应使用HTTPS，并配合正确的日志、认证与权限设计。</p></details></article>

@@ -52,7 +52,7 @@
   }
   function roadmap() { $('roadmap-view').innerHTML = `<div class="roadmap-intro"><h1>12天路线</h1></div>${course.days.map(item => `${item.day === 1 || item.day === 7 ? `<h2 class="week-banner">第${item.week}周</h2>` : ''}${planCard(item)}${item.day === 6 || item.day === 12 ? '<p class="week-banner">休息日</p>' : ''}`).join('')}`; }
   function guide() {
-    const progressGuide = review ? '当前为检查入口，12天全部开放；正式学习请打开index.html，按天解锁。' : '正式学习按天解锁：完成5道自测并自评、勾选3项收尾检查后，可以标记本日完成并进入下一天。';
+    const progressGuide = review ? (course.default_mode === 'review' ? '当前为开发检查，12天全部开放。正式学习会在检查结束后启用，学习记录分开保存。' : '当前为检查入口，12天全部开放；正式学习请打开index.html，按天解锁。') : '正式学习按天解锁：完成5道自测并自评、勾选3项收尾检查后，可以标记本日完成并进入下一天。';
     $('guide-view').innerHTML = `<div class="roadmap-intro"><h1>使用说明</h1></div><section class="card"><h2>每天怎样学习</h2><p>回顾10分钟，图文主线55分钟，自测20分钟，收尾5分钟。每周六个学习日，留一天休息。</p><p>计时归类需手动选择；它只记录用时，不会判断掌握程度。切到后台会暂停。</p><p>${progressGuide}</p></section><section class="card"><h2>学习模式与笔记</h2><p>学习模式收起两侧栏。每个知识点的“笔记”打开独立记录，支持复制粘贴，输入后自动保存。按Esc先收起笔记，再退出学习模式。</p></section><section class="card"><h2>换电脑继续</h2><ol><li>把项目从GitHub拉到另一台电脑，打开index.html。</li><li>在当前电脑“导出学习记录”，把JSON文件带过去，再“导入学习记录”。</li><li>在另一台电脑继续同一聊天，或将拉下来的项目文件夹关联到新的本地项目。</li></ol><p>课件代码、浏览器学习记录和GPT聊天历史是三件不同的事，不会因同一个账户自动合并。没有文件访问权限时，用“导出本课交接”把当前内容与笔记提供给GPT。</p><p>编写检查记录与正式学习记录分开。</p></section>`;
   }
   function ratingButtons(id, quiz = false) {
@@ -206,7 +206,7 @@
     download(lines.join('\n\n'), `network-course-day-${day}-handoff.md`, 'text/markdown;charset=utf-8');
   }
   const layerInfo = {
-    application: ['应用层：约定交流内容。', 'HTTP表达请求与响应；DNS查询域名对应的记录。'], transport: ['传输层：应用端点之间的运输。', 'TCP提供可靠有序的字节流；UDP提供数据报传输。端口属于这一层。'], network: ['网络层：跨网络寻址与转发。', 'IP地址参与寻址，路由器决定下一跳。'], link: ['链路层：当前链路的交付。', '例如以太网和Wi-Fi的链路机制。'], physical: ['物理层：用信号承载比特。', '例如电信号、光信号与无线电信号。']
+    application: ['应用层：表达请求和响应的含义。', '浏览器需要说清“我要课程首页”，网站需要按双方约定的规则回答。它们交流的内容由这一层解释。'], transport: ['传输层：提供程序之间的数据传输服务。', '本例需要把数据可靠、有序地交给对方程序。传输层负责提供这种服务；它不替网站解释请求的业务含义。'], network: ['网络层：跨网络寻址与转发。', '目标可能不在当前网络，需要标明网络地址，并由连接不同网络的设备继续转发。'], link: ['链路层：完成当前这一步的交付。', '通往远方的传输可能经过多段连接。每一步都要先把数据交给当前链路上的相邻设备。'], physical: ['物理层：用信号承载信息。', '数据最终需要通过电、光或无线电信号传出去，接收设备再从信号中恢复信息。']
   };
   function changeLayer(key) { const info = layerInfo[key]; if (!info) return; document.querySelectorAll('[data-layer]').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.layer === key))); document.querySelectorAll('[data-stack]').forEach(el => el.classList.toggle('active', el.dataset.stack === key)); $('layer-explanation').innerHTML = `<strong>${info[0]}</strong><p>${info[1]}</p>`; }
   function envelope() {
@@ -214,6 +214,7 @@
     let html = `<div class="packet" data-level="0">${labels[0]}</div>`;
     for (let i = 1; i <= encap; i++) html = `<div class="packet"><span class="packet-label">${labels[i]}</span>${html}</div>`;
     $('encap-visual').innerHTML = html; $('encap-step').textContent = `${encap} / 3`; $('encap-next').disabled = encap === 3;
+    $('encap-visual').setAttribute('aria-label', encap ? `从外到内：${labels.slice(0, encap + 1).reverse().join('；')}` : '只有应用请求数据，尚未添加传输、网络和链路控制信息');
     $('encap-description').textContent = ['应用组织好请求数据。', 'TCP加入端口等传输控制信息。', 'IP加入源与目标地址等网络控制信息。', '链路层形成帧，接着用物理信号传送。'][encap];
   }
   function hopSteps(remote) {

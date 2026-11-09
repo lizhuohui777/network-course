@@ -7,6 +7,8 @@
 <figure class="figure"><div class="table-wrap"><table class="data-table"><caption>第二段丢失时，接收方的连续边界停在哪里？</caption><thead><tr><th>到达的数据</th><th>接收方情况</th><th>累计确认</th></tr></thead><tbody><tr><td>1001—1100</td><td>连续收到第一段</td><td>ACK 1101</td></tr><tr><td>1101—1200丢失</td><td>中间出现缺口</td><td>仍期望1101</td></tr><tr><td>1201—1300</td><td>后段可被暂存，但缺口未补上</td><td>ACK 1101</td></tr><tr><td>重传1101—1200到达</td><td>三段连成完整连续范围</td><td>ACK 1301</td></tr></tbody></table></div><figcaption>图1 · 累计确认跨越的是连续字节；接收方对乱序数据的缓冲受自身资源约束。</figcaption></figure>
 <p>若启用了<strong>SACK（选择确认）</strong>，接收方还能报告“后面哪些字节块也已收到”，帮助发送方更准确地选择重传范围；累计确认号仍保留“前方连续边界”的含义。字节重传可能被重新分段，不要求每次恢复原来的包形状。</p>
 <p>再看确认丢失：接收方已拿到1001—1100，但ACK在路上消失。发送方可能把这些字节重传。接收方根据序号识别重复，正常情况下不会把同一批字节再次作为新内容交给应用。<strong>TCP的确认表示对端TCP已收到相应字节，不表示业务已经成功。</strong>服务器收到“转账”后可能尚未提交数据库；是否成功要等应用层结果。</p>
+<!-- EXAMPLE:d6-reliability -->
+
 <p>把连接串起来：握手交换初始序号并建立状态；传输阶段按字节确认与恢复；发送方向结束时FIN也占一个序号，允许对端确认“这边已经没有更多字节”。发生无法恢复的故障，应用最终会看到连接失败，而不是得到“永远保证送达”的承诺。</p>
 <details class="mini-check"><summary>小检查：收到ACK 1301，能推出对方已显示了这300字节吗？</summary><p>不能。只能据此知道相应连续字节被对端TCP确认。应用何时读取、解释或显示，是更上层的事情。</p></details></article>
 <article class="topic" id="d6-rto" data-topic="用往返时间设置重传等待" data-sources="94"><div class="topic-heading"><span class="topic-number">02</span><h3>用往返时间设置重传等待</h3><button class="topic-note-button" data-note="d6-rto" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
@@ -14,21 +16,28 @@
 <p>RFC 6298用平滑的RTT估计SRTT，以及衡量变化的RTTVAR，形成RTO。可以先理解为“典型往返耗时，加上给波动留的余量”。它还考虑计时器粒度，并建议计算后小于1秒的RTO向上取到1秒。这里描述规范的基础算法，不能据此断言每个系统、每个场景的实际计时值都相同。</p>
 <figure class="figure"><div class="flow" role="img" aria-label="发送数据后等待确认；收到新确认更新计时，超时则重传并扩大等待时间"><div class="endpoint"><strong>发送数据</strong><span>启动重传计时</span></div><div class="flow-middle"><span class="flow-arrow">→</span>有新确认：推进边界<br>超时：重传未确认数据<span class="flow-arrow">→</span></div><div class="endpoint"><strong>继续观察</strong><span>超时后RTO翻倍<br>后续有效样本再校准</span></div></div><figcaption>图2 · 超时是恢复信号，不是“已经证明对方没收到”的证据。</figcaption></figure>
 <p>具体算一次：暂取SRTT=200毫秒、RTTVAR=50毫秒，忽略更大的计时粒度，原始估计为200+4×50=400毫秒。本例按RFC 6298的基础建议取1秒。如果超时重传后仍无进展，等待可从1秒退避为2秒、4秒。<strong>指数退避</strong>避免在疑似不通或拥挤的网络里不停追加同样频率的重传。</p>
-<p>重传还带来测量歧义：同一字节发过两次后，返回的确认到底对应第一次还是第二次？没有额外信息时不能随意拿它测RTT，这就是Karn算法关注的问题；时间戳选项等机制可以帮助消除歧义。下一课还会看到：重复确认能在超时之前提示缺口，不是所有重传都必须等待RTO。</p>
+<!-- EXAMPLE:d6-rto -->
+
+<details class="mini-check"><summary>重传后的确认为什么不一定能用来测RTT？</summary><p>重传还带来测量歧义：同一字节发过两次后，返回的确认到底对应第一次还是第二次？没有额外信息时不能随意拿它测RTT，这就是Karn算法关注的问题；时间戳选项等机制可以帮助消除歧义。下一课还会看到：重复确认能在超时之前提示缺口，不是所有重传都必须等待RTO。</p></details>
 <details class="mini-check"><summary>小检查：RTT最近约80毫秒，RTO就必须是80毫秒吗？</summary><p>不必。RTO包含时延波动余量、计时规则与规范约束；用单次RTT直接替代会把正常延迟误判为丢包。</p></details></article>
 <article class="topic" id="d6-stream" data-topic="字节流不保留发送调用的边界" data-sources="8"><div class="topic-heading"><span class="topic-number">03</span><h3>字节流不保留发送调用的边界</h3><button class="topic-note-button" data-note="d6-stream" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
 <p>假设应用先调用一次发送，内容是<code>HELLO</code>，再发一次<code>WORLD</code>。TCP保证正常交付的字节顺序是<code>HELLOWORLD</code>，却不保证接收方两次读取分别得到这两块。它可能读到<code>HEL</code>、<code>LOWORLD</code>，也可能一次读到全部十个字节。接收调用还可能只返回当前可用的一部分。</p>
 <p>原因不是TCP“丢了消息”。<strong>TCP从来没有承诺为应用保存每次发送调用的边界。</strong>操作系统会缓冲数据，TCP按MSS、窗口和网络条件分段；接收端又按应用提供的缓冲区及数据就绪情况读取。应用调用、TCP报文段、接收调用，是三个不同层面的划分。</p>
+<!-- EXAMPLE:d6-stream -->
+
 <figure class="figure"><div class="stack"><div class="stack-row"><strong>应用两次发送</strong><span>HELLO ｜ WORLD</span></div><div class="stack-row"><strong>TCP字节顺序</strong><span>H E L L O W O R L D</span></div><div class="stack-row"><strong>一种合法读取</strong><span>HEL ｜ LOWO ｜ RLD</span></div></div><figcaption>图3 · 分隔线表示调用边界，不是流中自带的字符；可靠性没有赋予业务消息边界。</figcaption></figure>
 <p>人们常把多条消息一起读到叫“粘包”，把一条消息分开读到叫“拆包”。这些叫法描述应用观察到的结果，不能用来推断网络里真的存在一个应当一一对应的“消息包”。禁用某种缓冲优化、加大接收缓冲区或让发送之间暂停，都不是可靠的消息划分协议：网络与调度变化后，边界仍可能改变。</p>
 <p>例如聊天协议连续发送“你好”和“再见”，若只在每次读取后显示一条聊天记录，就可能显示成“你好再见”或半句话。应先在接收缓存中累积字节，依协议提取完整消息，剩余字节留给下一次继续解析。字符编码也有边界：一个UTF-8汉字可能占多个字节，不能把任意读取片段都当成独立完整文本解码。</p>
 <details class="mini-check"><summary>小检查：发送方一次发送100字节，接收方必须一次读满100字节吗？</summary><p>不必须。读取可能返回部分数据。需要100字节的应用应循环收集，处理结束和错误；若这100字节是一条消息，还需要已约定的边界规则。</p></details></article>
 <article class="topic" id="d6-framing" data-topic="用明确规则从流中取出消息" data-sources="66,S1"><div class="topic-heading"><span class="topic-number">04</span><h3>用明确规则从流中取出消息</h3><button class="topic-note-button" data-note="d6-framing" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
 <p>应用把业务消息编码成可解析的字节格式，这一步可叫<strong>成帧或消息封装</strong>。它解决“这一条在哪里结束、下一条从哪里开始”，与TCP/IP添加首部的分层封装相关，但不是同一层的工作。常见规则有三种：固定长度、特殊分隔符、长度前缀。</p>
-<div class="table-wrap"><table class="data-table"><caption>选择消息边界时，要同时约定异常情况</caption><thead><tr><th>规则</th><th>例子</th><th>需要处理的问题</th></tr></thead><tbody><tr><td>固定长度</td><td>每条记录恰好16字节</td><td>短内容怎样填充，长内容怎样表示</td></tr><tr><td>分隔符</td><td>每行一条，以换行结束</td><td>正文含换行时怎样转义或编码</td></tr><tr><td>长度前缀</td><td>先写4字节长度，再写正文</td><td>长度字段的字节序、单位和最大值</td></tr></tbody></table></div>
-<p>推演一个长度前缀协议：头部固定2字节，无符号大端整数，数值表示后面正文的<strong>字节数</strong>，且最多4096字节。两条正文是<code>CAT</code>和<code>DOGS</code>，流中就是<code>00 03 C A T 00 04 D O G S</code>。第一次只收到<code>00</code>，连头部都不完整，继续等；第二次收到<code>03 C A</code>，知道正文长3但只有2字节，继续等；第三次收到余下内容，才取出CAT，再解析下一个头部并取出DOGS。</p>
-<p>解析器每次都先问“头部够了吗”，再问“正文够了吗”。如果一读得到三条完整消息，就循环取出三条；如果末尾还残留半条，就保留。这种方法自然应对任意拆分与合并。读取遇到连接结束时，若缓存里仍缺正文，就应报告消息不完整，不能把残缺内容当作成功消息。</p>
-<p>为什么要限制4096？长度前缀来自对端，不能未经检查便按其要求分配巨大内存。“长度=5”也不能自行理解为五个汉字：在本例中它是五字节。双方还应约定文本编码、错误处理和等待期限，才有一个可以互通的协议。HTTP等成熟协议已有自己的消息或帧结构，应用应遵守对应版本的规则。</p>
+<div class="table-wrap"><table class="data-table"><caption>三种常见的应用消息定界规则</caption><thead><tr><th>规则</th><th>例子</th><th>需要约定什么</th></tr></thead><tbody><tr><td>固定长度</td><td>每条恰好16字节</td><td>短内容怎样填充，长内容怎样处理</td></tr><tr><td>分隔符</td><td>每行一条，以换行结束</td><td>正文含换行时怎样转义</td></tr><tr><td>长度前缀</td><td>先写1字节长度，再写正文</td><td>长度的单位、上限及异常处理</td></tr></tbody></table></div>
+<p>用一套具体规则推演：头部用1字节表示后面正文的<strong>字节数</strong>，本协议只允许0—100字节。正文为英文<code>HELLO</code>，本例按ASCII编码，每个英文字母占1字节，所以正文长5字节。流中的结构为“长度5｜H E L L O”；图中用<code>0x05</code>表示数值5这个字节，<code>0x</code>是十六进制写法的前缀，不是另外发送的字符。</p>
+<p>先收到长度5和<code>HE</code>时，正文还缺3字节，保留已有内容继续收；再收到<code>LLO</code>，才够一条完整消息。若后面还跟着下一条的长度头，就继续解析，不把所有字节都归给第一条。</p>
+<!-- EXAMPLE:d6-framing -->
+
+<p>解析时先检查头部是否完整、长度是否合法，再检查正文是否够长。缓存里的半条消息应保留；若连接已经结束却仍缺字节，应报告消息不完整。分隔符方案也要限制缓存和等待时间，不能无限积累。</p>
+<p>本例用1字节长度，只是双方约定的一种格式；其他协议可以使用更长的长度字段。字节数也不等于字符数，例如UTF-8中的一个汉字可能占多个字节。HTTP等成熟协议已有自己的定界规则，应按对应版本解析。</p>
 <details class="mini-check"><summary>小检查：约定换行分隔，聊天正文自己也能含换行，怎么办？</summary><p>必须另定转义、编码或改用长度前缀；只靠“看到换行就切开”会把正文内部的换行误作消息结束。</p></details></article>
 </section>
 <section class="lesson-section" id="d6-quiz" data-phase="quiz"><div class="section-heading"><h2><span class="section-number">03</span>理解自测</h2></div>

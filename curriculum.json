@@ -1,6 +1,6 @@
 {
   "id": "network-foundations-12",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "default_mode": "study",
   "checked_at": "2026-11-08",
   "title": "计算机网络 · 两周入门",
@@ -64,7 +64,7 @@
       ],
       "goals": [
         "链路和跨网络转发的区别",
-        "域名如何变成可用地址",
+        "域名怎样查到候选IP地址",
         "递归与迭代、缓存与分流"
       ],
       "exit": "画出DNS查询步骤，说明Ping能检查什么。",
