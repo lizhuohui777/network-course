@@ -6,7 +6,7 @@
 
 原有正文位于 `lessons/`，所有知识点新增的基础解释与分步示例位于 `interactive-examples.json`，由构建合并到两份自包含HTML；顺序与105个网站知识点映射位于 `curriculum.json`。每天包含回忆检查、今日主线、五道理解自测、三项收尾检查。每个 `.topic` 有稳定ID、网站知识点关联和独立笔记。
 
-当前为正式学习：`curriculum.json` 的 `default_mode` 为 `study`，默认入口 `index.html` 按天解锁；`review.html` 仍开放全部12天，使用独立检查记录。检查记录不能当成正式进度。当前没有任何实际学习完成或掌握度报告，不应因为内容已写好就认定学习者学过。
+当前为正式学习：`curriculum.json` 的 `default_mode` 为 `study`，默认入口 `index.html` 按天解锁；`review.html` 仍开放全部12天，使用独立检查记录。检查记录不能当成正式进度。用户已在另一台电脑学习一两课；具体完成标记和掌握程度以学习者提供的记录为准。
 
 换电脑：GitHub clone/pull携带代码和HTML；浏览器笔记、进度通过JSON导出/导入；GPT聊天历史与本地文件权限另行处理。不能承诺同账户自动同步本地文件或浏览器数据。
 

@@ -53,7 +53,7 @@
   function roadmap() { $('roadmap-view').innerHTML = `<div class="roadmap-intro"><h1>12天路线</h1></div>${course.days.map(item => `${item.day === 1 || item.day === 7 ? `<h2 class="week-banner">第${item.week}周</h2>` : ''}${planCard(item)}${item.day === 6 || item.day === 12 ? '<p class="week-banner">休息日</p>' : ''}`).join('')}`; }
   function guide() {
     const progressGuide = review ? (course.default_mode === 'review' ? '当前为开发检查，12天全部开放。正式学习会在检查结束后启用，学习记录分开保存。' : '当前为检查入口，12天全部开放；正式学习请打开index.html，按天解锁。') : '正式学习按天解锁：完成5道自测并自评、勾选3项收尾检查后，可以标记本日完成并进入下一天。';
-    $('guide-view').innerHTML = `<div class="roadmap-intro"><h1>使用说明</h1></div><section class="card"><h2>每天怎样学习</h2><p>回顾10分钟，图文主线55分钟，自测20分钟，收尾5分钟。每周六个学习日，留一天休息。</p><p>计时归类需手动选择；它只记录用时，不会判断掌握程度。切到后台会暂停。</p><p>${progressGuide}</p></section><section class="card"><h2>学习模式与笔记</h2><p>学习模式收起两侧栏。每个知识点的“笔记”打开独立记录，支持复制粘贴，输入后自动保存。按Esc先收起笔记，再退出学习模式。</p></section><section class="card"><h2>换电脑继续</h2><ol><li>把项目从GitHub拉到另一台电脑，打开index.html。</li><li>在当前电脑“导出学习记录”，把JSON文件带过去，再“导入学习记录”。</li><li>在另一台电脑继续同一聊天，或将拉下来的项目文件夹关联到新的本地项目。</li></ol><p>课件代码、浏览器学习记录和GPT聊天历史是三件不同的事，不会因同一个账户自动合并。没有文件访问权限时，用“导出本课交接”把当前内容与笔记提供给GPT。</p><p>编写检查记录与正式学习记录分开。</p></section>`;
+    $('guide-view').innerHTML = `<div class="roadmap-intro"><h1>使用说明</h1></div><section class="card"><h2>每天怎样学习</h2><p>回顾10分钟，图文主线55分钟，自测20分钟，收尾5分钟。每周六个学习日，留一天休息。</p><p>计时归类需手动选择；它只记录用时，不会判断掌握程度。切换标签页继续计时，休息时请手动暂停。关闭或刷新时保存用时，重新打开后保持暂停。</p><p>${progressGuide}</p></section><section class="card"><h2>学习模式与笔记</h2><p>学习模式收起两侧栏。每个知识点的“笔记”打开独立记录，支持复制粘贴，输入后自动保存。按Esc先收起笔记，再退出学习模式。</p></section><section class="card"><h2>换电脑继续</h2><ol><li>把项目从GitHub拉到另一台电脑，打开index.html。</li><li>在当前电脑“导出学习记录”，把JSON文件带过去，再“导入学习记录”。</li><li>在另一台电脑继续同一聊天，或将拉下来的项目文件夹关联到新的本地项目。</li></ol><p>课件代码、浏览器学习记录和GPT聊天历史是三件不同的事，不会因同一个账户自动合并。没有文件访问权限时，用“导出本课交接”把当前内容与笔记提供给GPT。</p><p>编写检查记录与正式学习记录分开。</p></section>`;
   }
   function ratingButtons(id, quiz = false) {
     const labels = quiz ? ['能独立解释', '只答对部分', '需要重学'] : ['已理解', '有点模糊', '需要补充'];
@@ -308,7 +308,7 @@
     } catch (error) { toast(`未导入：${error.message}`); }
     finally { event.target.value = ''; }
   });
-  document.addEventListener('visibilitychange', () => { if (document.hidden && running) pause(); });
+  document.addEventListener('visibilitychange', () => { if (running) { tick(); save(); renderTimer(); } });
   window.addEventListener('pagehide', pause);
   let ticks = 0; setInterval(() => { if (running) { tick(); renderTimer(); if (++ticks % 10 === 0) save(); } }, 1000);
   document.body.classList.toggle('review-mode', review);
