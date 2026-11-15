@@ -7,6 +7,7 @@
   const icons = {
     laptop:'<rect x="-28" y="-22" width="56" height="37" rx="4"/><path d="M-34 22H34L38 28H-38Z"/><path d="M-19-11H19M-19-3H8"/>',
     server:'<rect x="-22" y="-27" width="44" height="56" rx="5"/><path d="M-22-9H22M-22 10H22M-5-19H13M-5 1H13M-5 20H13"/><circle cx="-13" cy="-19" r="2"/><circle cx="-13" cy="1" r="2"/><circle cx="-13" cy="20" r="2"/>',
+    port:'<rect x="-23" y="-23" width="46" height="46" rx="4"/><path d="M-13-10H13V10H-13Z M-7 11V22M0 11V22M7 11V22"/>',
     database:'<ellipse cx="0" cy="-20" rx="29" ry="10"/><path d="M-29-20V21C-29 35 29 35 29 21V-20M-29 0C-29 14 29 14 29 0"/>',
     cache:'<path d="M-29-13H29V27H-29Z M-33-23H33V-12H-33Z M-10 2H10"/>',
     document:'<path d="M-22-28H11L25-14V29H-22Z M11-28V-14H25M-12-3H14M-12 7H14M-12 17H6"/>',
@@ -27,6 +28,7 @@
   function network(example, config, step) {
     const nodes = config.nodes.map((n,i) => ({...n,x:n.x ?? (config.nodes.length===1 ? 400 : 90+i*620/(config.nodes.length-1)),y:n.y ?? (config.nodes.length===3 ? (i===1 ? 65 : 200) : 145)}));
     const byId = Object.fromEntries(nodes.map(n=>[n.id,n]));
+    const groups = (config.groups || []).map(g=>`<g><rect x="${g.x}" y="${g.y}" width="${g.width}" height="${g.height}" rx="18" fill="#f1f4f0" stroke="#c9d5cc"/>${svgText(g.label,g.x+g.width/2,g.y+25,'ex-node-label',32)}</g>`).join('');
     const route = (a,b) => {const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy);return {x1:a.x+dx/d*49,y1:a.y+dy/d*49,x2:b.x-dx/d*49,y2:b.y-dy/d*49};};
     const pairs = new Map();
     for(const c of example.cases) for(const s of c.steps) for(const f of s.flows || []) if(byId[f.from] && byId[f.to]) pairs.set([f.from,f.to].sort().join(':'),f);
@@ -39,7 +41,7 @@
       return `<g class="ex-current-flow"><line x1="${p.x1}" y1="${p.y1}" x2="${x}" y2="${y}" stroke="${color}" stroke-width="4"/>${f.tone==='blocked' ? `<path d="M${x-7} ${y-7}L${x+7} ${y+7}M${x+7} ${y-7}L${x-7} ${y+7}" stroke="${color}" stroke-width="3"/>` : `<path d="M-12-6L0 0L-12 6" fill="none" stroke="${color}" stroke-width="3" transform="translate(${x} ${y}) rotate(${angle})"/>`}<circle r="5" fill="${color}" class="ex-moving"><animateMotion dur=".65s" fill="freeze" path="M${p.x1} ${p.y1}L${x} ${y}"/></circle>${svgText(f.label,(p.x1+x)/2+(Math.abs(dx)<80 ? 60 : 0),(p.y1+y)/2-16,'ex-flow-label',19)}</g>`;
     }).join('');
     const actors = nodes.map(n=>`<g class="ex-actor ${(step.active||[]).includes(n.id)?'is-active':''}" transform="translate(${n.x} ${n.y})"><rect x="-45" y="-38" width="90" height="78" rx="13"/><g class="ex-icon">${icons[n.kind] || icons.server}</g>${svgText(n.label,0,61,'ex-node-label',12)}${step.states?.[n.id] ? svgText(step.states[n.id],0,86,'ex-node-state',14):''}</g>`).join('');
-    return `<svg viewBox="0 0 800 365" role="img" aria-label="${esc(step.title+'。'+(step.flows||[]).map(f=>byId[f.from].label+'向'+byId[f.to].label+'：'+f.label).join('；'))}">${base}${flows}${actors}</svg>`;
+    return `<svg viewBox="0 0 800 365" role="img" aria-label="${esc(step.title+'。'+(config.groups||[]).map(g=>g.label).join('；')+'。'+(step.flows||[]).map(f=>byId[f.from].label+'向'+byId[f.to].label+'：'+f.label).join('；'))}">${groups}${base}${flows}${actors}</svg>`;
   }
   function blocks(config, step) {
     return `<div class="ex-rows">${(step.rows||config.rows).map(row=>`<div class="ex-data-row"><strong>${esc(row.label)}</strong><div class="ex-cells">${row.cells.map(cell=>{const status=step.statuses?.[cell.id];return `<div class="ex-cell ${(step.active||[]).includes(cell.id)?'is-active':''} ${status||''}"><span>${esc(cell.text)}</span>${status ? `<small>${esc(statusNames[status])}</small>`:''}</div>`;}).join('')}</div></div>`).join('')}</div>${config.scaleNote ? `<p class="ex-scale-note">${esc(config.scaleNote)}</p>` : ''}`;
@@ -84,7 +86,7 @@
   function diagramText(config, step) {
     if(config.kind==='network') {
       const names=Object.fromEntries(config.nodes.map(n=>[n.id,n.label]));
-      return ['图中参与方：'+config.nodes.map(n=>n.label).join('、'),...(step.flows||[]).map(f=>`${names[f.from]} → ${names[f.to]}：${f.label}${f.tone==='blocked'?'（图中丢失或过滤，未到达接收方）':''}`),...Object.entries(step.states||{}).map(([id,state])=>`${names[id]}状态：${state}`)].join('；');
+      return [...(config.groups||[]).map(g=>'图中设备范围：'+g.label),'图中参与方：'+config.nodes.map(n=>n.label).join('、'),...(step.flows||[]).map(f=>`${names[f.from]} → ${names[f.to]}：${f.label}${f.tone==='blocked'?'（图中丢失或过滤，未到达接收方）':''}`),...Object.entries(step.states||{}).map(([id,state])=>`${names[id]}状态：${state}`)].join('；');
     }
     if(config.kind==='blocks') return (config.scaleNote ? config.scaleNote+'\n' : '')+'图中区块：'+(step.rows||config.rows).map(row=>row.label+'：'+row.cells.map(cell=>cell.text+(step.statuses?.[cell.id]?'（'+statusNames[step.statuses[cell.id]]+'）':'')).join(' | ')).join('；');
     return `图中横轴：${config.xLabel}；纵轴：${config.yLabel}；坐标：${step.points.map(p=>'('+p.join(', ')+')').join('、')}`;

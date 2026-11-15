@@ -21,6 +21,11 @@ def validate_examples(examples, topic_ids):
             if kind == 'network':
                 assert 2 <= len(nodes) == len(config['nodes']) <= 5, topic_id
                 assert all(n['label'] and n['kind'] for n in config['nodes']), topic_id
+                for group in config.get('groups', []):
+                    assert group.get('label'), (topic_id, 'group label missing')
+                    assert all(isinstance(group.get(k), (int, float)) for k in ('x', 'y', 'width', 'height')), topic_id
+                    assert 0 <= group['x'] < group['x'] + group['width'] <= 800, (topic_id, 'group outside canvas')
+                    assert 0 <= group['y'] < group['y'] + group['height'] <= 365, (topic_id, 'group outside canvas')
             for step in case['steps']:
                 assert step['title'] and len(step['text']) >= 25, (topic_id, step['title'])
                 if kind == 'network':

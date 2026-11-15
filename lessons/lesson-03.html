@@ -1,32 +1,38 @@
 <section class="card lesson-goals"><h2>本课的三个问题</h2><ol class="objectives"><li>TCP的字节流与UDP的数据报边界有什么区别？</li><li>MTU、MSS与应用消息大小如何分开？</li><li>为什么普通DNS查询也可能走TCP？</li></ol><div class="day-source-links" data-day-sources></div></section><section class="lesson-section" id="d3-warmup" data-phase="recall"><div class="section-heading"><h2><span class="section-number">01</span>回忆检查</h2></div><details class="mini-check"><summary>回顾1：设备与递归解析器之间的递归请求是什么意思？</summary><p>请解析器继续查找并返回最终结果或错误；解析器再依据委派线索查询其他服务器。</p></details><details class="mini-check"><summary>回顾2：DNS缓存为什么会影响地址更新？</summary><p>记录可以在TTL约束内被继续使用；权威记录变化不会立即抹掉所有客户端或解析器的旧缓存。</p></details><details class="mini-check"><summary>回顾3：Ping成功是否证明TCP443可用？</summary><p>不能。Ping通常检查ICMP Echo往返，与TCP端口及应用业务是不同测试。</p></details></section><section class="lesson-section lesson-main" id="d3-main" data-phase="main"><div class="section-heading"><h2><span class="section-number">02</span>今日主线</h2></div><article class="topic" id="d3-tcp-stream" data-topic="TCP提供可靠的有序字节流" data-sources="50,87,88"><div class="topic-heading"><span class="topic-number">01</span><h3>TCP提供可靠的有序字节流</h3><button class="topic-note-button" data-note="d3-tcp-stream" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
 <p>应用先要决定希望下层提供什么运输服务。下载文件时，少一个字节、调换一段顺序都可能使文件损坏；应用不想自己反复追问每段是否收到。<strong>TCP在两个端点之间提供可靠、有序的字节流服务。</strong>它建立连接，给字节编号，依据确认和重传处理网络中的丢失，把可交付的数据按顺序交给接收应用。</p>
 <p>“可靠”不是网络永不丢包，而是TCP尝试恢复丢失并检测失败。如果网络长期中断，连接可能报错，应用仍需决定重试或向用户说明失败。对方TCP确认了字节，也不等于对方业务已经写入数据库：运输层的接收与业务层完成是两个事件。转账程序因此仍需要应用层的结果确认。</p>
-<figure class="figure"><div class="flow" role="img" aria-label="应用写入连续字节，TCP分段并经网络传送，接收端重组为同序字节，应用自行解析消息"><div class="endpoint"><strong>发送应用</strong><span>写入 ABC 与 DEF</span></div><span class="flow-arrow">→</span><div class="endpoint"><strong>TCP与网络</strong><span>可能分成不同的段<br>确认、重传、排序</span></div><span class="flow-arrow">→</span><div class="endpoint"><strong>接收应用</strong><span>得到 ABCDEF 字节流<br>自行识别消息边界</span></div></div><figcaption>图1 · 可靠和有序针对字节；应用写入次数、TCP段数和应用读取次数没有一一对应关系。</figcaption></figure>
-<p>这里“写入”指应用把字节交给TCP，“读取”指接收应用从TCP取走已经可以交付的字节。例如应用先写<code>HELLO</code>再写<code>WORLD</code>。接收端可能一次读到<code>HELLOWORLD</code>，也可能先读到<code>HEL</code>，后读到其余部分。只要在正常交付的字节流里内容和顺序符合约定，这两种结果都合理。TCP不会自动附上“这是第一条消息”的标签。长度字段、分隔符等应用规则负责划分消息，第6天会具体练习。</p>
+<figure class="figure"><div class="flow" role="img" aria-label="应用写入HELLO与WORLD，TCP分段并经网络传送，接收端重组为HELLOWORLD字节流，应用自行解析消息"><div class="endpoint"><strong>发送应用</strong><span>写入 HELLO 与 WORLD</span></div><span class="flow-arrow">→</span><div class="endpoint"><strong>TCP与网络</strong><span>可能分成不同的段<br>确认、重传、排序</span></div><span class="flow-arrow">→</span><div class="endpoint"><strong>接收应用</strong><span>得到 HELLOWORLD 字节流<br>自行识别消息边界</span></div></div><figcaption>图1 · 本例英文字符各占1字节。可靠和有序针对字节，应用调用次数与段数没有一一对应关系。</figcaption></figure>
+<p>这里“写入”指应用把字节交给TCP，“读取”指接收应用从TCP取走已可交付的字节。发送方先写<code>HELLO</code>、再写<code>WORLD</code>，TCP面对的是连续十个字节<code>HELLOWORLD</code>。如果接收时十个字节都可读取，应用可能一次取走；如果先只取到三个字节，得到<code>HEL</code>，后续再取到<code>LOWORLD</code>。<strong>将读取结果拼起来，内容和顺序相同；两次发送调用之间的分界却没有被传过去。</strong></p>
+<p>因此，运输完整字节和识别两条业务消息是两项任务。TCP负责前者；应用若要分别处理HELLO与WORLD，还须约定长度或分隔符，第6天会把这一步写完整。</p>
 <!-- EXAMPLE:d3-tcp-stream -->
 
 <p>TCP是全双工的：连接的两个方向可以各自发送数据。端点由地址与端口等信息区分；服务器的同一个监听端口可以接待多个连接，不能把端口看成一人占用的座位。所谓“面向连接”，指双方维护与这次通信有关的状态，并不意味着互联网铺出一根独占网线。</p>
 <p>HTTP/1.1、HTTP/2等应用协议使用TCP提供的传输服务。TCP运送的是字节，并不替应用决定这些字节代表网页、文件还是其他内容。不同应用也可以选择其他传输方式。</p>
 <details class="mini-check"><summary>小检查：发送方写两次，接收方就应读两次吗？</summary><p>不应这样假设。TCP只保证所交付字节的顺序和可靠性，不保留应用写入的消息边界。应用需要按协议累计与解析字节。</p></details></article><article class="topic" id="d3-udp-datagram" data-topic="UDP保留数据报边界" data-sources="85,86,89"><div class="topic-heading"><span class="topic-number">02</span><h3>UDP保留数据报边界</h3><button class="topic-note-button" data-note="d3-udp-datagram" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
 <p>另一些应用更需要一份一份地发送数据，并自己决定超时、恢复或丢弃的方式。<strong>UDP提供数据报服务：应用交付一份数据，UDP形成一份数据报。</strong>每份有源、目标端口、长度、校验和等首部字段。普通UDP首部为8字节，比不含选项的TCP首部20字节小，但首部更短不等于任何场景都更快。</p>
-<p>UDP本身不建立TCP式连接，不提供重传、顺序交付、去重、流量控制或拥塞控制。这表示应用可能看到丢失、乱序和重复，需要时由上层补上。校验和用于检测传输差错，不是加密，也不能证明发送者可信。对于普通IPv6 UDP通信，校验和一般不能省略；不能从早期IPv4规则推断所有UDP都可不校验。</p>
-<p>保留边界指接收接口仍以数据报为单位处理，不会像TCP一样将两份数据报自然合成一条无边界字节流。接收缓冲区太小还可能截断数据报，具体行为取决于接口。<strong>边界存在不意味着一定到达，也不意味着数据报到达顺序不变。</strong></p>
+<p>先走一次两份短数据报都到达的过程。发送应用交付A，UDP把它装成一份数据报并发送；应用再交付B，UDP又发送一份。接收端收到A，把A作为一份数据交给应用；收到B，也把B单独交给应用。<strong>接收接口保留每份数据报的边界，不会自然给出一条AB字节流。</strong></p>
 <!-- EXAMPLE:d3-udp-datagram -->
+
+<p>现在只改变一个条件：A在路上丢失，B到达。接收应用只取得B；UDP不会自行重传A，也不会为了等A而扣住B。<strong>“能分清一份数据的边界”和“保证每份数据到达”是不同承诺。</strong>UDP本身不提供TCP式连接建立、重传、有序交付和去重；应用如需这些能力，要由上层协议提供。</p>
+<details class="mini-check"><summary>UDP首部和接收接口还有哪些限制？</summary><p>校验和用于检测差错，不是加密或身份认证。普通IPv6 UDP通信一般不能省略校验和；IPv4的历史规则不能推广到所有UDP。接收缓冲区太小可能截断数据报，具体行为取决于接口，应用应检查实际返回结果。</p></details>
 
 <p>例子：语音每隔一小段时间生成一帧声音。很晚才到的一帧可能已经错过播放时机，应用可以跳过它，并用缓冲、编码等方法改善体验。文件下载则必须把缺失内容补齐。前者可能选择UDP配合实时协议，后者常选可靠运输；但不能简化成“视频都用UDP、文件都用TCP”，视频点播也大量使用HTTP与可靠运输。</p>
 <p>选择应问四件事：是否必须完整有序；丢失能否容忍；延迟与过时数据怎样权衡；应用有没有能力补足所需机制。QUIC是一种建立在UDP之上的传输协议，在其上补充可靠流、拥塞控制和安全握手等能力，说明“UDP本身不可靠”与“UDP上的协议能提供可靠服务”并不冲突。主动向互联网持续发UDP也必须考虑拥塞，不能把无内置控制当成无限发送的许可。</p>
 <details class="mini-check"><summary>小检查：一个UDP应用需要可靠交付，是否只能改成TCP？</summary><p>不是。它可以使用UDP之上的可靠协议，但必须承担重传、拥塞等机制的设计与成本。使用TCP或QUIC等成熟协议通常更省去这部分工作。</p></details></article><article class="topic" id="d3-sizes" data-topic="MTU、MSS与数据大小" data-sources="45,92"><div class="topic-heading"><span class="topic-number">03</span><h3>MTU、MSS与数据大小</h3><button class="topic-note-button" data-note="d3-sizes" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
 <p>应用想发送一张图，不意味着网络能把整张图装进一个IP包。<strong>MTU是某条链路允许承载的最大网络层包大小；路径MTU是整条路径上这些限制的最小值。</strong>常见以太网MTU为1500字节，但隧道、其他链路和配置会改变它，1500不是互联网统一固定值。字节是大小单位，8比特组成1字节。</p>
-<p><strong>MSS是TCP报文段中数据部分的大小上限参数，不含IP和TCP首部。</strong>两端通常在建立TCP连接时分别通告自己愿意接收的MSS，发送还受路径和选项等限制。不能把MSS当成应用单次写入的上限，也不能用一个总是成立的“MTU减40”公式忽略IPv6和选项。</p>
+<p>一份IP包不仅有应用数据，还要容纳IP和TCP首部。假设整条路径可承载1500字节的IP包，两种首部各占20字节，留给本例TCP数据的是<strong>1500−20−20＝1460字节</strong>。应用交给TCP的4000字节并不需要挤进一包，TCP可以分成较小的段发送。</p>
+<p><strong>MSS</strong>是TCP报文段中数据部分的大小上限参数，不含IP和TCP首部。两端建连时通常分别通告自己愿意接收的MSS，发送还受路径和选项等限制。因此，要区分“应用一共想发4000字节”和“其中每一段可以放多少字节”。</p>
 <figure class="figure"><div class="stack" role="img" aria-label="MTU1500的IPv4基本首部示例，IP首部20字节，TCP基本首部20字节，TCP数据最多1460字节"><div class="stack-row"><strong>链路MTU：1500</strong><span>这一帧中可承载的IP包大小上限</span></div><div class="stack-row"><strong>IP包内部</strong><span>IPv4首部20 ＋ TCP首部20 ＋ 数据1460</span></div><div class="stack-row"><strong>TCP数据部分</strong><span>示例最多1460字节；应用写入可远大于此</span></div></div><figcaption>图2 · 仅在IPv4和TCP均使用基本首部、无其他额外开销等条件下得到1460。此数不是普遍常量。</figcaption></figure>
-<p>现在算一个具体例子：应用写入4000字节，路径允许上述大小，TCP可以把它分成1460、1460、1080字节的数据段；实际分法还受窗口、选项和实现影响。应用看到的是连续4000字节，不需要按这三段读取。若改成IPv6，基本IP首部为40字节，相同MTU下的计算条件就变了。</p>
+<p>按每段最多1460字节来拆这4000字节：第一段取1460，还待发<strong>4000−1460＝2540</strong>；第二段再取1460，还待发<strong>2540−1460＝1080</strong>；最后一段取完1080，待发变成0。每段都分别带自己的20字节IP首部和20字节TCP首部，所以前两包各1500字节，最后一包1120字节；不是整次传输只加一次首部。</p>
+<p>这是允许的示例分法，实际分段还受窗口、选项和实现影响。接收应用最后仍看到连续4000字节，不需要按这三段读取。若改成IPv6，基本IP首部为40字节，相同MTU下的计算条件就变了。</p>
 <!-- EXAMPLE:d3-sizes -->
 
 <p>UDP也有协议长度字段上限。对不含选项的普通IPv4包，总长度最多65535字节，扣20字节IPv4首部与8字节UDP首部，理论UDP应用数据上限为65507字节。<strong>理论能表示，不等于适合在互联网直接发送。</strong>在MTU1500、IPv4基本首部条件下，不分片的UDP应用数据上限示例是1472字节；路径有更小MTU还需减小。</p>
 <p>超过路径承载能力可能涉及IP分片，或因不允许分片而丢弃并报告。一个被拆成多片的数据报需要所有片都到齐才能重组，丢一片可能使整份数据报不能交付；中间设备也可能丢弃分片。IPv6路由器不替发送方分片。因此应用应依据路径能力控制报文大小，并采用路径MTU探测等机制，而不是把65507当作推荐发送尺寸。</p>
 <details class="mini-check"><summary>小检查：写入4000字节的TCP调用会因MSS为1460而必然失败吗？</summary><p>不会。MSS约束TCP段的数据部分，TCP可以分段。应用接口是否接受全部数据还受缓冲区等因素影响，要按接口返回值处理。</p></details></article><article class="topic" id="d3-dns-transport" data-topic="DNS为什么同时使用UDP与TCP" data-sources="5,6"><div class="topic-heading"><span class="topic-number">04</span><h3>DNS为什么同时使用UDP与TCP</h3><button class="topic-note-button" data-note="d3-dns-transport" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
 <p>DNS的“查名字”和“使用哪种运输”是两个问题。<strong>传统DNS同时支持UDP和TCP，常规服务端口都是53，但两种协议的端口空间分别管理。</strong>普通查询常先用UDP，因为短小的一问一答无需TCP连接建立；这只是常见方式，不是DNS的定义。</p>
-<p>早期无扩展的DNS over UDP消息有512字节限制；EDNS允许通告更大的UDP负载能力，但仍需考虑路径MTU、分片和网络策略，不能推断越大越好。若响应放不下，服务器可以设置TC截断标志，客户端通常改用TCP重新查询，以取得完整答案。现代通用DNS实现应支持两种传输，不能只写“UDP用于查询，TCP只用于传送区域”。</p>
+<p>沿用昨天的<code>www.example.com</code>A记录查询。设备先用UDP向解析器提问；如果回答装不下，解析器可返回带<strong>TC=1</strong>的截断响应。设备现在知道“回答不完整”，于是建立或复用TCP连接，<strong>向同一个解析器重问同一个问题</strong>，取得完整结果。换的是运输方式，继续查名字的责任没有换人。</p>
+<details class="mini-check"><summary>为什么会装不下？512字节是现在所有DNS的上限吗？</summary><p>早期无扩展的DNS over UDP消息有512字节限制；EDNS允许通告更大的UDP负载能力，但仍要考虑路径MTU、分片和策略。现代通用DNS实现应支持UDP与TCP，普通查询也可直接选择TCP。</p></details>
 <details class="mini-check"><summary>DNS服务器之间怎样同步区域数据？</summary><p>区域传送是DNS服务器之间同步某区域数据。完整区域传送AXFR使用TCP，较大数据适合流式传输；增量区域传送IXFR可按规则使用UDP或TCP。区域传送与“一个用户查一个名字”属于不同任务，不能仅凭看到TCP53就断言发生了区域传送。</p></details>
 <!-- EXAMPLE:d3-dns-transport -->
 

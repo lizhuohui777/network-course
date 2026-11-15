@@ -1,13 +1,18 @@
 # 网络课事实核验
 
-核验日期：2026-11-08。范围：12课47个知识点正文、46项新交互的92组情形与298个步骤，以及既有下一跳/ARP两组情形。已核对假设、逐步文字、字节范围、数字、曲线点列、通信方向、两端状态和图示语义。本文为维护记录，不进入学习正文。
+核验日期：2026-11-15。范围：12课47个知识点正文、46项共享交互的94组情形与360个步骤，以及既有下一跳/ARP两组情形。对照已发布提交3ac5dea，复查本轮改变的假设、逐步文字、字节范围、数字、曲线点列、通信方向、两端状态和图示语义。本文为当前维护记录，不进入学习正文。
 
-**结论：本轮事实检查完成，发现的问题均已修正并定点复查，无未关闭事项。** 结论限定在课件已声明的教学条件下；浏览器布局与交互可用性由项目另外验证，不代表穷举所有协议实现。
+**结论：当前未发现未关闭的重要事实问题。** 核验结论限于课件已声明的教学条件，不代表穷举所有协议实现或保证真实学习者掌握。浏览器与记录验证范围见[REVIEW.md](REVIEW.md)。本轮仅本地修改，未提交、未推送。
 
-## 本轮修正与复查结果
+## 关键条件与复查结果
 
 | 检查项 | 最终状态 |
 |---|---|
+| TCP分段与关闭账目 | 4000字节按1460、1460、1080示意分段，每包分别加首部；报告20字节从7981到8000，后续FIN为8001。双向序列空间各自计算。 |
+| Reno窗口与FlightSize | 逐个新ACK计算1→2、2→3→4；重复ACK提示后段离网，但未累计确认的字节仍在FlightSize中，不能先扣三段再算阈值。 |
+| HTTP三个版本 | 始终比较图片A与样式B；HTTP/1.1示意同连接流水线，HTTP/2仍有TCP缺口阻塞，HTTP/3只隔离不同QUIC流的直接交付阻塞，保留共享拥塞与应用依赖边界。 |
+| TLS双向材料与校验 | 浏览器b/B、服务器s/S分别保留私有材料并双向交换公开份额；长期K私负责握手签名，Finished检查握手与密钥一致性。PSK恢复省证书/签名交换，不省Finished。 |
+| 安全与服务器对象 | 存储型XSS经网站错误输出进入浏览器；SQL结构与参数值分开；报告并发2、队列2是教学配置。监听L、连接A/B同时存在，关闭A不自动关闭L/B。 |
 | RTO规范强度 | 第6课及交互正确写明RFC 6298的1秒为建议；算例按该建议上调，而非宣称所有系统强制一致。 |
 | 条件请求首部语法 | 示例为`If-None-Match: "v3"`，符合entity-tag双引号规则。 |
 | Reno教学条件与步进 | 明确超时前cwnd=FlightSize=8MSS；等于阈值时本例选择拥塞避免。正常增长六步为1→2→4→8→9→10；超时恢复四步为8→1→2→4，点列正确。 |
@@ -31,7 +36,7 @@
 | MTU/MSS与消息边界 | MSS不含IP/TCP首部；通告MSS计算扣固定首部，实际发送需再扣选项。无选项IPv4/TCP、MTU1500得1460；4000可示意拆为1460+1460+1080，但非固定分段。TCP段/写入/读取边界无一一对应；应用必须自行成帧。 | [RFC 6691 §2](https://www.rfc-editor.org/rfc/rfc6691#section-2)、[RFC 9293 §3.7、3.7.1](https://www.rfc-editor.org/rfc/rfc9293#section-3.7) |
 | HTTP方法与编码 | 安全指所请求语义以读取为主，允许日志等附带效果；幂等比较预期状态效果，不要求响应相同。GET内容无一般定义语义；POST不自动保密、不固定两个TCP包；HTTP/2、3线格式不能冒充HTTP/1.1文本。 | [RFC 9110 §9.2、9.3.1、9.3.3](https://www.rfc-editor.org/rfc/rfc9110#section-9.2)、[RFC 9112 §2](https://www.rfc-editor.org/rfc/rfc9112#section-2)、[RFC 9113 §4](https://www.rfc-editor.org/rfc/rfc9113#section-4)、[RFC 9114 §4](https://www.rfc-editor.org/rfc/rfc9114#section-4) |
 | HTTP缓存 | 当前年龄而非每一缓存新计时决定新鲜度；max-age60且已积累Age50时，简化约余10秒。no-cache（不限定字段的响应指令）允许存储但复用前必须验证；no-store禁止相应存储，不是清理全部历史副本承诺。private（不限定字段）允许私有缓存，禁止共享缓存。304无新表示内容，依赖已有表示；ETag不必是哈希。 | [RFC 9111 §3–5.2.2](https://www.rfc-editor.org/rfc/rfc9111#section-4)、[RFC 9110 §8.8、15.4.5](https://www.rfc-editor.org/rfc/rfc9110#section-8.8) |
-| TLS 1.3 | 常见完整证书握手以临时ECDHE协商秘密，CertificateVerify用证书公钥对应私钥签署握手，AEAD保护记录；不能画成证书公钥加密会话密钥传输。RSA签名仍可存在，移除的是RSA密钥传输。恢复可用PSK，可能组合新DHE，非每次都重发证书；0-RTT有重放风险且不具完整1-RTT保证。TLS恢复不恢复应用登录权限。 | [RFC 8446 §1.2、2、2.2、2.3、4.4.3、5.2、8](https://www.rfc-editor.org/rfc/rfc8446#section-2) |
+| TLS 1.3 | 常见完整证书握手以临时ECDHE协商秘密，CertificateVerify用证书公钥对应私钥签署握手，AEAD保护记录；不能画成证书公钥加密会话密钥传输。RSA签名仍可存在，移除的是RSA密钥传输。恢复可用PSK，可能组合新DHE，非每次都重发证书；0-RTT有重放风险且不具完整1-RTT保证。TLS恢复不恢复应用登录权限。图选择双方校验后再发HTTP，不把它写成客户端必须等待服务器收到Finished的协议要求。 | [RFC 9846 §1.2、2、2.2、2.3、4.5.2、4.5.3、5.2、8](https://www.rfc-editor.org/rfc/rfc9846#section-2) |
 | Cookie/Session与攻击 | 随机会话ID为关联键，服务端校验真实会话与权限；客户端和服务器过期独立。HttpOnly限制脚本读Cookie，不阻止XSS代用户发请求；Secure保护传输范围，不证明内容可信。CSRF可利用自动附带Cookie，不必偷Cookie或读响应；POST与HTTPS本身不防CSRF，SameSite非所有场景万能防线；XSS可能绕过CSRF防护。 | [OWASP Session Management](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#httponly-attribute)、[OWASP XSS Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)、[OWASP CSRF Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html) |
 | Socket与连接容量 | 已连接TCP用一对端点（四元组）区分，监听443可以同时接待不同远端；accept返回新连接套接字，原监听对象保留。固定单源IP及固定目标时临时端口数可能限制并发，不能推导全机或服务器统一65535上限；还受内存、描述符与NAT等资源影响。 | [RFC 9293 §3.4.1](https://www.rfc-editor.org/rfc/rfc9293#section-3.4.1)、[Linux accept(2)](https://man7.org/linux/man-pages/man2/accept.2.html)、[Linux tcp(7)](https://man7.org/linux/man-pages/man7/tcp.7.html) |
 | 端口编号 | 16位字段编号0–65535；IANA分为系统0–1023、用户1024–49151、动态/私有49152–65535。IANA分类不等于每台系统的临时端口配置。 | [IANA Service Name and Transport Protocol Port Number Registry](https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml) |
@@ -42,11 +47,12 @@
 - 缺口1101–1200、后方1201–1300到达→累计ack1101；缺口重传且原先后段保留→ack1301。只有三个后续乱序段分别造成三个有效重复ACK，才达到所示Reno阈值。
 - rwnd12000、cwnd8000、未确认6000→新增2000。FlightSize12MSS→示例ssthresh6MSS、快速恢复临时cwnd9MSS、新确认后6MSS。
 - 本地改进版统一为1字节长度前缀、ASCII正文HELLO：长度字节`0x05`后跟`H E L L O`，正文5字节，协议上限100字节。`0x`是显示数值的十六进制前缀，不额外在线上传送；长度头和正文分别解析。
+- 本轮后续输入明确为LLO、`0x03`、BYE；解析HELLO后保留下一条头与正文，再按长度3解析BYE，不凭空出现未接收字节。
 - TIME-WAIT的2MSL是规范等待表达，不能从RTT直接算出，也不能声称所有系统固定60或120秒。DNS TTL与IP TTL不是同一单位。
 
 ## 47个知识点逐项检查
 
-下表“通过”指声明条件下的事实、数字、状态和箭头语义成立，并非穷举所有实现。参考依据见前表中同名协议分组。全部新增项均有两组可切换情形；`d2-hop`保留已有两组教学图。
+下表“通过”指声明条件下的事实、数字、状态和箭头语义成立，并非穷举所有实现。参考依据见前表中同名协议分组。全部共享项均有至少两组可切换情形；`d2-hop`保留已有两组教学图。
 
 | 知识点ID | 已核对重点 | 结果 |
 |---|---|---|
@@ -101,12 +107,12 @@
 
 ## 最终核对记录
 
-当前数据为46项新交互、92组情形、298步，另保留既有ARP两组情形。依据官方RFC对应章节、IANA注册表、OWASP指南与Linux手册核对相关技术主题；TCP来源正确为RFC 9293。未发现须更改既有自测答案键的算术问题。最终复查未留下已知事实错误或未关闭问题。
+当前数据为46项共享交互、94组情形、360步，另保留既有ARP两组情形。依据官方RFC对应章节、IANA注册表、OWASP指南与Linux手册核对相关技术主题；TCP来源为RFC 9293，TLS 1.3使用修订版RFC 9846。本轮60道自测及答案原文保持不变。最终复查未留下重要的已知事实错误。
 
 ## 本地连贯性修订复核
 
-全12课按阅读顺序检查必要定义、图示位置、例子条件与每日回顾/自测。46项共享例子均移至先决解释之后；第2课专用ARP图移至MAC/ARP定义之后。折叠原先紧邻图示重复出现的补充用语，保留其条件与文字交接。
+独立复读者先检查全部12课，再按第1至12天阅读实际改写文件与全部对应图示情形。发送与收到、输入与解析、条件与结果均能依据已教概念连续追踪；PSK/binder、max、ETag引号和独立表重新编号等轻量反馈已读回确认。没有用新增过渡句或全体扩写代替机制修补。
 
-另一次独立事实复核检查本轮正文与示例改动，未发现阻断性事实回退。发现MSS通告一句需要保留“通常”的限定，已恢复；RFC 9293 §3.7.1允许不带MSS选项并采用默认值。纠正密钥总称的范围与DNS“可用地址”措辞，补足同源/同站的两个HTTPS子域例子。TLS参考更新为RFC 9846，其§1.2说明是同版本、向后兼容的修订；旧版RFC 8446的对应基础机制仍用于下表定位。
+复查依据包括RFC 9293的TCP编号与状态、RFC 5681的每ACK增长及FlightSize、RFC 9110/9111的304与缓存年龄、RFC 9113及RFC 9000的跨流阻塞、RFC 9846的双向Hello、证书签名、Finished与PSK恢复，以及OWASP和官方Socket接口说明。RFC 9846为同TLS版本的兼容修订，不把旧RSA密钥传输图当作现代通用流程。
 
-本轮不改课程、知识点或记录字段标识。所有结果限于课件已声明的教学条件，不作正确率百分比或穷尽所有实现的承诺。
+本轮不改课程、知识点或记录字段标识。程序测试证明的范围与阅读验收分开，真实学习难度仍由学习者实际反馈验证。

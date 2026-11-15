@@ -426,21 +426,36 @@
     "terms": "端口是TCP或UDP首部中的16位编号；通信时要结合地址和传输协议使用。编号范围0—65535，0被保留，编号不是全球唯一的程序名称。",
     "diagram": {
       "kind": "network",
+      "groups": [
+        {
+          "x": 420,
+          "y": 15,
+          "width": 365,
+          "height": 340,
+          "label": "同一台服务器 · 198.51.100.20"
+        }
+      ],
       "nodes": [
         {
           "id": "b",
           "label": "你的电脑",
-          "kind": "laptop"
+          "kind": "laptop",
+          "x": 90,
+          "y": 145
         },
         {
           "id": "a",
-          "label": "课程服务",
-          "kind": "server"
+          "label": "课程服务 · TCP443",
+          "kind": "port",
+          "x": 515,
+          "y": 100
         },
         {
           "id": "s",
-          "label": "另一项服务",
-          "kind": "server"
+          "label": "另一服务 · TCP8443",
+          "kind": "port",
+          "x": 685,
+          "y": 205
         }
       ]
     },
@@ -1417,12 +1432,12 @@
         "assumption": "示意两份短数据报完整到达，接收缓冲区足够。",
         "steps": [
           {
-            "title": "第一次发送A",
-            "text": "一次发送提交A，形成一份UDP数据报。它有自己的长度和端口等首部信息。",
-            "active": [
-              "a",
-              "b"
-            ],
+            "title": "应用先发送A",
+            "text": "发送应用把A交给UDP；UDP带上首部，形成独立的数据报A。箭头表示它正在去往接收端。",
+            "states": {
+              "a": "已提交A",
+              "b": "还未取得A"
+            },
             "flows": [
               {
                 "from": "a",
@@ -1431,16 +1446,33 @@
                 "tone": "normal"
               }
             ],
-            "states": {},
-            "values": []
-          },
-          {
-            "title": "第二次发送B",
-            "text": "B是另一份数据报，不会因为接着发送，就与A在UDP接口中自然变成一条无边界流。",
             "active": [
               "a",
               "b"
             ],
+            "values": []
+          },
+          {
+            "title": "接收端取得A",
+            "text": "A完整到达，接收接口把A作为一份数据交给应用。此时只有A，B还没有发送。",
+            "states": {
+              "a": "A已发送",
+              "b": "已取得一份：A"
+            },
+            "flows": [],
+            "active": [
+              "a",
+              "b"
+            ],
+            "values": []
+          },
+          {
+            "title": "应用再发送B",
+            "text": "应用再交付B，UDP形成另一份数据报。B有自己的长度与首部，不借用A的边界。",
+            "states": {
+              "a": "已提交A和B",
+              "b": "已取得A，等待B"
+            },
             "flows": [
               {
                 "from": "a",
@@ -1449,19 +1481,24 @@
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "a",
+              "b"
+            ],
             "values": []
           },
           {
-            "title": "分别接收两份数据",
-            "text": "应用按接口取得数据报。数据报边界仍在，但并不因此得到全局的到达、顺序或去重保证。",
+            "title": "接收端单独取得B",
+            "text": "B到达后，接收接口单独交付B。应用取得了A、B两份数据，而不是TCP式的一条AB字节流。",
+            "states": {
+              "a": "两份已发送",
+              "b": "分别取得A、B"
+            },
+            "flows": [],
             "active": [
+              "a",
               "b"
             ],
-            "flows": [],
-            "states": {
-              "b": "两份数据报：A、B"
-            },
             "values": []
           }
         ]
@@ -1605,36 +1642,191 @@
             ]
           },
           {
-            "title": "4000字节可以分段",
-            "text": "应用一次写入4000字节，不会只因1460这个值就必然失败。TCP可以按1460、1460、1080分段，这是一个可行示例。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [
-              {
-                "label": "总量核对",
-                "value": "1460+1460+1080=4000"
-              }
-            ],
+            "title": "待发送4000字节",
+            "text": "每段最多1460字节。先把待发量写成4000，再逐段取走；每段另加自己的IP和TCP首部。",
             "rows": [
               {
-                "label": "TCP数据分段",
+                "label": "待发",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "1460"
-                  },
+                    "id": "待发-0",
+                    "text": "4000字节"
+                  }
+                ]
+              },
+              {
+                "label": "每段数据上限",
+                "cells": [
                   {
-                    "id": "r0c1",
-                    "text": "1460"
-                  },
-                  {
-                    "id": "r0c2",
-                    "text": "1080"
+                    "id": "每段数据上限-0",
+                    "text": "1460字节"
                   }
                 ]
               }
-            ]
+            ],
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
+          },
+          {
+            "title": "第一段取1460",
+            "text": "4000−1460＝2540，还待发2540字节。本包大小20＋20＋1460＝1500。",
+            "rows": [
+              {
+                "label": "第1包",
+                "cells": [
+                  {
+                    "id": "第1包-0",
+                    "text": "IP20"
+                  },
+                  {
+                    "id": "第1包-1",
+                    "text": "TCP20"
+                  },
+                  {
+                    "id": "第1包-2",
+                    "text": "数据1460"
+                  }
+                ]
+              },
+              {
+                "label": "待发",
+                "cells": [
+                  {
+                    "id": "待发-0",
+                    "text": "2540字节"
+                  }
+                ]
+              }
+            ],
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
+          },
+          {
+            "title": "第二段再取1460",
+            "text": "2540−1460＝1080，还待发1080字节。第二包也分别带两层首部。",
+            "rows": [
+              {
+                "label": "第1包",
+                "cells": [
+                  {
+                    "id": "第1包-0",
+                    "text": "IP20"
+                  },
+                  {
+                    "id": "第1包-1",
+                    "text": "TCP20"
+                  },
+                  {
+                    "id": "第1包-2",
+                    "text": "数据1460"
+                  }
+                ]
+              },
+              {
+                "label": "第2包",
+                "cells": [
+                  {
+                    "id": "第2包-0",
+                    "text": "IP20"
+                  },
+                  {
+                    "id": "第2包-1",
+                    "text": "TCP20"
+                  },
+                  {
+                    "id": "第2包-2",
+                    "text": "数据1460"
+                  }
+                ]
+              },
+              {
+                "label": "待发",
+                "cells": [
+                  {
+                    "id": "待发-0",
+                    "text": "1080字节"
+                  }
+                ]
+              }
+            ],
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
+          },
+          {
+            "title": "最后取完1080",
+            "text": "1080−1080＝0，本包20＋20＋1080＝1120。接收应用仍取得4000个连续字节，读取不必遵循三段边界。",
+            "rows": [
+              {
+                "label": "第1包",
+                "cells": [
+                  {
+                    "id": "第1包-0",
+                    "text": "IP20"
+                  },
+                  {
+                    "id": "第1包-1",
+                    "text": "TCP20"
+                  },
+                  {
+                    "id": "第1包-2",
+                    "text": "数据1460"
+                  }
+                ]
+              },
+              {
+                "label": "第2包",
+                "cells": [
+                  {
+                    "id": "第2包-0",
+                    "text": "IP20"
+                  },
+                  {
+                    "id": "第2包-1",
+                    "text": "TCP20"
+                  },
+                  {
+                    "id": "第2包-2",
+                    "text": "数据1460"
+                  }
+                ]
+              },
+              {
+                "label": "第3包",
+                "cells": [
+                  {
+                    "id": "第3包-0",
+                    "text": "IP20"
+                  },
+                  {
+                    "id": "第3包-1",
+                    "text": "TCP20"
+                  },
+                  {
+                    "id": "第3包-2",
+                    "text": "数据1080"
+                  }
+                ]
+              },
+              {
+                "label": "待发",
+                "cells": [
+                  {
+                    "id": "待发-0",
+                    "text": "0字节"
+                  }
+                ]
+              }
+            ],
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
           }
         ]
       },
@@ -1885,8 +2077,8 @@
             "values": []
           },
           {
-            "title": "区分区域传送这个任务",
-            "text": "AXFR是DNS服务器之间完整同步区域，使用TCP；IXFR按规则可使用UDP或TCP。任务类型和承载选择要分别说明。",
+            "title": "收到完整查询结果",
+            "text": "同一个A记录问题通过TCP取得完整响应。名字查询已完成，设备可以用地址准备后续通信；这份普通查询不是服务器同步区域数据。",
             "active": [
               "r"
             ],
@@ -2132,25 +2324,26 @@
         "assumption": "无握手数据，客户端ISN100，服务器ISN700，无丢失；不涉及同时打开和TCP Fast Open。",
         "steps": [
           {
-            "title": "服务器先监听",
-            "text": "客户端尚未发起，服务器端口处于LISTEN。监听不是已经与某个客户端建好连接。",
-            "active": [
-              "s"
-            ],
-            "flows": [],
+            "title": "服务器等待，客户端准备发起",
+            "text": "LISTEN表示服务器在监听入口等请求；客户端还没有这条已建立连接。",
             "states": {
-              "c": "CLOSED",
-              "s": "LISTEN"
+              "c": "CLOSED · 尚未发起",
+              "s": "LISTEN · 等待SYN"
             },
-            "values": []
-          },
-          {
-            "title": "客户端发SYN",
-            "text": "客户端发送seq=100的SYN，自己进入SYN-SENT，等待对方回应。",
+            "flows": [],
             "active": [
               "c",
               "s"
             ],
+            "values": []
+          },
+          {
+            "title": "客户端发出SYN",
+            "text": "客户端选择seq=100，发SYN并进入SYN-SENT：等待本次请求的回应。服务器还未收到，状态未变。",
+            "states": {
+              "c": "SYN-SENT · 等待回应",
+              "s": "LISTEN · 尚未收到"
+            },
             "flows": [
               {
                 "from": "c",
@@ -2159,52 +2352,80 @@
                 "tone": "normal"
               }
             ],
-            "states": {
-              "c": "SYN-SENT",
-              "s": "等待SYN"
-            },
-            "values": []
-          },
-          {
-            "title": "服务器回SYN与ACK",
-            "text": "服务器发自己的seq=700，并确认客户端SYN到ack=101。服务器此时等待最终确认。",
-            "active": [
-              "s",
-              "c"
-            ],
-            "flows": [
-              {
-                "from": "s",
-                "to": "c",
-                "label": "SYN+ACK · 700 / 101",
-                "tone": "normal"
-              }
-            ],
-            "states": {
-              "c": "收到后可进入ESTABLISHED",
-              "s": "SYN-RECEIVED"
-            },
-            "values": []
-          },
-          {
-            "title": "客户端确认服务器SYN",
-            "text": "普通无数据第三步为seq=101、ack=701。服务器收到并处理有效ACK后进入ESTABLISHED。",
             "active": [
               "c",
               "s"
             ],
+            "values": []
+          },
+          {
+            "title": "服务器收到并回答",
+            "text": "服务器知道客户端起点100，确认ack=101；同时发自己的SYN seq=700，进入SYN-RECEIVED，尚缺对自己SYN的确认。",
+            "states": {
+              "c": "SYN-SENT · 回应还在途",
+              "s": "SYN-RECEIVED · 等确认701"
+            },
+            "flows": [
+              {
+                "from": "s",
+                "to": "c",
+                "label": "SYN+ACK · seq=700, ack=101",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "c",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "客户端收到服务器回应",
+            "text": "客户端知道自己的SYN已被确认，也知道服务器起点700，本端进入ESTABLISHED。服务器还未收到最后确认。",
+            "states": {
+              "c": "ESTABLISHED · 已知两边起点",
+              "s": "SYN-RECEIVED · 仍等确认701"
+            },
+            "flows": [],
+            "active": [
+              "c",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "客户端发最后确认",
+            "text": "客户端发seq=101、ack=701的纯ACK，确认服务器SYN。纯ACK不占新的序列号。",
+            "states": {
+              "c": "ESTABLISHED · 已发确认701",
+              "s": "SYN-RECEIVED · ACK还在途"
+            },
             "flows": [
               {
                 "from": "c",
                 "to": "s",
-                "label": "ACK · seq=101 ack=701",
+                "label": "ACK · seq=101, ack=701",
                 "tone": "normal"
               }
             ],
+            "active": [
+              "c",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "服务器收到有效确认",
+            "text": "服务器收到ack=701，自己的SYN得到确认，本端也进入ESTABLISHED。两端完成普通握手，HTTP请求还没发生。",
             "states": {
               "c": "ESTABLISHED",
-              "s": "收到ACK后ESTABLISHED"
+              "s": "ESTABLISHED"
             },
+            "flows": [],
+            "active": [
+              "c",
+              "s"
+            ],
             "values": []
           }
         ]
@@ -2214,62 +2435,80 @@
         "assumption": "从服务器已发SYN+ACK、客户端已收到它开始，省略重传计时细节。",
         "steps": [
           {
-            "title": "客户端的确认在途中丢失",
-            "text": "客户端已确认服务器的初始序列号，但服务器没有收到这份证据。两边状态不会因为客户端按下发送就自动同时变化。",
-            "active": [
-              "c"
-            ],
+            "title": "最后ACK在路上丢失",
+            "text": "客户端已收到SYN+ACK并发确认；丢失使服务器没有收到ack=701，两端暂时不同步。",
+            "states": {
+              "c": "ESTABLISHED",
+              "s": "SYN-RECEIVED · 等确认701"
+            },
             "flows": [
               {
                 "from": "c",
                 "to": "s",
-                "label": "最后ACK丢失",
+                "label": "ACK · ack=701",
                 "tone": "blocked"
               }
             ],
-            "states": {
-              "c": "ESTABLISHED",
-              "s": "SYN-RECEIVED"
-            },
-            "values": []
-          },
-          {
-            "title": "服务器可重传SYN+ACK",
-            "text": "在相应重传条件下，服务器再次发SYN+ACK；这与从头创建另一条业务连接不是一回事。",
-            "active": [
-              "s",
-              "c"
-            ],
-            "flows": [
-              {
-                "from": "s",
-                "to": "c",
-                "label": "重传SYN+ACK",
-                "tone": "normal"
-              }
-            ],
-            "states": {},
-            "values": []
-          },
-          {
-            "title": "客户端再确认",
-            "text": "客户端可再次发送确认，服务器收到有效确认后才能完成本端相应的建立过程。",
             "active": [
               "c",
               "s"
             ],
+            "values": []
+          },
+          {
+            "title": "服务器重传SYN+ACK",
+            "text": "重传条件满足后，服务器仍用seq=700、ack=101，恢复同一次握手，不是另建连接。",
+            "states": {
+              "c": "ESTABLISHED",
+              "s": "SYN-RECEIVED · 重传后仍等确认"
+            },
+            "flows": [
+              {
+                "from": "s",
+                "to": "c",
+                "label": "重传 SYN+ACK · 700 / 101",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "c",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "客户端再确认",
+            "text": "客户端识别重传并再发ack=701；服务器仍需等它实际到达。",
+            "states": {
+              "c": "ESTABLISHED · 再发确认701",
+              "s": "SYN-RECEIVED · 确认在途"
+            },
             "flows": [
               {
                 "from": "c",
                 "to": "s",
-                "label": "再次ACK",
+                "label": "ACK · ack=701",
                 "tone": "normal"
               }
             ],
+            "active": [
+              "c",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "服务器取得缺少的确认",
+            "text": "有效ack=701到达后，服务器才进入ESTABLISHED。发送和对方收到是不同事件。",
             "states": {
               "c": "ESTABLISHED",
-              "s": "收到后ESTABLISHED"
+              "s": "ESTABLISHED"
             },
+            "flows": [],
+            "active": [
+              "c",
+              "s"
+            ],
             "values": []
           }
         ]
@@ -2310,7 +2549,7 @@
     "cases": [
       {
         "label": "相对序列号显示",
-        "assumption": "假设客户端真实ISN为420000；工具把本方向起点显示为0。",
+        "assumption": "独立的抓包显示算例，不延续100/700握手。客户端真实ISN420000，工具显示为相对0。",
         "steps": [
           {
             "title": "在线上发送真实ISN",
@@ -2403,86 +2642,90 @@
         "assumption": "概念比较：新旧连接四元组相同，实际还需时间、窗口和连接状态等共同判断。",
         "steps": [
           {
-            "title": "旧连接可能留下迟到段",
-            "text": "数据在网络中延迟，新连接出现时不能仅看源目的地址就相信它属于当前发送空间。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "旧连接留下编号101的数据",
+            "text": "同一四元组的旧连接曾从ISN100开始，迟到数据覆盖101—120。端点相同，不能单凭它认定属于新连接。",
             "rows": [
               {
-                "label": "旧连接",
+                "label": "旧连接迟到段",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "旧编号范围"
+                    "id": "旧连接迟到段-0",
+                    "text": "seq=101"
+                  },
+                  {
+                    "id": "旧连接迟到段-1",
+                    "text": "20字节：101—120"
+                  }
+                ]
+              }
+            ],
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
+          },
+          {
+            "title": "比较新连接的接收范围",
+            "text": "仅看这个示意：新连接也期待101—120时，旧编号可能重叠；新起点900000、当前期待900001—900020时，旧101不在该范围。实际还检查状态和窗口等规则。",
+            "rows": [
+              {
+                "label": "相近编号",
+                "cells": [
+                  {
+                    "id": "相近编号-0",
+                    "text": "期待101—120"
+                  },
+                  {
+                    "id": "相近编号-1",
+                    "text": "旧101—120可能重叠"
                   }
                 ]
               },
               {
-                "label": "新连接",
+                "label": "不同起点",
                 "cells": [
                   {
-                    "id": "r1c0",
-                    "text": "新的发送空间"
+                    "id": "不同起点-0",
+                    "text": "期待900001—900020"
+                  },
+                  {
+                    "id": "不同起点-1",
+                    "text": "旧101—120不在范围"
                   }
                 ]
               }
-            ]
+            ],
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
           },
           {
-            "title": "为新连接选择合适起点",
-            "text": "现代ISN选择结合时间与含秘密的连接相关计算，使外部难以预测，同时配合其他TCP机制。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "起点与等待共同保护",
+            "text": "现代ISN选择结合时间与含秘密的连接相关计算；关闭后的等待也帮助隔开旧段。这个不回绕的小算例不是所有32位序号的比较算法。",
             "rows": [
               {
-                "label": "选择考虑",
+                "label": "共同机制",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "时间变化"
+                    "id": "共同机制-0",
+                    "text": "ISN选择"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "连接四元组"
+                    "id": "共同机制-1",
+                    "text": "接收状态与窗口"
                   },
                   {
-                    "id": "r0c2",
-                    "text": "秘密值"
+                    "id": "共同机制-2",
+                    "text": "关闭后的等待"
                   }
                 ]
               }
-            ]
-          },
-          {
-            "title": "多个机制共同区分新旧",
-            "text": "ISN不是单独消灭所有旧包的万能开关。接收窗口、状态验证和TIME-WAIT等也参与保护。",
-            "active": [],
-            "flows": [],
-            "states": {},
+            ],
             "values": [],
-            "rows": [
-              {
-                "label": "共同作用",
-                "cells": [
-                  {
-                    "id": "r0c0",
-                    "text": "序号选择"
-                  },
-                  {
-                    "id": "r0c1",
-                    "text": "接收窗口"
-                  },
-                  {
-                    "id": "r0c2",
-                    "text": "连接状态与等待"
-                  }
-                ]
-              }
-            ]
+            "active": [],
+            "states": {},
+            "flows": []
           }
         ]
       }
@@ -2660,81 +2903,160 @@
     "cases": [
       {
         "label": "上传结束，等待报告",
-        "assumption": "已建连；客户端先结束发送，服务器还有报告未发送。",
+        "assumption": "已建连；客户端上传字节已到1000，服务器下一待发编号7981，报告20字节；两方向分别编号。",
         "steps": [
           {
-            "title": "客户端发送FIN",
-            "text": "客户端声明自己的发送方向结束。它仍可接收服务器后续的数据。",
+            "title": "上传完，准备等报告",
+            "text": "客户端此前数据到1000，下一编号1001；服务器下一编号7981。这是两套独立编号，不能互相相减。",
+            "states": {
+              "c": "上传到1000 · 可接收报告",
+              "s": "报告待发20字节 · 起点7981"
+            },
+            "flows": [],
             "active": [
               "c",
               "s"
             ],
+            "values": []
+          },
+          {
+            "title": "客户端发FIN",
+            "text": "FIN使用客户端下一编号1001，声明本方向没有更多数据。服务器还未收到；客户端仍保留接收方向。",
+            "states": {
+              "c": "已发FIN1001 · 仍能接收",
+              "s": "FIN未到 · 仍能发送"
+            },
             "flows": [
               {
                 "from": "c",
                 "to": "s",
-                "label": "FIN：客户端发完",
+                "label": "FIN · seq=1001",
                 "tone": "normal"
               }
             ],
+            "active": [
+              "c",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "服务器收到并确认FIN",
+            "text": "FIN占一个编号，服务器确认ack=1002。上传结束了，但报告还没发，服务器自己的方向保持可发送。",
             "states": {
-              "c": "发送方向结束",
-              "s": "仍可发送"
+              "c": "等待确认 · 仍能接收",
+              "s": "已知上传结束 · 报告待发"
             },
-            "values": []
-          },
-          {
-            "title": "服务器确认客户端FIN",
-            "text": "确认收到结束信号，不等于服务器也已发完。服务器可以在确认之后继续生成和发送报告。",
-            "active": [
-              "s",
-              "c"
-            ],
             "flows": [
               {
                 "from": "s",
                 "to": "c",
-                "label": "ACK：确认FIN",
+                "label": "ACK · ack=1002",
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "c",
+              "s"
+            ],
             "values": []
           },
           {
-            "title": "服务器继续返回报告",
-            "text": "报告仍可从服务器送往客户端。收到一端FIN不要求另一端立刻抛弃合法剩余数据。",
-            "active": [
-              "s",
-              "c"
-            ],
+            "title": "确认到达，服务器发报告",
+            "text": "客户端收到ack=1002，FIN已确认。服务器发20字节报告，seq=7981，覆盖7981—8000；客户端尚等它到达。",
+            "states": {
+              "c": "FIN已确认 · 等待报告",
+              "s": "已发送报告7981—8000"
+            },
             "flows": [
               {
                 "from": "s",
                 "to": "c",
-                "label": "剩余报告数据",
+                "label": "报告20字节 · seq=7981",
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "c",
+              "s"
+            ],
             "values": []
           },
           {
-            "title": "服务器也发送FIN",
-            "text": "服务器发完后才结束自己的方向，客户端再确认它。这是常见四个关闭动作的来源。",
-            "active": [
-              "s",
-              "c"
+            "title": "客户端收到报告并确认",
+            "text": "客户端连续收到7981—8000，取得报告字节并发ack=8001。发送方向关闭不妨碍接收与确认。",
+            "states": {
+              "c": "已收到20字节报告",
+              "s": "报告已发 · 等待确认"
+            },
+            "flows": [
+              {
+                "from": "c",
+                "to": "s",
+                "label": "ACK · ack=8001",
+                "tone": "normal"
+              }
             ],
+            "active": [
+              "c",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "服务器结束自己的方向",
+            "text": "报告发完，服务器下一编号8001，以seq=8001发FIN。客户端还未收到。",
+            "states": {
+              "c": "报告已收 · 等服务器结束",
+              "s": "已发FIN8001 · 等确认"
+            },
             "flows": [
               {
                 "from": "s",
                 "to": "c",
-                "label": "FIN：服务器也发完",
+                "label": "FIN · seq=8001",
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "c",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "客户端收到FIN并确认",
+            "text": "客户端发ack=8002，两方向都无新业务字节可发；服务器仍需实际收到最后确认。",
+            "states": {
+              "c": "已收FIN · 已发确认8002",
+              "s": "等待FIN确认8002"
+            },
+            "flows": [
+              {
+                "from": "c",
+                "to": "s",
+                "label": "ACK · ack=8002",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "c",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "服务器收到最后确认",
+            "text": "服务器FIN得到确认，完成本端关闭。报告是否表示业务成功仍由应用解释。",
+            "states": {
+              "c": "保留关闭等待状态",
+              "s": "本端关闭完成"
+            },
+            "flows": [],
+            "active": [
+              "c",
+              "s"
+            ],
             "values": []
           }
         ]
@@ -2745,56 +3067,72 @@
         "steps": [
           {
             "title": "客户端FIN到达",
-            "text": "服务器收到对方结束信号，此时自己的数据也已经发送完毕。",
+            "text": "本情形沿用1001/8001，但服务器收到FIN前就已发完全部报告数据。",
+            "states": {
+              "c": "已发FIN1001",
+              "s": "已收FIN · 自己已发完"
+            },
+            "flows": [],
             "active": [
               "c",
               "s"
             ],
-            "flows": [
-              {
-                "from": "c",
-                "to": "s",
-                "label": "FIN",
-                "tone": "normal"
-              }
-            ],
-            "states": {},
             "values": []
           },
           {
-            "title": "服务器合并ACK与FIN",
-            "text": "服务器可以在同一段里同时确认对方FIN并发送自己的FIN。动作逻辑仍有两个，报文段不必固定四个。",
-            "active": [
-              "s",
-              "c"
-            ],
+            "title": "服务器合并确认与FIN",
+            "text": "一个段同时携带ack=1002和自己的FIN seq=8001。两个逻辑动作合在一份发送中，并非只结束一个方向。",
+            "states": {
+              "c": "尚未收到回应",
+              "s": "已发FIN8001 · 等确认"
+            },
             "flows": [
               {
                 "from": "s",
                 "to": "c",
-                "label": "ACK+FIN",
+                "label": "FIN+ACK · 8001 / 1002",
                 "tone": "normal"
               }
             ],
-            "states": {},
-            "values": []
-          },
-          {
-            "title": "客户端最终确认",
-            "text": "客户端确认服务器FIN。不能把“四次挥手”理解成任何正常关闭抓包都必须恰好出现四个分开的包。",
             "active": [
               "c",
               "s"
             ],
+            "values": []
+          },
+          {
+            "title": "客户端收到并最后确认",
+            "text": "客户端收到自身FIN的确认和服务器FIN，发ack=8002。服务器仍需等它到达。",
+            "states": {
+              "c": "保留结束等待 · 已发确认8002",
+              "s": "等待最终确认8002"
+            },
             "flows": [
               {
                 "from": "c",
                 "to": "s",
-                "label": "最终ACK",
+                "label": "ACK · ack=8002",
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "c",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "最后ACK到达",
+            "text": "服务器关闭，客户端按规则保留结束等待状态。合并改变包数，不改变两方向分别结束的规则。",
+            "states": {
+              "c": "保留结束等待",
+              "s": "本端已关闭"
+            },
+            "flows": [],
+            "active": [
+              "c",
+              "s"
+            ],
             "values": []
           }
         ]
@@ -2830,12 +3168,12 @@
         "assumption": "服务器稍后才结束，省略同时关闭和报文丢失。",
         "steps": [
           {
-            "title": "客户端发出FIN",
-            "text": "客户端在FIN-WAIT-1等待确认或对方结束；服务器处理FIN后可进入CLOSE-WAIT，等待本地应用结束发送。",
-            "active": [
-              "c",
-              "s"
-            ],
+            "title": "主动端发FIN",
+            "text": "本端发完后进入FIN-WAIT-1。对方尚未收到，仍是ESTABLISHED。",
+            "states": {
+              "c": "FIN-WAIT-1 · 等确认",
+              "s": "ESTABLISHED · FIN还在途"
+            },
             "flows": [
               {
                 "from": "c",
@@ -2844,40 +3182,54 @@
                 "tone": "normal"
               }
             ],
-            "states": {
-              "c": "FIN-WAIT-1",
-              "s": "收到后CLOSE-WAIT"
-            },
+            "active": [
+              "c",
+              "s"
+            ],
             "values": []
           },
           {
-            "title": "客户端FIN得到确认",
-            "text": "客户端进入FIN-WAIT-2，自己的结束已确认，还在等服务器FIN。服务器可能仍合法生成报告。",
-            "active": [
-              "s",
-              "c"
-            ],
+            "title": "对方收到FIN并回ACK",
+            "text": "被动端进入CLOSE-WAIT，等本地应用发完；主动端在ACK到达前仍为FIN-WAIT-1。",
+            "states": {
+              "c": "FIN-WAIT-1 · ACK还在途",
+              "s": "CLOSE-WAIT · 等本地应用结束"
+            },
             "flows": [
               {
                 "from": "s",
                 "to": "c",
-                "label": "ACK",
+                "label": "ACK · 确认主动端FIN",
                 "tone": "normal"
               }
             ],
-            "states": {
-              "c": "FIN-WAIT-2",
-              "s": "CLOSE-WAIT"
-            },
+            "active": [
+              "c",
+              "s"
+            ],
             "values": []
           },
           {
-            "title": "服务器发FIN",
-            "text": "服务器进入LAST-ACK等最终确认；客户端处理此FIN并发ACK，进入TIME-WAIT。",
+            "title": "主动端收到ACK",
+            "text": "本端FIN已确认，进入FIN-WAIT-2，等对方FIN。被动端仍可合法发送剩余内容。",
+            "states": {
+              "c": "FIN-WAIT-2 · 等对方FIN",
+              "s": "CLOSE-WAIT · 仍可发送"
+            },
+            "flows": [],
             "active": [
-              "s",
-              "c"
+              "c",
+              "s"
             ],
+            "values": []
+          },
+          {
+            "title": "被动端发完后发FIN",
+            "text": "被动端进入LAST-ACK，等自己的FIN确认；主动端尚未收到它。",
+            "states": {
+              "c": "FIN-WAIT-2 · FIN还在途",
+              "s": "LAST-ACK · 等最终ACK"
+            },
             "flows": [
               {
                 "from": "s",
@@ -2886,31 +3238,45 @@
                 "tone": "normal"
               }
             ],
-            "states": {
-              "c": "处理后TIME-WAIT",
-              "s": "LAST-ACK"
-            },
-            "values": []
-          },
-          {
-            "title": "最后确认抵达服务器",
-            "text": "服务器收到有效ACK后关闭，客户端按规则等待后再结束相应状态。",
             "active": [
               "c",
               "s"
             ],
+            "values": []
+          },
+          {
+            "title": "主动端收到FIN并回ACK",
+            "text": "主动端处理FIN，发最终ACK并进入TIME-WAIT；被动端仍在LAST-ACK。",
+            "states": {
+              "c": "TIME-WAIT · 保留结束状态",
+              "s": "LAST-ACK · ACK还在途"
+            },
             "flows": [
               {
                 "from": "c",
                 "to": "s",
-                "label": "ACK",
+                "label": "ACK · 最终确认",
                 "tone": "normal"
               }
             ],
+            "active": [
+              "c",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "被动端收到最终ACK",
+            "text": "被动端进入CLOSED；主动端TIME-WAIT等待期结束后再关闭。两端按各自收到的事件变状态。",
             "states": {
-              "c": "TIME-WAIT",
+              "c": "TIME-WAIT · 等待期未结束",
               "s": "CLOSED"
             },
+            "flows": [],
+            "active": [
+              "c",
+              "s"
+            ],
             "values": []
           }
         ]
@@ -2920,12 +3286,12 @@
         "assumption": "同样的普通关闭过程，把主动角色换成服务器。",
         "steps": [
           {
-            "title": "服务器先发FIN",
-            "text": "服务器是本次主动关闭端，先进入FIN-WAIT-1。主动角色不是客户端的固定身份。",
-            "active": [
-              "s",
-              "c"
-            ],
+            "title": "主动端发FIN",
+            "text": "本端发完后进入FIN-WAIT-1。对方尚未收到，仍是ESTABLISHED。",
+            "states": {
+              "s": "FIN-WAIT-1 · 等确认",
+              "c": "ESTABLISHED · FIN还在途"
+            },
             "flows": [
               {
                 "from": "s",
@@ -2934,52 +3300,101 @@
                 "tone": "normal"
               }
             ],
-            "states": {
-              "s": "FIN-WAIT-1",
-              "c": "收到后CLOSE-WAIT"
-            },
+            "active": [
+              "s",
+              "c"
+            ],
             "values": []
           },
           {
-            "title": "客户端确认后暂未结束",
-            "text": "服务器可处于FIN-WAIT-2，客户端在CLOSE-WAIT。状态名描述本地仍在等待什么。",
-            "active": [
-              "c",
-              "s"
-            ],
+            "title": "对方收到FIN并回ACK",
+            "text": "被动端进入CLOSE-WAIT，等本地应用发完；主动端在ACK到达前仍为FIN-WAIT-1。",
+            "states": {
+              "s": "FIN-WAIT-1 · ACK还在途",
+              "c": "CLOSE-WAIT · 等本地应用结束"
+            },
             "flows": [
               {
                 "from": "c",
                 "to": "s",
-                "label": "ACK",
+                "label": "ACK · 确认主动端FIN",
                 "tone": "normal"
               }
             ],
-            "states": {
-              "s": "FIN-WAIT-2",
-              "c": "CLOSE-WAIT"
-            },
+            "active": [
+              "s",
+              "c"
+            ],
             "values": []
           },
           {
-            "title": "最终服务器通常承担等待",
-            "text": "客户端稍后发FIN，服务器最终确认后进入TIME-WAIT。图示角色互换后，等待并没有固定留给客户端。",
+            "title": "主动端收到ACK",
+            "text": "本端FIN已确认，进入FIN-WAIT-2，等对方FIN。被动端仍可合法发送剩余内容。",
+            "states": {
+              "s": "FIN-WAIT-2 · 等对方FIN",
+              "c": "CLOSE-WAIT · 仍可发送"
+            },
+            "flows": [],
             "active": [
-              "c",
-              "s"
+              "s",
+              "c"
             ],
+            "values": []
+          },
+          {
+            "title": "被动端发完后发FIN",
+            "text": "被动端进入LAST-ACK，等自己的FIN确认；主动端尚未收到它。",
+            "states": {
+              "s": "FIN-WAIT-2 · FIN还在途",
+              "c": "LAST-ACK · 等最终ACK"
+            },
             "flows": [
               {
                 "from": "c",
                 "to": "s",
-                "label": "稍后的FIN",
+                "label": "FIN",
                 "tone": "normal"
               }
             ],
+            "active": [
+              "s",
+              "c"
+            ],
+            "values": []
+          },
+          {
+            "title": "主动端收到FIN并回ACK",
+            "text": "主动端处理FIN，发最终ACK并进入TIME-WAIT；被动端仍在LAST-ACK。",
             "states": {
-              "s": "处理后TIME-WAIT",
-              "c": "LAST-ACK"
+              "s": "TIME-WAIT · 保留结束状态",
+              "c": "LAST-ACK · ACK还在途"
             },
+            "flows": [
+              {
+                "from": "s",
+                "to": "c",
+                "label": "ACK · 最终确认",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "s",
+              "c"
+            ],
+            "values": []
+          },
+          {
+            "title": "被动端收到最终ACK",
+            "text": "被动端进入CLOSED；主动端TIME-WAIT等待期结束后再关闭。两端按各自收到的事件变状态。",
+            "states": {
+              "s": "TIME-WAIT · 等待期未结束",
+              "c": "CLOSED"
+            },
+            "flows": [],
+            "active": [
+              "s",
+              "c"
+            ],
             "values": []
           }
         ]
@@ -3341,7 +3756,7 @@
         "steps": [
           {
             "title": "第一段到达",
-            "text": "1001到1100连续收到，下一个期望位置是1101。",
+            "text": "1001到1100连续收到，下一个期望位置是1101。 接收TCP现在可向应用交付这100字节，应用是否已取走是另一步。",
             "active": [],
             "flows": [],
             "states": {},
@@ -3357,7 +3772,7 @@
           },
           {
             "title": "第二段丢失，第三段先到",
-            "text": "后方1201到1300暂存，中间仍缺1101到1200。累计ACK不能跳到1301。",
+            "text": "后方1201到1300暂存，中间仍缺1101到1200。累计ACK不能跳到1301。 后段留在TCP缓冲中，不能越过缺口按有序字节流交付。",
             "active": [],
             "flows": [],
             "states": {},
@@ -3375,7 +3790,7 @@
           },
           {
             "title": "重传补齐中间缺口",
-            "text": "指定恢复机制触发重传后，缺失字节到达，前三段现在形成连续前缀。",
+            "text": "指定恢复机制触发重传后，缺失字节到达，前三段现在形成连续前缀。 累计ACK到1301，补齐部分与暂存后段现在都可按序交付。",
             "active": [],
             "flows": [],
             "states": {},
@@ -3398,52 +3813,119 @@
         "assumption": "假设数据已到，但相应确认丢失，随后触发重传。",
         "steps": [
           {
-            "title": "数据已收到",
-            "text": "接收方已识别这些字节在本连接中的序号范围。确认在路上丢失，不会让已接收的数据自动消失。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [
+            "title": "订单字节已经送到",
+            "text": "订单请求占100字节，seq1001—1100。接收TCP已向应用交付一次，但ack1101丢失。",
+            "rows": [
               {
-                "label": "发送方视角",
-                "value": "尚未得到确认"
+                "label": "接收记录",
+                "cells": [
+                  {
+                    "id": "接收记录-0",
+                    "text": "1001—1100已收"
+                  }
+                ]
+              },
+              {
+                "label": "应用取得",
+                "cells": [
+                  {
+                    "id": "应用取得-0",
+                    "text": "订单请求1次"
+                  }
+                ]
+              },
+              {
+                "label": "发送方缺少",
+                "cells": [
+                  {
+                    "id": "发送方缺少-0",
+                    "text": "ack1101"
+                  }
+                ]
               }
             ],
-            "statuses": {
-              "r0c0": "received"
-            }
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
           },
           {
-            "title": "相同范围再次到达",
-            "text": "TCP依据序号识别重复字节；应用不会因此必然得到第二份相同内容。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [
+            "title": "TCP重传相同编号",
+            "text": "运输超时后重传1001—1100。接收TCP识别已收范围，不再交付一份新订单；重新确认ack1101。",
+            "rows": [
               {
-                "label": "重传范围",
-                "value": "1001—1100"
+                "label": "再次到达",
+                "cells": [
+                  {
+                    "id": "再次到达-0",
+                    "text": "相同seq1001—1100"
+                  }
+                ]
+              },
+              {
+                "label": "应用取得",
+                "cells": [
+                  {
+                    "id": "应用取得-0",
+                    "text": "仍为1次"
+                  }
+                ]
+              },
+              {
+                "label": "返回确认",
+                "cells": [
+                  {
+                    "id": "返回确认-0",
+                    "text": "ack1101"
+                  }
+                ]
               }
             ],
-            "statuses": {
-              "r0c0": "duplicate"
-            }
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
           },
           {
-            "title": "继续确认接收进展",
-            "text": "运输层确认不等于数据库事务提交。业务仍需自己的结果与重复操作处理规则。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [
+            "title": "应用重发是新的字节",
+            "text": "这是另一条路径：应用没等到业务结果，再次发送同文订单，新编号1101—1200。TCP照常交付新字节，应用取得第2次请求，业务须按订单标识去重。",
+            "rows": [
               {
-                "label": "业务完成？",
-                "value": "TCP ACK不能单独证明"
+                "label": "应用再次发送",
+                "cells": [
+                  {
+                    "id": "应用再次发送-0",
+                    "text": "相同订单文字"
+                  },
+                  {
+                    "id": "应用再次发送-1",
+                    "text": "新seq1101—1200"
+                  }
+                ]
+              },
+              {
+                "label": "应用取得",
+                "cells": [
+                  {
+                    "id": "应用取得-0",
+                    "text": "2次请求"
+                  }
+                ]
+              },
+              {
+                "label": "业务责任",
+                "cells": [
+                  {
+                    "id": "业务责任-0",
+                    "text": "按订单标识去重"
+                  }
+                ]
               }
             ],
-            "statuses": {
-              "r0c0": "received"
-            }
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
           }
         ]
       }
@@ -3537,31 +4019,52 @@
             ]
           },
           {
-            "title": "超时后作指数退避",
-            "text": "在相应重传计时器连续超时且无进展的示例中，等待区间从1秒增加到2秒、4秒。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "翻倍的是等待区间",
+            "text": "t=0发原段，等1秒；t=1超时重传，再等2秒，到t=3；t=3再重传，等4秒，到t=7。连续无进展时翻倍的是每次区间，不是绝对时刻。",
             "rows": [
               {
-                "label": "连续等待区间",
+                "label": "发送/重传时刻",
                 "cells": [
                   {
-                    "id": "r0c0",
+                    "id": "发送/重传时刻-0",
+                    "text": "t=0"
+                  },
+                  {
+                    "id": "发送/重传时刻-1",
+                    "text": "t=1"
+                  },
+                  {
+                    "id": "发送/重传时刻-2",
+                    "text": "t=3"
+                  },
+                  {
+                    "id": "发送/重传时刻-3",
+                    "text": "t=7"
+                  }
+                ]
+              },
+              {
+                "label": "相邻等待区间",
+                "cells": [
+                  {
+                    "id": "相邻等待区间-0",
                     "text": "1秒"
                   },
                   {
-                    "id": "r0c1",
+                    "id": "相邻等待区间-1",
                     "text": "2秒"
                   },
                   {
-                    "id": "r0c2",
+                    "id": "相邻等待区间-2",
                     "text": "4秒"
                   }
                 ]
               }
-            ]
+            ],
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
           }
         ]
       },
@@ -3926,98 +4429,104 @@
         "assumption": "本例协议用1字节无符号长度，正文采用ASCII，上限100字节；0x05表示长度5，不额外发送字符0和x。",
         "steps": [
           {
-            "title": "先收到长度5与HE",
-            "text": "首字节0x05说明接下来正文需5字节，目前只有HE两字节。先保留缓冲，不能提前当完整HELLO交付。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "先收到0x05与HE",
+            "text": "首字节0x05表示正文5字节。读掉长度头后缓存HE，已有2，还差3；不能当完整消息。",
             "rows": [
               {
-                "label": "已收到",
+                "label": "已读长度",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "0x05"
-                  },
-                  {
-                    "id": "r0c1",
-                    "text": "H"
-                  },
-                  {
-                    "id": "r0c2",
-                    "text": "E"
+                    "id": "已读长度-0",
+                    "text": "5"
                   }
                 ]
               },
               {
-                "label": "还缺正文",
+                "label": "正文缓冲",
                 "cells": [
                   {
-                    "id": "r1c0",
+                    "id": "正文缓冲-0",
+                    "text": "HE · 2字节"
+                  }
+                ]
+              },
+              {
+                "label": "还缺",
+                "cells": [
+                  {
+                    "id": "还缺-0",
                     "text": "3字节"
                   }
                 ]
               }
-            ]
+            ],
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
           },
           {
-            "title": "后续收到LLO",
-            "text": "正文累积为HELLO，共5字节，长度条件刚好满足，可以取出这一条。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "随后读到LLO和下一条",
+            "text": "本批实际收到LLO、0x03、BYE，拼旧缓冲后为HELLO、0x03、BYE。第一条只需要前5字节HELLO。",
             "rows": [
               {
-                "label": "长度头",
+                "label": "本批新字节",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "0x05"
+                    "id": "本批新字节-0",
+                    "text": "LLO"
+                  },
+                  {
+                    "id": "本批新字节-1",
+                    "text": "0x03"
+                  },
+                  {
+                    "id": "本批新字节-2",
+                    "text": "BYE"
                   }
                 ]
               },
               {
-                "label": "正文",
+                "label": "累计缓冲",
                 "cells": [
                   {
-                    "id": "r1c0",
-                    "text": "H"
+                    "id": "累计缓冲-0",
+                    "text": "HELLO"
                   },
                   {
-                    "id": "r1c1",
-                    "text": "E"
+                    "id": "累计缓冲-1",
+                    "text": "0x03"
                   },
                   {
-                    "id": "r1c2",
-                    "text": "L"
-                  },
+                    "id": "累计缓冲-2",
+                    "text": "BYE"
+                  }
+                ]
+              },
+              {
+                "label": "当前正文目标",
+                "cells": [
                   {
-                    "id": "r1c3",
-                    "text": "L"
-                  },
-                  {
-                    "id": "r1c4",
-                    "text": "O"
+                    "id": "当前正文目标-0",
+                    "text": "5字节 · 已足够"
                   }
                 ]
               }
-            ]
+            ],
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
           },
           {
-            "title": "剩余字节留给下一条",
-            "text": "如果同一次read还包含下一条头与内容，取完本条后继续解析剩余缓冲；不是把所有读到的数据都归给第一条。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "取出HELLO，留下后续字节",
+            "text": "交付HELLO后仅移走它的5字节正文；还留0x03与BYE，不把下一条吞进HELLO。",
             "rows": [
               {
-                "label": "取出消息",
+                "label": "已交付",
                 "cells": [
                   {
-                    "id": "r0c0",
+                    "id": "已交付-0",
                     "text": "HELLO"
                   }
                 ]
@@ -4026,12 +4535,61 @@
                 "label": "剩余缓冲",
                 "cells": [
                   {
-                    "id": "r1c0",
-                    "text": "下一条的长度头与内容"
+                    "id": "剩余缓冲-0",
+                    "text": "0x03"
+                  },
+                  {
+                    "id": "剩余缓冲-1",
+                    "text": "BYE"
                   }
                 ]
               }
-            ]
+            ],
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
+          },
+          {
+            "title": "继续解析BYE",
+            "text": "读下一头0x03，目标正文3字节；BYE正好3字节，交付第二条。缓冲归零，等下一头。",
+            "rows": [
+              {
+                "label": "已交付",
+                "cells": [
+                  {
+                    "id": "已交付-0",
+                    "text": "HELLO"
+                  },
+                  {
+                    "id": "已交付-1",
+                    "text": "BYE"
+                  }
+                ]
+              },
+              {
+                "label": "缓冲",
+                "cells": [
+                  {
+                    "id": "缓冲-0",
+                    "text": "空"
+                  }
+                ]
+              },
+              {
+                "label": "下一动作",
+                "cells": [
+                  {
+                    "id": "下一动作-0",
+                    "text": "等待长度头"
+                  }
+                ]
+              }
+            ],
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
           }
         ]
       },
@@ -4161,7 +4719,7 @@
     "cases": [
       {
         "label": "应用暂时不读",
-        "assumption": "教学缓冲容量6KB，按字节计数，忽略其他占用。",
+        "assumption": "教学缓冲容量6KB，按字节计数，忽略其他占用。 本例1KB按1000字节计。",
         "steps": [
           {
             "title": "开始有6KB空位",
@@ -4243,7 +4801,7 @@
       },
       {
         "label": "窗口降到0",
-        "assumption": "假设接收方暂无可接纳空间，发送方遵守零窗口机制。",
+        "assumption": "假设接收方暂无可接纳空间，发送方遵守零窗口机制。 本例1KB按1000字节计。",
         "steps": [
           {
             "title": "缓冲被填满",
@@ -4345,7 +4903,7 @@
     "cases": [
       {
         "label": "算出本次新增额度",
-        "assumption": "假设rwnd10KB、cwnd6KB、在途4KB，应用有足够待发数据。",
+        "assumption": "假设rwnd10KB、cwnd6KB、在途4KB，应用有足够待发数据。 本例1KB按1000字节计。",
         "steps": [
           {
             "title": "先选更紧的窗口",
@@ -4434,7 +4992,7 @@
       },
       {
         "label": "接收窗口更紧",
-        "assumption": "保持cwnd6KB，改为rwnd3KB，在途2KB。",
+        "assumption": "保持cwnd6KB，改为rwnd3KB，在途2KB。 本例1KB按1000字节计。",
         "steps": [
           {
             "title": "接收方成为当前限制",
@@ -4556,14 +5114,18 @@
           },
           {
             "title": "一轮后近似翻倍",
-            "text": "在充分发送与确认条件下，慢开始按ACK增长，约每RTT翻倍。",
+            "text": "本轮cwnd允许1MSS，发1个满段；确认该新段的ACK到达后，慢开始增加1MSS，因此1＋1＝2MSS。为看清轮次，本图按每轮开始窗口发送、轮末汇总。",
             "active": [],
             "flows": [],
             "states": {},
             "values": [
               {
-                "label": "cwnd",
-                "value": "2MSS"
+                "label": "本轮发送/新ACK",
+                "value": "1段 / 1个"
+              },
+              {
+                "label": "窗口变化",
+                "value": "1 + 1 = 2 MSS"
               }
             ],
             "points": [
@@ -4579,14 +5141,18 @@
           },
           {
             "title": "第二轮后增长到4MSS",
-            "text": "在本例无丢失、及时确认且充分发送的条件下，第二轮后窗口近似增长到4MSS，尚未到8MSS阈值。",
+            "text": "本轮开始窗口2MSS，发2个满段；第1个新ACK令2→3，第2个令3→4。两个各加1MSS的确认，合计让窗口从2变4。",
             "active": [],
             "flows": [],
             "states": {},
             "values": [
               {
-                "label": "cwnd",
-                "value": "4MSS"
+                "label": "本轮发送/新ACK",
+                "value": "2段 / 2个"
+              },
+              {
+                "label": "逐次累计",
+                "value": "2 → 3 → 4 MSS"
               }
             ],
             "points": [
@@ -4606,7 +5172,7 @@
           },
           {
             "title": "第三轮到达阈值8MSS",
-            "text": "本例第三轮到8MSS，恰好等于ssthresh。等于阈值时标准允许相应选择，本例选择随后按拥塞避免推进。",
+            "text": "本轮开始4MSS，4个满段分别得到新ACK，每个增加1MSS：4→5→6→7→8。到达阈值8MSS后，本例选择拥塞避免。",
             "active": [],
             "flows": [],
             "states": {},
@@ -4637,7 +5203,7 @@
           },
           {
             "title": "第四轮近似增加到9MSS",
-            "text": "经典拥塞避免在本例近似每轮增加1MSS，从8到9。增长比此前的翻倍更加平缓。",
+            "text": "窗口8MSS时，经典拥塞避免不再每ACK加1MSS。按MSS²/cwnd的近似规则，起初每次约加1/8MSS，8个确认合计约加1MSS，轮末约9MSS；窗口更新后每次实际增量也会变化。",
             "active": [],
             "flows": [],
             "states": {},
@@ -4667,7 +5233,7 @@
           },
           {
             "title": "第五轮近似增加到10MSS",
-            "text": "在同样理想化条件下继续增长到10MSS。实际确认策略、实现和所选拥塞算法会改变精确轨迹，不能用这条曲线预测所有连接。",
+            "text": "下一轮约9MSS，充分发送并确认后合计再加约1MSS，到10MSS。这是经典理想化趋势，不是所有算法或实际时间轨迹。",
             "active": [],
             "flows": [],
             "states": {},
@@ -4726,7 +5292,7 @@
           },
           {
             "title": "调整阈值并收缩窗口",
-            "text": "经典规则将ssthresh设为不大于max(FlightSize/2,2MSS)的值，本例取4MSS；超时后cwnd降至1MSS。",
+            "text": "max表示取较大者。经典规则将ssthresh设为不大于max(FlightSize/2,2MSS)的值，本例取4MSS；超时后cwnd降至1MSS。",
             "active": [],
             "flows": [],
             "states": {},
@@ -4844,22 +5410,27 @@
     "cases": [
       {
         "label": "数够三个重复ACK",
-        "assumption": "假设满足RFC5681重复ACK条件，发送方有未确认数据。",
+        "assumption": "每段100字节；1001—1100已收到，1101—1200丢失，后续三段分别到达；满足经典重复ACK条件。",
         "steps": [
           {
-            "title": "第一次收到1101",
-            "text": "这是当前累计确认值的首次出现，本例重复计数为0。这个首次确认是随后统计重复次数的基准。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "第一段得到首次1101",
+            "text": "收到1001—1100后首次ack1101，下一期待1101。重复次数为0，不能把首次算作第1个重复。",
             "rows": [
               {
-                "label": "ACK序列",
+                "label": "到达数据",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "1101"
+                    "id": "到达数据-0",
+                    "text": "1001—1100"
+                  }
+                ]
+              },
+              {
+                "label": "收到ACK",
+                "cells": [
+                  {
+                    "id": "收到ACK-0",
+                    "text": "首次1101"
                   }
                 ]
               },
@@ -4867,35 +5438,36 @@
                 "label": "重复计数",
                 "cells": [
                   {
-                    "id": "r1c0",
+                    "id": "重复计数-0",
                     "text": "0"
                   }
                 ]
               }
-            ]
+            ],
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
           },
           {
-            "title": "又收到两个1101",
-            "text": "现在总共三个相同ACK，但后两个才是重复，因此重复计数为2，尚未达到本例触发阈值。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "后段1201—1300到达",
+            "text": "1101—1200仍缺，后段暂存，接收方再发ack1101；发送方得到第1个重复ACK。",
             "rows": [
               {
-                "label": "ACK序列",
+                "label": "到达数据",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "1101"
-                  },
+                    "id": "到达数据-0",
+                    "text": "1201—1300"
+                  }
+                ]
+              },
+              {
+                "label": "缺口",
+                "cells": [
                   {
-                    "id": "r0c1",
-                    "text": "1101"
-                  },
-                  {
-                    "id": "r0c2",
-                    "text": "1101"
+                    "id": "缺口-0",
+                    "text": "1101—1200"
                   }
                 ]
               },
@@ -4903,39 +5475,73 @@
                 "label": "重复计数",
                 "cells": [
                   {
-                    "id": "r1c0",
+                    "id": "重复计数-0",
+                    "text": "1"
+                  }
+                ]
+              }
+            ],
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
+          },
+          {
+            "title": "后段1301—1400到达",
+            "text": "缺口仍在，累计确认不能越过；又收到ack1101，第2个重复。",
+            "rows": [
+              {
+                "label": "到达数据",
+                "cells": [
+                  {
+                    "id": "到达数据-0",
+                    "text": "1301—1400"
+                  }
+                ]
+              },
+              {
+                "label": "缺口",
+                "cells": [
+                  {
+                    "id": "缺口-0",
+                    "text": "1101—1200"
+                  }
+                ]
+              },
+              {
+                "label": "重复计数",
+                "cells": [
+                  {
+                    "id": "重复计数-0",
                     "text": "2"
                   }
                 ]
               }
-            ]
+            ],
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
           },
           {
-            "title": "再收到一个1101",
-            "text": "累计出现四个1101，其中三个是重复ACK。经典快速重传可据此重传推断缺失的段，不必等RTO。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "后段1401—1500到达",
+            "text": "再收到ack1101，第3个重复。总共4份1101：1份首次加3份重复，经典快速重传据此恢复1101—1200。",
             "rows": [
               {
-                "label": "ACK序列",
+                "label": "到达数据",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "1101"
-                  },
+                    "id": "到达数据-0",
+                    "text": "1401—1500"
+                  }
+                ]
+              },
+              {
+                "label": "ACK总数",
+                "cells": [
                   {
-                    "id": "r0c1",
-                    "text": "1101"
-                  },
-                  {
-                    "id": "r0c2",
-                    "text": "1101"
-                  },
-                  {
-                    "id": "r0c3",
-                    "text": "1101"
+                    "id": "ACK总数-0",
+                    "text": "4份1101"
                   }
                 ]
               },
@@ -4943,37 +5549,59 @@
                 "label": "重复计数",
                 "cells": [
                   {
-                    "id": "r1c0",
-                    "text": "3 → 快速重传"
+                    "id": "重复计数-0",
+                    "text": "3 · 触发快速重传"
                   }
                 ]
               }
-            ]
+            ],
+            "values": [],
+            "active": [],
+            "states": {},
+            "flows": []
           }
         ]
       },
       {
         "label": "经典Reno恢复窗口",
-        "assumption": "设触发时FlightSize12MSS，按RFC5681经典模型选择ssthresh6MSS。",
+        "assumption": "独立的Reno窗口账目，不延续上一情形5个100字节段。触发时FlightSize12MSS，三个重复ACK提示3MSS后段已到接收方。",
         "steps": [
           {
             "title": "确定ssthresh",
-            "text": "阈值依据实际FlightSize，示例取max(12/2,2)=6MSS。不能未经说明总把cwnd除二替代FlightSize。",
+            "text": "FlightSize按已发但未确认字节计。缺口挡住累计确认，后续3MSS虽已到接收方，仍含在12MSS账目中。本例ssthresh=max(12/2,2)=6MSS，不先把3从FlightSize扣掉。",
             "active": [],
             "flows": [],
             "states": {},
             "values": [],
             "rows": [
               {
-                "label": "示例计算",
+                "label": "累计确认账目",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "FlightSize12"
+                    "id": "累计确认账目-0",
+                    "text": "FlightSize12MSS · 未累计确认"
+                  }
+                ]
+              },
+              {
+                "label": "其中3MSS",
+                "cells": [
+                  {
+                    "id": "其中3MSS-0",
+                    "text": "已到接收方"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "ssthresh6"
+                    "id": "其中3MSS-1",
+                    "text": "已离开路径"
+                  }
+                ]
+              },
+              {
+                "label": "阈值",
+                "cells": [
+                  {
+                    "id": "阈值-0",
+                    "text": "6MSS"
                   }
                 ]
               }
@@ -4981,7 +5609,7 @@
           },
           {
             "title": "进入快速恢复",
-            "text": "经典Reno暂设cwnd=ssthresh+3MSS，即9MSS，补偿三个重复ACK所反映的离网数据。这个9不是“立刻随意发9份新数据”。",
+            "text": "三个重复ACK各提示后段已经离开路径，但仍被缺口挡在累计确认之外。经典Reno临时设cwnd=6+3=9MSS补偿这个区别；新增发送仍须满足窗口和在途约束，绝不是任意再发9MSS。",
             "active": [],
             "flows": [],
             "states": {},
@@ -4993,15 +5621,32 @@
             ],
             "rows": [
               {
-                "label": "快速恢复",
+                "label": "临时cwnd",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "ssthresh6"
+                    "id": "临时cwnd-0",
+                    "text": "ssthresh6MSS"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "cwnd9"
+                    "id": "临时cwnd-1",
+                    "text": "+3MSS"
+                  },
+                  {
+                    "id": "临时cwnd-2",
+                    "text": "＝9MSS"
+                  }
+                ]
+              },
+              {
+                "label": "注意",
+                "cells": [
+                  {
+                    "id": "注意-0",
+                    "text": "已离网 ≠ 已累计确认"
+                  },
+                  {
+                    "id": "注意-1",
+                    "text": "新增发送仍需检查预算"
                   }
                 ]
               }
@@ -5059,131 +5704,166 @@
         "assumption": "只画报文结构，省略实际连接与TLS；本例GET没有请求内容。",
         "steps": [
           {
-            "title": "先写请求行",
-            "text": "GET是方法，/books?q=tcp是本例请求目标，HTTP/1.1说明消息版本。查询串不是另一次请求。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "浏览器需要查tcp相关书目",
+            "text": "浏览器按本例接口把读取动作写成GET，把路径和查询写成/books?q=tcp；q=tcp是同一请求的条件，不是另一次访问。",
             "rows": [
+              {
+                "label": "浏览器需要",
+                "cells": [
+                  {
+                    "id": "浏览器需要-0",
+                    "text": "读取tcp相关书目"
+                  }
+                ]
+              },
               {
                 "label": "请求行",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "GET"
-                  },
-                  {
-                    "id": "r0c1",
-                    "text": "/books?q=tcp"
-                  },
-                  {
-                    "id": "r0c2",
-                    "text": "HTTP/1.1"
+                    "id": "请求行-0",
+                    "text": "GET /books?q=tcp HTTP/1.1"
                   }
                 ]
               }
-            ]
+            ],
+            "statuses": {},
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
           },
           {
-            "title": "补充首部字段",
-            "text": "Host说明目标主机等信息，Accept描述可接受的响应媒体类型。字段含义由协议约定，不能看成正文里的装饰文字。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "补上站点与可接受类型",
+            "text": "Host选择learn.example站点，Accept说明能接受普通文本。服务器按本例接口读/books及q=tcp，执行对应查询。",
             "rows": [
               {
                 "label": "请求行",
                 "cells": [
                   {
-                    "id": "r0c0",
+                    "id": "请求行-0",
                     "text": "GET /books?q=tcp HTTP/1.1"
                   }
                 ]
               },
               {
-                "label": "首部字段",
+                "label": "字段",
                 "cells": [
                   {
-                    "id": "r1c0",
+                    "id": "字段-0",
                     "text": "Host: learn.example"
                   },
                   {
-                    "id": "r1c1",
+                    "id": "字段-1",
                     "text": "Accept: text/plain"
                   }
                 ]
-              }
-            ]
-          },
-          {
-            "title": "空行结束首部",
-            "text": "本例没有内容，首部后的空行即可结束相应部分。响应另有状态行、字段与可能的内容，不是把请求原样回显。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
-            "rows": [
+              },
               {
-                "label": "请求结构",
+                "label": "服务器解释",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "请求行"
+                    "id": "服务器解释-0",
+                    "text": "读取/books"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "首部字段"
-                  },
-                  {
-                    "id": "r0c2",
-                    "text": "空行（本例没有请求内容）"
+                    "id": "服务器解释-1",
+                    "text": "按q=tcp筛选"
                   }
                 ]
               }
-            ]
+            ],
+            "statuses": {},
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "空行结束请求字段",
+            "text": "读到空行，服务器知道字段部分结束。本例没有请求正文，至此请求完整；不能靠一次TCP读取结束代替空行。",
+            "rows": [
+              {
+                "label": "请求行",
+                "cells": [
+                  {
+                    "id": "请求行-0",
+                    "text": "GET /books?q=tcp HTTP/1.1"
+                  }
+                ]
+              },
+              {
+                "label": "字段",
+                "cells": [
+                  {
+                    "id": "字段-0",
+                    "text": "Host: learn.example"
+                  },
+                  {
+                    "id": "字段-1",
+                    "text": "Accept: text/plain"
+                  }
+                ]
+              },
+              {
+                "label": "字段边界",
+                "cells": [
+                  {
+                    "id": "字段边界-0",
+                    "text": "空行 · 本例无请求正文"
+                  }
+                ]
+              }
+            ],
+            "statuses": {},
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
           }
         ]
       },
       {
         "label": "HTTP/1.1文本响应",
-        "assumption": "本例返回普通文本Hello，共5个ASCII字节，无额外换行；省略连接和传输细节。",
+        "assumption": "接续同一GET /books?q=tcp。本例把服务器查询结果简化成Hello这5个ASCII字节，仅观察响应结构，不是真实书目。",
         "steps": [
           {
-            "title": "状态行先说明结果",
-            "text": "HTTP/1.1 200 OK包含协议版本与状态码。200表示本次请求按相应语义成功，不代表图片等其他请求也都成功。",
+            "title": "服务器先表达处理结果",
+            "text": "本例查询已成功，服务器写HTTP/1.1 200 OK。这个状态只属于这一次/books请求。",
             "rows": [
               {
                 "label": "状态行",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "HTTP/1.1"
-                  },
+                    "id": "状态行-0",
+                    "text": "HTTP/1.1 200 OK"
+                  }
+                ]
+              },
+              {
+                "label": "待返回内容",
+                "cells": [
                   {
-                    "id": "r0c1",
-                    "text": "200"
-                  },
-                  {
-                    "id": "r0c2",
-                    "text": "OK"
+                    "id": "待返回内容-0",
+                    "text": "Hello · 示例5字节"
                   }
                 ]
               }
             ],
+            "statuses": {},
             "active": [],
+            "states": {},
+            "flows": [],
             "values": []
           },
           {
-            "title": "字段描述返回内容",
-            "text": "Content-Type说明内容类型与字符编码；Content-Length按字节计数。这里正文是普通文本Hello，正好5字节。",
+            "title": "字段说明怎样解释内容",
+            "text": "Content-Type说明普通UTF-8文本；Content-Length为5，因为本例Hello正好5个ASCII字节，无额外换行。",
             "rows": [
               {
                 "label": "状态行",
                 "cells": [
                   {
-                    "id": "r0c0",
+                    "id": "状态行-0",
                     "text": "HTTP/1.1 200 OK"
                   }
                 ]
@@ -5192,46 +5872,67 @@
                 "label": "响应字段",
                 "cells": [
                   {
-                    "id": "r1c0",
+                    "id": "响应字段-0",
                     "text": "Content-Type: text/plain; charset=utf-8"
                   },
                   {
-                    "id": "r1c1",
+                    "id": "响应字段-1",
                     "text": "Content-Length: 5"
                   }
                 ]
               }
             ],
+            "statuses": {},
             "active": [],
+            "states": {},
+            "flows": [],
             "values": []
           },
           {
-            "title": "空行之后才是正文",
-            "text": "字段后的空行结束字段部分，随后是Hello这5个字节。客户端按HTTP消息规则处理，不能把一次TCP读取结束当成整条响应结束。",
+            "title": "浏览器读空行再取5字节",
+            "text": "空行结束响应字段，随后取5字节Hello。浏览器按text/plain把它作为普通文本呈现；消息完成，不等于TCP连接必须关闭。",
             "rows": [
               {
-                "label": "完整结构",
+                "label": "状态行",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "状态行"
-                  },
+                    "id": "状态行-0",
+                    "text": "HTTP/1.1 200 OK"
+                  }
+                ]
+              },
+              {
+                "label": "字段结束",
+                "cells": [
                   {
-                    "id": "r0c1",
-                    "text": "响应字段"
-                  },
-                  {
-                    "id": "r0c2",
+                    "id": "字段结束-0",
                     "text": "空行"
-                  },
+                  }
+                ]
+              },
+              {
+                "label": "响应正文",
+                "cells": [
                   {
-                    "id": "r0c3",
-                    "text": "Hello（5字节）"
+                    "id": "响应正文-0",
+                    "text": "Hello · 5字节"
+                  }
+                ]
+              },
+              {
+                "label": "浏览器呈现",
+                "cells": [
+                  {
+                    "id": "浏览器呈现-0",
+                    "text": "Hello"
                   }
                 ]
               }
             ],
+            "statuses": {},
             "active": [],
+            "states": {},
+            "flows": [],
             "values": []
           }
         ]
@@ -5374,24 +6075,18 @@
             "values": []
           },
           {
-            "title": "保密要另看HTTPS",
-            "text": "PUT幂等或GET安全，都不能代替TLS。传输是否保密与方法的业务语义分别判断。",
+            "title": "比较预期效果",
+            "text": "两次都是将同一个目标设成A，没有因为再调用一次而新增B。这叫幂等；日志或返回码可以不同，预期目标状态仍相同。",
+            "states": {
+              "b": "重复提交同一PUT",
+              "s": "同一目标仍为A"
+            },
+            "flows": [],
             "active": [
               "b",
               "s"
             ],
-            "flows": [],
-            "states": {},
-            "values": [
-              {
-                "label": "重复效果",
-                "value": "按方法与接口语义"
-              },
-              {
-                "label": "传输保密",
-                "value": "看安全通道"
-              }
-            ]
+            "values": []
           }
         ]
       }
@@ -5480,30 +6175,68 @@
         "assumption": "比较两个不同的响应情形，不把它们当同一条连续请求。",
         "steps": [
           {
-            "title": "302指向另一位置",
-            "text": "某次请求得到302与Location，客户端可根据语义与策略去新位置继续请求。",
-            "active": [
-              "s",
-              "b"
-            ],
+            "title": "302：当前资源搬到别处",
+            "text": "这是重定向分支。浏览器请求/old，服务器返回302与Location: /new，让客户端按策略去另一地址继续请求。",
+            "states": {
+              "b": "已请求/old",
+              "s": "本次返回新位置/new"
+            },
             "flows": [
               {
                 "from": "s",
                 "to": "b",
-                "label": "302 · Location",
+                "label": "302 · Location: /new",
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "b",
+              "s"
+            ],
             "values": []
           },
           {
-            "title": "304确认缓存表示可复用",
-            "text": "另一条件GET的验证器匹配，服务器可返回304，不发送新的表示正文；客户端使用已存表示。",
+            "title": "304分支：先有正文和标记",
+            "text": "换看同一公告的缓存分支：浏览器此前已取得正文A与标记v3，并保存在本地。现在需要询问这份内容是否变化。",
+            "states": {
+              "b": "已存公告正文A · 标记v3",
+              "s": "当前公告A · 标记v3"
+            },
+            "flows": [],
             "active": [
-              "s",
-              "b"
+              "b",
+              "s"
             ],
+            "values": []
+          },
+          {
+            "title": "带旧标记询问",
+            "text": "浏览器对原公告地址发送条件GET，If-None-Match: \"v3\"，意思是仍匹配这份标记就不必再传完整正文。",
+            "states": {
+              "b": "保留A/v3 · 等待验证结果",
+              "s": "需比较请求v3与当前v3"
+            },
+            "flows": [
+              {
+                "from": "b",
+                "to": "s",
+                "label": "条件GET · 已有标记v3",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "相同标记得到304",
+            "text": "源站确认标记匹配，返回304而不带新的正文。不是要求跳去/new；浏览器仍需本地的A。",
+            "states": {
+              "b": "仍保留A/v3 · 304在途",
+              "s": "已比较v3=v3 · 不重传正文"
+            },
             "flows": [
               {
                 "from": "s",
@@ -5512,27 +6245,25 @@
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "b",
+              "s"
+            ],
             "values": []
           },
           {
-            "title": "看完整语义再行动",
-            "text": "网关502表示上游响应无效，504表示等待上游超时。状态码帮助缩小方向，不能唯一指出哪行程序有错。",
-            "active": [
-              "b"
-            ],
+            "title": "浏览器复用正文A",
+            "text": "浏览器处理304与相关字段，使用已存正文A完成显示。302换位置、304用已有正文，是两种不同的后续动作。",
+            "states": {
+              "b": "显示已存正文A",
+              "s": "本次无需重复传A"
+            },
             "flows": [],
-            "states": {},
-            "values": [
-              {
-                "label": "302",
-                "value": "重定向相关语义"
-              },
-              {
-                "label": "304",
-                "value": "条件请求验证结果"
-              }
-            ]
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
           }
         ]
       }
@@ -5730,25 +6461,21 @@
   },
   "d9-connections": {
     "title": "同一条连接怎样承载多项资源？",
-    "intro": "把三个资源分到逻辑流，再看传输层丢失可能影响哪些流。连接复用、多路复用和缓存是不同机制。",
+    "intro": "始终追踪图片A和样式B这两项资源。比较它们在HTTP/1.1、HTTP/2和HTTP/3中如何等待、交错与恢复。",
     "terms": "逻辑流用于分别组织消息；TCP本身交付一条有序字节流；QUIC支持彼此独立的有序流。",
     "diagram": {
       "kind": "blocks",
       "rows": [
         {
-          "label": "请求资源",
+          "label": "同两项资源",
           "cells": [
             {
-              "id": "r0c0",
-              "text": "HTML"
+              "id": "同两项资源-0",
+              "text": "A：/logo.png"
             },
             {
-              "id": "r0c1",
-              "text": "图片"
-            },
-            {
-              "id": "r0c2",
-              "text": "样式"
+              "id": "同两项资源-1",
+              "text": "B：/site.css"
             }
           ]
         }
@@ -5756,209 +6483,342 @@
     },
     "cases": [
       {
-        "label": "HTTP/2经TCP",
-        "assumption": "示意三个HTTP/2流共用一条TCP连接，丢失前方TCP数据；省略流控与帧细节。",
+        "label": "HTTP/1.1流水线",
+        "assumption": "已取得主HTML。A=/logo.png，B=/site.css，浏览器已在同一连接按A再B发请求；这里示意流水线，不代表浏览器普遍启用。",
         "steps": [
           {
-            "title": "多个流交错发送帧",
-            "text": "HTTP/2以流编号区分消息，图片响应慢时不要求所有其他响应都在HTTP层排在它之后。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "两项资源都已请求",
+            "text": "图片A与样式B是独立资源。A处理慢、B已准备好，先观察HTTP/1.1同一连接的响应顺序。",
             "rows": [
               {
-                "label": "逻辑流",
+                "label": "请求顺序",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "流1：HTML"
+                    "id": "请求顺序-0",
+                    "text": "A：/logo.png"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "流3：图片"
-                  },
-                  {
-                    "id": "r0c2",
-                    "text": "流5：样式"
+                    "id": "请求顺序-1",
+                    "text": "B：/site.css"
                   }
                 ]
               },
               {
-                "label": "TCP",
+                "label": "服务器准备",
                 "cells": [
                   {
-                    "id": "r1c0",
-                    "text": "帧交错进入连续字节流"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "title": "前方TCP数据丢失",
-            "text": "后续字节可能已到，但TCP在补齐缺口前不能将它们按序交付给HTTP/2。多个流都可能受影响。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
-            "rows": [
-              {
-                "label": "TCP字节范围",
-                "cells": [
-                  {
-                    "id": "r0c0",
-                    "text": "已到前缀"
+                    "id": "服务器准备-0",
+                    "text": "A还没好"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "缺口"
-                  },
-                  {
-                    "id": "r0c2",
-                    "text": "后方已到但暂等"
+                    "id": "服务器准备-1",
+                    "text": "B已准备好"
                   }
                 ]
               }
             ],
-            "statuses": {
-              "r0c1": "missing",
-              "r0c2": "buffered"
-            }
+            "statuses": {},
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
           },
           {
-            "title": "恢复后继续各流",
-            "text": "多路复用减少应用层的队头等待，但不消除TCP有序交付带来的跨流等待。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "B仍需等A响应先输出",
+            "text": "流水线响应必须按请求顺序返回。即使B已准备好，也不能在同一连接抢到A前面；这是HTTP层响应排队。",
             "rows": [
               {
-                "label": "缺口补齐",
+                "label": "响应顺序",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "TCP继续交付"
+                    "id": "响应顺序-0",
+                    "text": "A等待处理中"
+                  },
+                  {
+                    "id": "响应顺序-1",
+                    "text": "B准备好但等A"
+                  }
+                ]
+              }
+            ],
+            "statuses": {},
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "A输出后，B才能继续",
+            "text": "A响应A1/A2输出完，再输出B1/B2。本图的1/2只是各响应内容的前后块，区块不表示真实包大小。",
+            "rows": [
+              {
+                "label": "同一连接输出",
+                "cells": [
+                  {
+                    "id": "同一连接输出-0",
+                    "text": "A1"
+                  },
+                  {
+                    "id": "同一连接输出-1",
+                    "text": "A2"
+                  },
+                  {
+                    "id": "同一连接输出-2",
+                    "text": "B1"
+                  },
+                  {
+                    "id": "同一连接输出-3",
+                    "text": "B2"
+                  }
+                ]
+              }
+            ],
+            "statuses": {},
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          }
+        ]
+      },
+      {
+        "label": "HTTP/2经TCP",
+        "assumption": "相同A图片和B样式，各响应示意拆为两块。帧按A1、B1、A2、B2写入同一TCP流，A1所需前方TCP字节丢失。",
+        "steps": [
+          {
+            "title": "流编号让A/B帧可交错",
+            "text": "A属于HTTP/2流1，B属于流3。服务器可以先写A1，再写B1，不要求把A整份响应输出完；帧内编号说明它属于哪条流。",
+            "rows": [
+              {
+                "label": "HTTP/2帧写入顺序",
+                "cells": [
+                  {
+                    "id": "HTTP/2帧写入顺序-0",
+                    "text": "A1 · 流1"
+                  },
+                  {
+                    "id": "HTTP/2帧写入顺序-1",
+                    "text": "B1 · 流3"
+                  },
+                  {
+                    "id": "HTTP/2帧写入顺序-2",
+                    "text": "A2 · 流1"
+                  },
+                  {
+                    "id": "HTTP/2帧写入顺序-3",
+                    "text": "B2 · 流3"
+                  }
+                ]
+              }
+            ],
+            "statuses": {},
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "A1前方TCP字节缺失",
+            "text": "这里假设后续B1、A2、B2已到接收TCP，A1所在字节有缺口。TCP有序交付不能越过它，所以B1也暂时交不到HTTP/2层。",
+            "rows": [
+              {
+                "label": "接收TCP",
+                "cells": [
+                  {
+                    "id": "接收TCP-0",
+                    "text": "A1缺口"
+                  },
+                  {
+                    "id": "接收TCP-1",
+                    "text": "B1已到但等待"
+                  },
+                  {
+                    "id": "接收TCP-2",
+                    "text": "A2已到但等待"
+                  },
+                  {
+                    "id": "接收TCP-3",
+                    "text": "B2已到但等待"
+                  }
+                ]
+              }
+            ],
+            "statuses": {},
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "补齐后恢复交付",
+            "text": "A1缺失字节重传到达，TCP连续前缀补齐，HTTP/2才能读到这些帧并按流号分别处理A、B。多路复用没有取消底层TCP的顺序。",
+            "rows": [
+              {
+                "label": "可交给HTTP/2",
+                "cells": [
+                  {
+                    "id": "可交给HTTP/2-0",
+                    "text": "A1 · 流1"
+                  },
+                  {
+                    "id": "可交给HTTP/2-1",
+                    "text": "B1 · 流3"
+                  },
+                  {
+                    "id": "可交给HTTP/2-2",
+                    "text": "A2 · 流1"
+                  },
+                  {
+                    "id": "可交给HTTP/2-3",
+                    "text": "B2 · 流3"
                   }
                 ]
               },
               {
-                "label": "HTTP/2",
+                "label": "最终资源",
                 "cells": [
                   {
-                    "id": "r1c0",
-                    "text": "各流继续处理"
+                    "id": "最终资源-0",
+                    "text": "图片A完整"
+                  },
+                  {
+                    "id": "最终资源-1",
+                    "text": "样式B完整"
                   }
                 ]
               }
-            ]
+            ],
+            "statuses": {},
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
           }
         ]
       },
       {
         "label": "HTTP/3经QUIC",
-        "assumption": "概念比较不同流的数据丢失，假设其他流数据已可交付。",
+        "assumption": "仍是同一图片A/样式B与A1/A2、B1/B2；它们用不同QUIC流，假设各块所在报文独立，A1丢失而B两块到达且无其他依赖。",
         "steps": [
           {
-            "title": "多个QUIC流分别排序",
-            "text": "同一流需要有序交付，流间不共享TCP式的一个字节序列空间。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "相同资源，分属独立有序流",
+            "text": "A1/A2在流A内排序，B1/B2在流B内排序。这里没有把所有流内容装成一个TCP字节序列。",
             "rows": [
               {
-                "label": "QUIC流A",
+                "label": "图片流A",
                 "cells": [
                   {
-                    "id": "r0c0",
+                    "id": "图片流A-0",
                     "text": "A1"
                   },
                   {
-                    "id": "r0c1",
+                    "id": "图片流A-1",
                     "text": "A2"
                   }
                 ]
               },
               {
-                "label": "QUIC流B",
+                "label": "样式流B",
                 "cells": [
                   {
-                    "id": "r1c0",
+                    "id": "样式流B-0",
                     "text": "B1"
                   },
                   {
-                    "id": "r1c1",
+                    "id": "样式流B-1",
                     "text": "B2"
                   }
                 ]
               }
-            ]
+            ],
+            "statuses": {},
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
           },
           {
-            "title": "A1丢失不直接扣住B",
-            "text": "流A可以等待自己的缺口，流B中已具备交付条件的数据不必仅因A1丢失而等待。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "A1丢失，B仍可交付",
+            "text": "A2虽到但流A要等A1；B1/B2都到齐，流B可按自身顺序交付，不仅因为A1丢失而被扣住。样式B可用，图片A仍等待。",
             "rows": [
               {
-                "label": "流A",
+                "label": "图片流A",
                 "cells": [
                   {
-                    "id": "r0c0",
+                    "id": "图片流A-0",
                     "text": "A1缺失"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "A2等待"
+                    "id": "图片流A-1",
+                    "text": "A2已到但等待"
                   }
                 ]
               },
               {
-                "label": "流B",
+                "label": "样式流B",
                 "cells": [
                   {
-                    "id": "r1c0",
-                    "text": "B1、B2可交付"
+                    "id": "样式流B-0",
+                    "text": "B1可交付"
+                  },
+                  {
+                    "id": "样式流B-1",
+                    "text": "B2可交付"
+                  }
+                ]
+              },
+              {
+                "label": "资源结果",
+                "cells": [
+                  {
+                    "id": "资源结果-0",
+                    "text": "A等待"
+                  },
+                  {
+                    "id": "资源结果-1",
+                    "text": "B完整"
                   }
                 ]
               }
             ],
-            "statuses": {
-              "r0c0": "missing",
-              "r0c1": "buffered",
-              "r1c0": "received"
-            }
+            "statuses": {},
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
           },
           {
-            "title": "仍共享真实路径资源",
-            "text": "拥塞控制、带宽、连接级流控或应用依赖仍可能影响多流。不能把“减少跨流交付等待”扩大为永远无阻塞。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "A补齐，不宣称永无阻塞",
+            "text": "A1恢复后图片A完整。QUIC流仍共享拥塞控制和路径带宽，应用也可能有依赖；本例只比较一个流缺口对另一流交付的直接影响。",
             "rows": [
               {
-                "label": "仍可能共同受限",
+                "label": "资源结果",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "拥塞"
+                    "id": "资源结果-0",
+                    "text": "图片A完整"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "带宽"
-                  },
+                    "id": "资源结果-1",
+                    "text": "样式B已先完成"
+                  }
+                ]
+              },
+              {
+                "label": "仍共享",
+                "cells": [
                   {
-                    "id": "r0c2",
-                    "text": "流控与应用依赖"
+                    "id": "仍共享-0",
+                    "text": "带宽与拥塞控制"
                   }
                 ]
               }
-            ]
+            ],
+            "statuses": {},
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
           }
         ]
       }
@@ -6224,23 +7084,81 @@
         ]
       },
       {
-        "label": "新鲜但要求验证",
-        "assumption": "假设响应带无字段限定的no-cache，即便当前年龄很小。",
+        "label": "从源站刚取得的新响应",
+        "assumption": "max-age120，收到时当前年龄近似0；无其他验证要求或限制，忽略额外网络耗时。",
         "steps": [
           {
-            "title": "年龄还小",
-            "text": "新鲜度只是复用判断的一部分，其他指令也会改变能否直接使用。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "新取得的内容从近似0开始",
+            "text": "与前一情形Age100不同，本次直接取得新响应，当前年龄近似0。不能把这套起点套到已有年龄的上级缓存响应。",
             "rows": [
               {
-                "label": "当前年龄",
+                "label": "信息",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "10秒"
+                    "id": "信息-0",
+                    "text": "max-age120"
+                  },
+                  {
+                    "id": "信息-1",
+                    "text": "当前年龄约0"
+                  }
+                ]
+              }
+            ],
+            "statuses": {},
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "15秒后仍可直接复用",
+            "text": "当前年龄约15，小于120，剩余新鲜期约105秒。本例请求匹配、无其他限制，可直接用已存正文。",
+            "rows": [
+              {
+                "label": "年龄计算",
+                "cells": [
+                  {
+                    "id": "年龄计算-0",
+                    "text": "0+15＝15秒"
+                  }
+                ]
+              },
+              {
+                "label": "剩余新鲜期",
+                "cells": [
+                  {
+                    "id": "剩余新鲜期-0",
+                    "text": "120−15＝105秒"
+                  }
+                ]
+              },
+              {
+                "label": "动作",
+                "cells": [
+                  {
+                    "id": "动作-0",
+                    "text": "直接复用正文"
+                  }
+                ]
+              }
+            ],
+            "statuses": {},
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "125秒后需要再判断",
+            "text": "当前年龄125，大于120，成为陈旧；原正文还在，但本例不再有直接新鲜复用许可。下一节将用标记向源站验证。",
+            "rows": [
+              {
+                "label": "年龄",
+                "cells": [
+                  {
+                    "id": "年龄-0",
+                    "text": "125秒"
                   }
                 ]
               },
@@ -6248,67 +7166,26 @@
                 "label": "新鲜寿命",
                 "cells": [
                   {
-                    "id": "r1c0",
+                    "id": "新鲜寿命-0",
                     "text": "120秒"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "title": "no-cache要求成功验证",
-            "text": "不能只因为10小于120就直接返回旧表示。复用前仍要与源站成功验证。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
-            "rows": [
-              {
-                "label": "响应指令",
-                "cells": [
-                  {
-                    "id": "r0c0",
-                    "text": "no-cache"
                   }
                 ]
               },
               {
-                "label": "需要动作",
+                "label": "动作",
                 "cells": [
                   {
-                    "id": "r1c0",
-                    "text": "先验证"
+                    "id": "动作-0",
+                    "text": "不能仅按原新鲜期直接用"
                   }
                 ]
               }
-            ]
-          },
-          {
-            "title": "验证后按结果处理",
-            "text": "若未修改可复用已存表示；若修改则取得新表示。年龄、验证与是否存储是相互关联但不同的问题。",
+            ],
+            "statuses": {},
             "active": [],
-            "flows": [],
             "states": {},
-            "values": [],
-            "rows": [
-              {
-                "label": "判断维度",
-                "cells": [
-                  {
-                    "id": "r0c0",
-                    "text": "可存吗"
-                  },
-                  {
-                    "id": "r0c1",
-                    "text": "新鲜吗"
-                  },
-                  {
-                    "id": "r0c2",
-                    "text": "必须验证吗"
-                  }
-                ]
-              }
-            ]
+            "flows": [],
+            "values": []
           }
         ]
       }
@@ -6342,6 +7219,20 @@
         "label": "ETag没有变化",
         "assumption": "假设已有正文A和ETag \"v3\"；这次必须验证，GET条件正确。",
         "steps": [
+          {
+            "title": "浏览器先保存A与v3",
+            "text": "此前源站返回200、正文A与ETag v3，且策略允许存储。浏览器要保留正文和标记，304才有旧正文可用。",
+            "states": {
+              "b": "已存A/v3 · 现在需要验证",
+              "s": "当前A/v3"
+            },
+            "flows": [],
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
           {
             "title": "带上已知标记询问",
             "text": "浏览器发送If-None-Match: \"v3\"，表达当前表示若仍匹配，就不必再传完整正文。",
@@ -6399,6 +7290,20 @@
         "assumption": "起点仍是旧正文A / v3，服务器当前为正文B / v4。",
         "steps": [
           {
+            "title": "浏览器先保存A与v3",
+            "text": "此前源站返回200、正文A与ETag v3，且策略允许存储。浏览器要保留正文和标记，304才有旧正文可用。",
+            "states": {
+              "b": "已存A/v3 · 现在需要验证",
+              "s": "当前已变B/v4"
+            },
+            "flows": [],
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
             "title": "照样提交旧验证器",
             "text": "客户端此时还不知道服务器已经变化，所以条件请求携带它实际保存的旧标记。",
             "active": [
@@ -6435,23 +7340,18 @@
             "values": []
           },
           {
-            "title": "区分no-cache与no-store",
-            "text": "no-cache可允许存储但复用前验证；no-store要求不存相关请求/响应内容，不保证擦除所有历史副本或防恶意记录。",
-            "active": [
-              "b"
-            ],
+            "title": "保存B/v4并显示新正文",
+            "text": "浏览器收到200与新正文B、标记v4，按允许的存储策略更新缓存并显示B。后续验证应带v4，不继续带旧v3。",
+            "states": {
+              "b": "已更新缓存B/v4 · 显示B",
+              "s": "当前B/v4"
+            },
             "flows": [],
-            "states": {},
-            "values": [
-              {
-                "label": "no-cache",
-                "value": "先验证再复用"
-              },
-              {
-                "label": "no-store",
-                "value": "不得按指令存储"
-              }
-            ]
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
           }
         ]
       }
@@ -6616,7 +7516,7 @@
       "https://www.rfc-editor.org/info/rfc9846/",
       "https://www.rfc-editor.org/rfc/rfc9110#section-4.2.2"
     ],
-    "limit": "只画保护边界，不展示真实密钥或凭据；元信息暴露还受DNS、ECH等配置影响。"
+    "limit": "只画保护边界，不展示真实密钥或凭据；哪些元信息可见还受实际部署配置影响。"
   },
   "d10-keys": {
     "title": "协商秘密、证明身份、保护正文分别靠什么？",
@@ -6643,71 +7543,124 @@
         "assumption": "常见证书认证加临时ECDHE情形，省略算法和密钥派生细节。",
         "steps": [
           {
-            "title": "交换公开的临时份额",
-            "text": "客户端和服务器交换用于ECDHE的公开份额；各自的临时私有材料不这样公开发送。",
+            "title": "两端先有自己的临时材料",
+            "text": "浏览器本地生成私有材料b和公开份额B；服务器本地生成私有s和公开S。b/s不能公开。服务器另有长期签名私钥K私，与临时s不是同一个对象。",
+            "states": {
+              "b": "私有b · 公开B",
+              "s": "私有s · 公开S · 签名K私"
+            },
+            "flows": [],
             "active": [
               "b",
               "s"
             ],
+            "values": []
+          },
+          {
+            "title": "浏览器发送公开B",
+            "text": "只把公开份额B交给服务器，不发送私有b。服务器收到B后具备自己的s与对方B。",
+            "states": {
+              "b": "保留私有b · 还缺S",
+              "s": "持有私有s · 已收到B"
+            },
             "flows": [
               {
                 "from": "b",
                 "to": "s",
-                "label": "公开密钥份额",
+                "label": "公开临时份额B",
                 "tone": "normal"
               }
             ],
-            "states": {},
-            "values": []
-          },
-          {
-            "title": "分别算出共享秘密材料",
-            "text": "双方根据自己私有材料和对方公开份额计算，再结合握手上下文派生密钥。共享秘密不是直接明文发过去的一串口令。",
             "active": [
               "b",
               "s"
             ],
-            "flows": [],
-            "states": {
-              "b": "本地计算并派生",
-              "s": "本地计算并派生"
-            },
             "values": []
           },
           {
-            "title": "服务器用签名证明身份",
-            "text": "服务器用相应证书私钥签署规定的握手内容，浏览器用证书公钥验证。证书签名密钥和临时协商材料不是同一任务。",
-            "active": [
-              "s",
-              "b"
-            ],
+            "title": "服务器发送公开S",
+            "text": "服务器提供S给浏览器，保留私有s。浏览器收到后也具备自己的b与对方S；两个方向的公开交换都完成了。",
+            "states": {
+              "b": "持有私有b · 已收到S",
+              "s": "持有私有s · 已收到B"
+            },
             "flows": [
               {
                 "from": "s",
                 "to": "b",
-                "label": "握手签名证明",
+                "label": "公开临时份额S",
                 "tone": "normal"
               }
             ],
-            "states": {},
-            "values": []
-          },
-          {
-            "title": "用对称密钥保护正文",
-            "text": "派生出的流量密钥按方向用于AEAD保护记录。TLS1.3记录保护可以检测未经授权的修改，不能当普通TCP校验和理解。",
             "active": [
               "b",
               "s"
             ],
+            "values": []
+          },
+          {
+            "title": "两端各自算出同一共享秘密",
+            "text": "在所选ECDHE规则下，浏览器用b和S、服务器用s和B，得到同一共享秘密，再结合握手上下文派生密钥。共享秘密没有通过箭头明文发送。",
+            "states": {
+              "b": "本地输入b+S · 派生密钥",
+              "s": "本地输入s+B · 派生密钥"
+            },
+            "flows": [],
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": [
+              {
+                "label": "浏览器本地计算",
+                "value": "自己的私有b + 对方公开S"
+              },
+              {
+                "label": "服务器本地计算",
+                "value": "自己的私有s + 对方公开B"
+              }
+            ]
+          },
+          {
+            "title": "长期签名钥认证这次协商",
+            "text": "服务器用K私签署规定握手内容，浏览器用已认证的证书公钥K验签。临时s用于协商，长期K私用于身份认证，不能互相替代。",
+            "states": {
+              "b": "已认证公钥K · 验握手签名",
+              "s": "用长期K私签署握手"
+            },
+            "flows": [
+              {
+                "from": "s",
+                "to": "b",
+                "label": "CertificateVerify · 握手签名",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "后续使用对称流量密钥",
+            "text": "握手验证完成后，按方向派生的流量密钥用于AEAD保护HTTP。图片主要由对称算法处理，不把每个图片字节都拿长期私钥签一遍。",
+            "states": {
+              "b": "流量密钥 · 保护HTTP",
+              "s": "流量密钥 · 校验并解密"
+            },
             "flows": [
               {
                 "from": "b",
                 "to": "s",
-                "label": "AEAD保护的数据",
+                "label": "受AEAD保护的HTTP数据",
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "b",
+              "s"
+            ],
             "values": []
           }
         ]
@@ -6779,128 +7732,380 @@
     "intro": "先认清信任来源，再核对域名和握手中的私钥持有证明。公开证书不是复制后就能冒充的通行证。",
     "terms": "证书把身份信息与公钥关联，由签发者签名。浏览器的信任起点来自事先配置的信任根，还要检查域名、有效期、用途等条件。",
     "diagram": {
-      "kind": "network",
-      "nodes": [
+      "kind": "blocks",
+      "rows": [
         {
-          "id": "b",
-          "label": "浏览器",
-          "kind": "laptop"
-        },
-        {
-          "id": "s",
-          "label": "网站",
-          "kind": "server"
-        },
-        {
-          "id": "ca",
-          "label": "已配置信任根",
-          "kind": "key"
+          "label": "证书对象",
+          "cells": [
+            {
+              "id": "证书对象-0",
+              "text": "站点证书"
+            },
+            {
+              "id": "证书对象-1",
+              "text": "中间证书"
+            },
+            {
+              "id": "证书对象-2",
+              "text": "本地信任根"
+            }
+          ]
         }
       ]
     },
     "cases": [
       {
         "label": "链与域名均匹配",
-        "assumption": "教学访问learn.example，省略证书策略和路径构建细节。",
+        "assumption": "访问learn.example；网站发送站点与中间证书，本地已配置可信根。假设有效期、用途、算法等其余约束均满足。",
         "steps": [
           {
-            "title": "网站提供证书链",
-            "text": "网站通常提供站点与中间证书；私钥不包含在公开证书里。远端随便发来的根也不能自动成为可信根。",
-            "active": [
-              "s",
-              "b"
-            ],
-            "flows": [
+            "title": "网站提供两个公开证书",
+            "text": "站点证书绑定learn.example与公钥K，由中间CA签名；中间证书绑定中间CA与公钥I，由根CA签名。它们都不包含相应私钥。",
+            "rows": [
               {
-                "from": "s",
-                "to": "b",
-                "label": "站点与中间证书",
-                "tone": "normal"
+                "label": "站点证书",
+                "cells": [
+                  {
+                    "id": "站点证书-0",
+                    "text": "域名learn.example"
+                  },
+                  {
+                    "id": "站点证书-1",
+                    "text": "公钥K"
+                  },
+                  {
+                    "id": "站点证书-2",
+                    "text": "中间CA签名"
+                  }
+                ]
+              },
+              {
+                "label": "中间证书",
+                "cells": [
+                  {
+                    "id": "中间证书-0",
+                    "text": "中间CA"
+                  },
+                  {
+                    "id": "中间证书-1",
+                    "text": "公钥I"
+                  },
+                  {
+                    "id": "中间证书-2",
+                    "text": "根CA签名"
+                  }
+                ]
+              },
+              {
+                "label": "浏览器本地",
+                "cells": [
+                  {
+                    "id": "浏览器本地-0",
+                    "text": "已信任根公钥R"
+                  }
+                ]
               }
             ],
+            "active": [],
             "states": {},
-            "values": []
-          },
-          {
-            "title": "链接到已信任的根",
-            "text": "浏览器按验证规则检查签名链，信任根来自事先配置，不是因为证书自己声明可信。",
-            "active": [
-              "b",
-              "ca"
-            ],
             "flows": [],
-            "states": {
-              "b": "验证签名链",
-              "ca": "本地已信任"
-            },
             "values": []
           },
           {
-            "title": "核对访问域名等条件",
-            "text": "本例证书覆盖learn.example且满足有效期、用途等条件。之后还需验证握手的相应私钥持有证明。",
-            "active": [
-              "b",
-              "s"
-            ],
-            "flows": [
+            "title": "用本地可信R验证中间证书",
+            "text": "浏览器用本地信任根的公钥R检查中间证书签名及约束，取得可用于此链的中间公钥I。信任不是网站随便传来的根自称可信。",
+            "rows": [
               {
-                "from": "s",
-                "to": "b",
-                "label": "握手中的签名证明",
-                "tone": "normal"
+                "label": "第一层验证",
+                "cells": [
+                  {
+                    "id": "第一层验证-0",
+                    "text": "本地可信R"
+                  },
+                  {
+                    "id": "第一层验证-1",
+                    "text": "验中间证书签名"
+                  },
+                  {
+                    "id": "第一层验证-2",
+                    "text": "得到可信I"
+                  }
+                ]
               }
             ],
+            "active": [],
             "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "用I验证站点证书并匹配域名",
+            "text": "浏览器用I验证站点证书，核对覆盖learn.example，及有效期、用途等。于是K才可作为本次访问的认证公钥。",
+            "rows": [
+              {
+                "label": "第二层验证",
+                "cells": [
+                  {
+                    "id": "第二层验证-0",
+                    "text": "可信I"
+                  },
+                  {
+                    "id": "第二层验证-1",
+                    "text": "验站点证书签名"
+                  }
+                ]
+              },
+              {
+                "label": "身份检查",
+                "cells": [
+                  {
+                    "id": "身份检查-0",
+                    "text": "访问learn.example"
+                  },
+                  {
+                    "id": "身份检查-1",
+                    "text": "证书覆盖learn.example"
+                  }
+                ]
+              },
+              {
+                "label": "得到",
+                "cells": [
+                  {
+                    "id": "得到-0",
+                    "text": "经过认证的站点公钥K"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "还要验证网站持有K私",
+            "text": "网站用与K对应的私钥签署本次握手，浏览器用已认证K验证CertificateVerify。复制公开证书的人没有K私，不能提供有效的本次签名。",
+            "rows": [
+              {
+                "label": "本次握手证明",
+                "cells": [
+                  {
+                    "id": "本次握手证明-0",
+                    "text": "网站K私签署握手"
+                  },
+                  {
+                    "id": "本次握手证明-1",
+                    "text": "浏览器K验证签名"
+                  }
+                ]
+              },
+              {
+                "label": "不能替代它的对象",
+                "cells": [
+                  {
+                    "id": "不能替代它的对象-0",
+                    "text": "公开证书副本"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
             "values": []
           }
         ]
       },
       {
         "label": "证书只覆盖另一个域名",
-        "assumption": "访问learn.example，证书仅覆盖login.example，即便签名链可验证。",
+        "assumption": "访问learn.example，证书只覆盖login.example；签名链和其他约束假设均通过。",
         "steps": [
           {
-            "title": "链可验证只是一个条件",
-            "text": "浏览器没有因此把所有域名都视作此证书的身份范围。签名链和访问域名是需要分别满足的检查条件。",
-            "active": [
-              "b",
-              "ca"
+            "title": "签名链通过",
+            "text": "链检查认证的是证书写明的身份与公钥，不能自动把这把公钥用于所有域名。",
+            "rows": [
+              {
+                "label": "已通过",
+                "cells": [
+                  {
+                    "id": "已通过-0",
+                    "text": "签名链"
+                  }
+                ]
+              },
+              {
+                "label": "证书身份",
+                "cells": [
+                  {
+                    "id": "证书身份-0",
+                    "text": "login.example"
+                  }
+                ]
+              }
             ],
+            "active": [],
+            "states": {},
             "flows": [],
-            "states": {
-              "b": "链可验证"
-            },
             "values": []
           },
           {
-            "title": "域名检查不匹配",
-            "text": "learn.example不在本例证书的有效身份范围，这次身份验证不能视为成功。此时应检查访问域名与证书配置，而不是跳过浏览器警告继续访问。",
-            "active": [
-              "b"
-            ],
-            "flows": [],
-            "states": {},
-            "values": [
+            "title": "比较实际访问名",
+            "text": "地址栏learn.example不匹配证书login.example。链通过，域名条件却失败。",
+            "rows": [
               {
                 "label": "访问",
-                "value": "learn.example"
+                "cells": [
+                  {
+                    "id": "访问-0",
+                    "text": "learn.example"
+                  }
+                ]
               },
               {
-                "label": "证书范围",
-                "value": "login.example"
+                "label": "证书覆盖",
+                "cells": [
+                  {
+                    "id": "证书覆盖-0",
+                    "text": "login.example"
+                  }
+                ]
+              },
+              {
+                "label": "结果",
+                "cells": [
+                  {
+                    "id": "结果-0",
+                    "text": "不匹配"
+                  }
+                ]
               }
-            ]
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
           },
           {
             "title": "拒绝把错身份当成功",
-            "text": "复制正确站点的公开证书也不足以冒充，因为还要证明持有相应私钥。身份绑定与数学有效性需要一起成立。",
-            "active": [
-              "b"
+            "text": "此次服务器身份认证不能视为成功。应修复地址或证书配置，不跳过警告继续把它当learn.example。",
+            "rows": [
+              {
+                "label": "认证结果",
+                "cells": [
+                  {
+                    "id": "认证结果-0",
+                    "text": "域名验证失败"
+                  }
+                ]
+              },
+              {
+                "label": "正确动作",
+                "cells": [
+                  {
+                    "id": "正确动作-0",
+                    "text": "检查地址与证书配置"
+                  }
+                ]
+              }
             ],
+            "active": [],
+            "states": {},
             "flows": [],
-            "states": {
-              "b": "证书身份验证失败"
-            },
+            "values": []
+          }
+        ]
+      },
+      {
+        "label": "复制正确网站的公开证书",
+        "assumption": "攻击者取得真实learn.example公开证书，但没有对应私钥K私；浏览器要求认证本次握手。",
+        "steps": [
+          {
+            "title": "公开证书可被复制",
+            "text": "副本仍含learn.example、公钥K与CA签名。复制它不会获得秘密K私。",
+            "rows": [
+              {
+                "label": "攻击者已有",
+                "cells": [
+                  {
+                    "id": "攻击者已有-0",
+                    "text": "公开证书"
+                  },
+                  {
+                    "id": "攻击者已有-1",
+                    "text": "公钥K"
+                  }
+                ]
+              },
+              {
+                "label": "攻击者缺少",
+                "cells": [
+                  {
+                    "id": "攻击者缺少-0",
+                    "text": "私钥K私"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "本次握手需要新的签名",
+            "text": "CertificateVerify针对本次规定的握手内容。攻击者不能只交公开证书，就代替用K私生成有效签名。",
+            "rows": [
+              {
+                "label": "浏览器要求",
+                "cells": [
+                  {
+                    "id": "浏览器要求-0",
+                    "text": "本次握手的有效签名"
+                  }
+                ]
+              },
+              {
+                "label": "必要材料",
+                "cells": [
+                  {
+                    "id": "必要材料-0",
+                    "text": "与K对应的K私"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "验证失败，不建立可信身份",
+            "text": "浏览器用K无法验证攻击者的本次私钥持有证明，认证失败。证书链与本次握手证明是两道不同检查。",
+            "rows": [
+              {
+                "label": "结果",
+                "cells": [
+                  {
+                    "id": "结果-0",
+                    "text": "没有有效CertificateVerify"
+                  }
+                ]
+              },
+              {
+                "label": "浏览器动作",
+                "cells": [
+                  {
+                    "id": "浏览器动作-0",
+                    "text": "拒绝本次身份认证"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
             "values": []
           }
         ]
@@ -6915,7 +8120,7 @@
   "d10-handshake": {
     "title": "完整握手与恢复连接，分别省掉什么？",
     "intro": "先把TCP建连与TLS认证分开，再观察重复访问时恢复机制如何减少成本。恢复安全通道不等于恢复网站登录。",
-    "terms": "TLS会话票据与此前共享的秘密材料可用于恢复；0-RTT是可选的早期数据机制，存在重放风险，需要额外应用约束。",
+    "terms": "会话票据与此前秘密可用于恢复。PSK是双方已有的预共享恢复秘密；binder是基于该秘密对本次ClientHello的校验，不是秘密本身。",
     "diagram": {
       "kind": "network",
       "nodes": [
@@ -6934,134 +8139,313 @@
     "cases": [
       {
         "label": "新建TLS1.3完整握手",
-        "assumption": "基于新TCP连接的常见证书认证完整握手，省略可选消息与HTTP/3。",
+        "assumption": "TCP已连接；常见服务器证书认证+ECDHE，省略EncryptedExtensions等非本图重点消息及可选重试。每一箭头是一种逻辑消息，不表示一定独占一个网络包。",
         "steps": [
           {
-            "title": "TCP连接建立还不够",
-            "text": "三次TCP握手不验证网站证书，也不自动使应用数据加密。接着要完成TLS协议相应步骤。",
-            "active": [
-              "b",
-              "s"
-            ],
-            "flows": [],
+            "title": "浏览器发送ClientHello",
+            "text": "浏览器提出支持的TLS版本、密码参数与公开临时份额B。还没有服务器身份验证，正常HTTP请求尚未发。",
             "states": {
-              "b": "TCP已连接",
-              "s": "等待TLS参数"
+              "b": "已发ClientHello · 等选择",
+              "s": "等待ClientHello"
             },
-            "values": []
-          },
-          {
-            "title": "协商TLS参数和密钥材料",
-            "text": "ClientHello、ServerHello等建立协商上下文。TLS1.3中ServerHello后的大部分握手内容已经受加密保护。",
-            "active": [
-              "b",
-              "s"
-            ],
             "flows": [
               {
                 "from": "b",
                 "to": "s",
-                "label": "协商版本与密钥材料",
+                "label": "ClientHello · 参数 + B",
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "b",
+              "s"
+            ],
             "values": []
           },
           {
-            "title": "认证与Finished校验",
-            "text": "检查证书、相应签名和Finished等，确认规定的身份与握手完整性。不同消息分别完成不同证明。",
-            "active": [
-              "s",
-              "b"
-            ],
+            "title": "服务器收到并发送ServerHello",
+            "text": "服务器收到B，选择双方支持参数，发送公开份额S；它用私有s与B派生握手密钥。浏览器尚等S到达。",
+            "states": {
+              "b": "等待ServerHello · 还缺S",
+              "s": "已选参数 · 已派生握手密钥"
+            },
             "flows": [
               {
                 "from": "s",
                 "to": "b",
-                "label": "受保护的认证与确认",
+                "label": "ServerHello · 选择 + S",
                 "tone": "normal"
               }
             ],
-            "states": {},
-            "values": []
-          },
-          {
-            "title": "发送正常HTTPS请求",
-            "text": "相应验证完成后，客户端通过安全通道发正常请求。TLS成功仍不能替代网站登录与权限检查。",
             "active": [
               "b",
               "s"
             ],
+            "values": []
+          },
+          {
+            "title": "浏览器收到S，派生握手密钥",
+            "text": "浏览器用私有b与公开S计算共享秘密，结合握手上下文派生密钥。此后服务器大部分握手消息已受保护，但身份尚未检查完。",
+            "states": {
+              "b": "握手密钥就绪 · 身份未完成",
+              "s": "握手密钥就绪 · 准备认证"
+            },
+            "flows": [],
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "浏览器收到证书并检查链和域名",
+            "text": "服务器提供Certificate，浏览器检查本地信任链、learn.example域名与其余约束，得到可认证本次网站的公钥K；此时还需私钥持有证明。",
+            "states": {
+              "b": "证书检查通过 · 已认证K",
+              "s": "提供站点与中间证书"
+            },
+            "flows": [
+              {
+                "from": "s",
+                "to": "b",
+                "label": "Certificate · 受保护",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "浏览器验证CertificateVerify",
+            "text": "服务器用K私签署规定握手内容，浏览器用K验证。这把本次握手和证书身份绑定，不是把共享秘密公开签字后发送。",
+            "states": {
+              "b": "本次握手签名通过",
+              "s": "用K私证明本次身份"
+            },
+            "flows": [
+              {
+                "from": "s",
+                "to": "b",
+                "label": "CertificateVerify · 受保护",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "浏览器验证服务器Finished",
+            "text": "服务器Finished是基于握手秘密的校验；浏览器验证握手记录与密钥一致性。它与上一条数字签名的工作不同。",
+            "states": {
+              "b": "服务器Finished通过",
+              "s": "已发Finished · 等客户端"
+            },
+            "flows": [
+              {
+                "from": "s",
+                "to": "b",
+                "label": "服务器Finished · 受保护",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "浏览器发送自己的Finished",
+            "text": "浏览器也提交自己的握手校验，服务器还要实际收到并验证。通道成本不等于网站登录成功。",
+            "states": {
+              "b": "已发客户端Finished",
+              "s": "等待客户端Finished"
+            },
             "flows": [
               {
                 "from": "b",
                 "to": "s",
-                "label": "受保护的HTTP请求",
+                "label": "客户端Finished · 受保护",
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "服务器验证，通道准备完成",
+            "text": "服务器收到并验证客户端Finished。双方可用按方向派生的应用流量密钥保护正常HTTP；认证授权仍由网站应用完成。",
+            "states": {
+              "b": "TLS通道就绪 · 可发HTTP",
+              "s": "客户端Finished通过 · 可收HTTP"
+            },
+            "flows": [],
+            "active": [
+              "b",
+              "s"
+            ],
             "values": []
           }
         ]
       },
       {
-        "label": "恢复与0-RTT的区别",
-        "assumption": "假设客户端已有可用恢复材料，服务器可选择接受；0-RTT不作为必经步骤。",
+        "label": "使用票据的普通恢复",
+        "assumption": "同站点先前完整握手成功；采用PSK加新的ECDHE恢复，服务器选择接受。不发送0-RTT，省略其他握手消息。",
         "steps": [
           {
-            "title": "用此前材料请求恢复",
-            "text": "恢复尝试基于此前建立的秘密材料，服务器不必每次接受；也可结合新的密钥协商。",
-            "active": [
-              "b",
-              "s"
-            ],
-            "flows": [
-              {
-                "from": "b",
-                "to": "s",
-                "label": "恢复尝试",
-                "tone": "normal"
-              }
-            ],
-            "states": {},
-            "values": []
-          },
-          {
-            "title": "普通恢复不等于必须早发业务",
-            "text": "恢复可减少部分握手成本，仍按协商验证通道。用户是否登录是应用层另一项状态。",
-            "active": [
-              "s",
-              "b"
-            ],
+            "title": "此前服务器提供恢复票据",
+            "text": "在之前成功的TLS连接中，服务器发送NewSessionTicket。票据与那次连接关联，不是HTTP正文缓存，也不是登录Cookie。",
+            "states": {
+              "b": "此前TLS连接已成功",
+              "s": "提供恢复票据"
+            },
             "flows": [
               {
                 "from": "s",
                 "to": "b",
-                "label": "接受或拒绝恢复",
+                "label": "NewSessionTicket · 此前连接",
                 "tone": "normal"
               }
             ],
-            "states": {},
-            "values": []
-          },
-          {
-            "title": "另一分支：可选的0-RTT早期数据",
-            "text": "这一步改看另一分支：若使用0-RTT，客户端随恢复尝试、在等待服务器接受确认之前发送早期数据。它有重放风险，不能仅凭加密就执行非幂等付款；普通恢复并不必须发送早期数据。",
             "active": [
               "b",
               "s"
             ],
+            "values": []
+          },
+          {
+            "title": "浏览器保存恢复材料",
+            "text": "浏览器保存票据，并根据已有秘密派生相关PSK恢复材料。秘密不是跟票据一起明文送来的；后续恢复需要这些材料有效。",
+            "states": {
+              "b": "保存票据 + 相关恢复秘密",
+              "s": "可识别/验证对应恢复材料"
+            },
+            "flows": [],
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "新连接发送恢复ClientHello",
+            "text": "新TCP连接上，浏览器提供票据对应的PSK身份和binder证明，并给新的公开份额B；本例此时不发送业务早期数据。",
+            "states": {
+              "b": "请求恢复 · 等服务器选择",
+              "s": "尚待验证恢复请求"
+            },
             "flows": [
               {
                 "from": "b",
                 "to": "s",
-                "label": "可选早期数据",
-                "tone": "warning"
+                "label": "ClientHello · PSK身份+binder+B",
+                "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "服务器接受并发送ServerHello",
+            "text": "服务器验证并选择PSK恢复，ServerHello指出选择并提供新公开S。若拒绝，需退回允许的完整握手，不是强制成功。",
+            "states": {
+              "b": "等待恢复选择和S",
+              "s": "接受PSK恢复 · 提供S"
+            },
+            "flows": [
+              {
+                "from": "s",
+                "to": "b",
+                "label": "ServerHello · 选择PSK + S",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "双方派生本次握手密钥",
+            "text": "浏览器收到选择与S，两端结合PSK及新ECDHE秘密派生本次密钥。此恢复分支不再发送完整证书链和CertificateVerify，身份延续依赖有效恢复材料。",
+            "states": {
+              "b": "本次握手密钥就绪",
+              "s": "本次握手密钥就绪"
+            },
+            "flows": [],
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "服务器Finished仍要验证",
+            "text": "恢复省去证书链与签名交换，不省掉握手校验。浏览器验证服务器Finished，确认本次密钥与握手一致。",
+            "states": {
+              "b": "服务器Finished通过",
+              "s": "等待客户端Finished"
+            },
+            "flows": [
+              {
+                "from": "s",
+                "to": "b",
+                "label": "服务器Finished",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "浏览器发送Finished",
+            "text": "浏览器发送本次校验，服务器还需收到并验证。恢复成功也不会自动知道用户甲的应用权限。",
+            "states": {
+              "b": "已发客户端Finished",
+              "s": "等待收到并验证"
+            },
+            "flows": [
+              {
+                "from": "b",
+                "to": "s",
+                "label": "客户端Finished",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "恢复通道就绪",
+            "text": "服务器验证通过，正常HTTP可使用本次流量密钥。没有为省证书而把本地HTTP缓存或登录Session当作恢复秘密。",
+            "states": {
+              "b": "恢复TLS通道就绪",
+              "s": "验证通过 · 可处理HTTP"
+            },
+            "flows": [],
+            "active": [
+              "b",
+              "s"
+            ],
             "values": []
           }
         ]
@@ -7102,30 +8486,36 @@
         "assumption": "假设通过HTTPS成功认证，示例会话ID为r7，不是真实凭据。",
         "steps": [
           {
-            "title": "应用创建会话记录",
-            "text": "服务器确认登录后创建难猜的随机标识，保存r7与用户甲、权限、到期信息的关联。",
-            "active": [
-              "a",
-              "d"
-            ],
+            "title": "应用先记录登录会话",
+            "text": "HTTPS登录验证成功后，应用生成示意ID r7，把用户甲、笔记读取权限与到期信息保存在会话存储。此刻浏览器还没有r7。",
+            "states": {
+              "b": "尚未收到r7",
+              "a": "登录已验证 · 创建r7",
+              "d": "r7→用户甲/权限/到期"
+            },
             "flows": [
               {
                 "from": "a",
                 "to": "d",
-                "label": "r7 → 用户甲",
+                "label": "写会话 r7→用户甲",
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "b",
+              "a",
+              "d"
+            ],
             "values": []
           },
           {
-            "title": "浏览器保存会话ID",
-            "text": "响应用Set-Cookie要求浏览器保存sid=r7。服务器记录仍在服务器一侧，不是整份Session被搬到浏览器。",
-            "active": [
-              "a",
-              "b"
-            ],
+            "title": "响应让浏览器保存标识",
+            "text": "应用返回Set-Cookie: sid=r7。只把标识交给浏览器；用户名、权限与有效性记录仍在服务器会话存储中。",
+            "states": {
+              "b": "Set-Cookie尚在途",
+              "a": "已发设置Cookie响应",
+              "d": "保留r7→用户甲"
+            },
             "flows": [
               {
                 "from": "a",
@@ -7134,45 +8524,96 @@
                 "tone": "normal"
               }
             ],
-            "states": {
-              "b": "保存Cookie标识"
-            },
+            "active": [
+              "b",
+              "a",
+              "d"
+            ],
             "values": []
           },
           {
-            "title": "下一次请求按范围带回Cookie",
-            "text": "浏览器符合域、路径、安全属性等发送条件时，附带Cookie: sid=r7请求笔记。",
+            "title": "浏览器保存Cookie",
+            "text": "浏览器按规则保存sid=r7。Cookie是客户端的标识，会话记录是服务端的关联，两份存储没有互相搬走。",
+            "states": {
+              "b": "已存Cookie sid=r7",
+              "a": "等待后续请求",
+              "d": "保留有效r7记录"
+            },
+            "flows": [],
             "active": [
               "b",
-              "a"
+              "a",
+              "d"
             ],
+            "values": []
+          },
+          {
+            "title": "访问笔记时带回r7",
+            "text": "用户请求GET /notes；本例符合Cookie范围与安全条件，浏览器自动附带sid=r7。应用尚需检查它是否有效。",
+            "states": {
+              "b": "已带sid=r7请求笔记",
+              "a": "收到标识 · 尚未授权",
+              "d": "仍存r7记录"
+            },
             "flows": [
               {
                 "from": "b",
                 "to": "a",
-                "label": "请求笔记 · sid=r7",
+                "label": "GET /notes · Cookie sid=r7",
                 "tone": "normal"
               }
             ],
-            "states": {},
-            "values": []
-          },
-          {
-            "title": "服务端查记录并检查权限",
-            "text": "应用查到用户甲，还需验证会话有效性及操作权限；不能直接信任客户端自己写出的admin字样。",
             "active": [
+              "b",
               "a",
               "d"
             ],
+            "values": []
+          },
+          {
+            "title": "应用查会话，再检查权限",
+            "text": "应用查询r7，取得用户甲及有效权限；检查未到期且允许读甲的笔记。不因Cookie非空或写着admin就直接授权。",
+            "states": {
+              "b": "等待笔记响应",
+              "a": "检查有效性与权限",
+              "d": "返回用户甲/权限/到期"
+            },
             "flows": [
               {
                 "from": "a",
                 "to": "d",
-                "label": "校验r7与访问权限",
+                "label": "查询r7对应会话",
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "b",
+              "a",
+              "d"
+            ],
+            "values": []
+          },
+          {
+            "title": "通过检查后返回甲的笔记",
+            "text": "会话有效且有权限，应用返回甲的笔记。请求、标识、查记录、授权和响应连起来，才完成这次登录后的访问。",
+            "states": {
+              "b": "收到用户甲的笔记",
+              "a": "本次读取通过授权",
+              "d": "r7会话仍有效"
+            },
+            "flows": [
+              {
+                "from": "a",
+                "to": "b",
+                "label": "200 · 用户甲的笔记",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "b",
+              "a",
+              "d"
+            ],
             "values": []
           }
         ]
@@ -7196,7 +8637,11 @@
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "states": {
+              "b": "仍保存旧Cookie r7",
+              "a": "需检查会话",
+              "d": "r7已注销或到期"
+            },
             "values": []
           },
           {
@@ -7215,7 +8660,9 @@
               }
             ],
             "states": {
-              "a": "会话无效，拒绝授权"
+              "b": "仍保存旧Cookie r7",
+              "a": "发现r7无效 · 不授权",
+              "d": "r7已注销或到期"
             },
             "values": []
           },
@@ -7227,7 +8674,11 @@
               "b"
             ],
             "flows": [],
-            "states": {},
+            "states": {
+              "b": "仍保存旧Cookie r7",
+              "a": "需检查会话",
+              "d": "r7已注销或到期"
+            },
             "values": [
               {
                 "label": "Cookie存在",
@@ -7257,7 +8708,7 @@
       "nodes": [
         {
           "id": "m",
-          "label": "攻击者控制内容",
+          "label": "攻击者",
           "kind": "document"
         },
         {
@@ -7267,7 +8718,7 @@
         },
         {
           "id": "s",
-          "label": "课程网站",
+          "label": "learn.example",
           "kind": "server"
         }
       ]
@@ -7278,105 +8729,204 @@
         "assumption": "概念图，不含可执行攻击代码；假设网站错误处理不可信评论。",
         "steps": [
           {
-            "title": "评论内容进入页面",
-            "text": "网站接收不可信评论，若未经正确处理就放进可执行上下文，数据与代码的边界会被突破。",
-            "active": [
-              "m",
-              "b"
-            ],
+            "title": "攻击者提交不可信评论",
+            "text": "攻击者把可被当成脚本的评论提交给learn.example。危险输入先进入网站，不是直接从攻击者跳进受害者浏览器。",
+            "states": {
+              "m": "提交不可信评论",
+              "s": "接收并保存评论",
+              "b": "已登录learn.example"
+            },
             "flows": [
               {
                 "from": "m",
-                "to": "b",
-                "label": "不可信内容进入页面",
-                "tone": "warning"
+                "to": "s",
+                "label": "提交课程评论",
+                "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "m",
+              "s",
+              "b"
+            ],
             "values": []
           },
           {
-            "title": "脚本在目标站点上下文执行",
-            "text": "恶意脚本可借页面权限发请求或读取页面信息。HttpOnly限制直接读取Cookie，也不能阻止所有这类操作。",
-            "active": [
-              "b",
-              "s"
+            "title": "网站错误地把评论拼进页面",
+            "text": "网站处理受害者的看评论请求，将评论未按输出上下文安全处理就放进可执行位置，返回页面。漏洞发生在数据被变成代码的解释边界。",
+            "states": {
+              "m": "评论已存入网站",
+              "s": "错误输出评论为可执行内容",
+              "b": "等待课程评论页面"
+            },
+            "flows": [
+              {
+                "from": "s",
+                "to": "b",
+                "label": "含不安全评论的页面",
+                "tone": "normal"
+              }
             ],
+            "active": [
+              "m",
+              "s",
+              "b"
+            ],
+            "values": []
+          },
+          {
+            "title": "浏览器在课程站身份下执行",
+            "text": "浏览器按learn.example页面上下文执行它。脚本可读取页面允许的信息，或发该站请求，不需要先直接读出HttpOnly Cookie。",
+            "states": {
+              "m": "代码来自不可信评论",
+              "s": "漏洞页面已返回",
+              "b": "恶意脚本在learn站点执行"
+            },
+            "flows": [],
+            "active": [
+              "m",
+              "s",
+              "b"
+            ],
+            "values": []
+          },
+          {
+            "title": "脚本发请求，浏览器按规则带Cookie",
+            "text": "脚本诱导已登录浏览器向learn.example发操作请求；符合条件时浏览器附Cookie。HttpOnly只限制直接读Cookie，不阻止这种发送。",
+            "states": {
+              "m": "利用脚本权限",
+              "s": "收到带身份的请求",
+              "b": "发同站请求 · 自动带sid=r7"
+            },
             "flows": [
               {
                 "from": "b",
                 "to": "s",
-                "label": "借页面权限操作",
-                "tone": "warning"
+                "label": "操作请求 · Cookie sid=r7",
+                "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "m",
+              "s",
+              "b"
+            ],
             "values": []
           },
           {
-            "title": "在解释边界阻断",
-            "text": "按输出上下文编码，使用安全文本接口；确需富文本时可靠清洗，再配合CSP。防线要对应“内容被当代码”的入口。",
+            "title": "防护对照：同一评论只作为文本",
+            "text": "换看正确处理分支：网站使用安全文本输出或按上下文编码，使同一外部内容只显示为文字，不变成脚本；富文本另需可靠清洗与CSP配合。",
+            "states": {
+              "m": "仍提交外部评论",
+              "s": "按正确边界处理评论",
+              "b": "仅显示文字 · 不执行评论"
+            },
+            "flows": [],
             "active": [
+              "m",
+              "s",
               "b"
             ],
-            "flows": [],
-            "states": {
-              "b": "按数据安全呈现"
-            },
             "values": []
           }
         ]
       },
       {
         "label": "CSRF：请求携带已有身份",
-        "assumption": "假设相应跨站请求可携带登录身份，服务端缺少适当防伪造校验；实际受SameSite等条件影响。",
+        "assumption": "用户已登录https://learn.example，随后浏览https://evil.example；假设SameSite等条件允许该跨站请求携带Cookie。比较无防伪造与有令牌校验两分支。",
         "steps": [
           {
-            "title": "恶意页面诱导发请求",
-            "text": "受害者浏览攻击者页面，页面诱导浏览器向课程站发送修改操作请求。攻击者不必先读出Cookie。",
-            "active": [
-              "m",
-              "b"
-            ],
+            "title": "用户打开恶意站点页面",
+            "text": "evil.example控制页面内容，learn.example的登录Cookie仍在浏览器。攻击者没有因此取得Cookie值。",
+            "states": {
+              "m": "控制evil.example页面",
+              "b": "已登录learn · 正浏览evil",
+              "s": "拥有用户r7会话"
+            },
             "flows": [
               {
                 "from": "m",
                 "to": "b",
-                "label": "诱导跨站操作",
-                "tone": "warning"
+                "label": "evil.example页面",
+                "tone": "normal"
               }
             ],
-            "states": {},
-            "values": []
-          },
-          {
-            "title": "浏览器可能自动附带身份",
-            "text": "若条件允许，浏览器把相应Cookie带给目标网站。仅检查登录Cookie，不能证明这就是用户想执行的操作。",
             "active": [
+              "m",
               "b",
               "s"
             ],
+            "values": []
+          },
+          {
+            "title": "恶意页面诱导发修改请求",
+            "text": "页面诱导浏览器向learn.example发修改邮箱请求。发送目标是learn，不是把learn的Cookie发送给evil。",
+            "states": {
+              "m": "诱导跨站修改请求",
+              "b": "向learn准备操作请求",
+              "s": "仍需检查这次请求"
+            },
+            "flows": [],
+            "active": [
+              "m",
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "浏览器按learn范围自动加Cookie",
+            "text": "在本例发送条件下，浏览器给去往learn的请求附sid=r7。能确认这是某个登录会话，不能确认用户真想修改邮箱。",
+            "states": {
+              "m": "不必知道Cookie值",
+              "b": "给learn请求附sid=r7",
+              "s": "收到身份 · 缺少意图依据"
+            },
             "flows": [
               {
                 "from": "b",
                 "to": "s",
-                "label": "带身份的请求",
-                "tone": "warning"
+                "label": "修改邮箱 · Cookie sid=r7",
+                "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "m",
+              "b",
+              "s"
+            ],
             "values": []
           },
           {
-            "title": "服务器核验请求意图依据",
-            "text": "使用与会话关联的CSRF令牌、来源检查和合适SameSite等分层措施。POST或HTTPS本身不自动完成防CSRF。",
+            "title": "缺少校验时可能误执行",
+            "text": "如果服务端只查会话和权限、没有防伪造校验，这个带身份的请求可能被执行。HTTPS和POST都不等于有用户意图。",
+            "states": {
+              "m": "利用自动身份携带",
+              "b": "未主动打算修改邮箱",
+              "s": "无防伪造检查 · 可能误执行"
+            },
+            "flows": [],
             "active": [
+              "m",
+              "b",
               "s"
             ],
-            "flows": [],
+            "values": []
+          },
+          {
+            "title": "防护对照：检查与会话关联的令牌",
+            "text": "换看有防护的同请求：正常页面拿到与会话关联的秘密CSRF令牌并提交；evil通常无法跨源读它，伪造请求缺少或给错令牌，服务器比较失败就拒绝修改。来源校验与SameSite可分层配合。",
             "states": {
-              "s": "校验防伪造信息"
+              "m": "不能提供正确秘密令牌",
+              "b": "伪造请求缺/错CSRF令牌",
+              "s": "校验失败 · 不修改邮箱"
             },
+            "flows": [],
+            "active": [
+              "m",
+              "b",
+              "s"
+            ],
             "values": []
           }
         ]
@@ -7418,54 +8968,144 @@
         "assumption": "示意预编译与参数绑定，不含攻击语句；假设查询结构固定。",
         "steps": [
           {
-            "title": "应用收到搜索文字",
-            "text": "输入来自外部，即使网页前端检查过，也可能有直接构造的请求绕过前端。",
-            "active": [
-              "u",
-              "a"
-            ],
-            "flows": [
+            "title": "先看要查询的两条课程",
+            "text": "数据库表courses中有id1、title TCP与id2、title DNS。用户输入TCP，希望找标题恰好相等的课程；本例不做模糊搜索。",
+            "rows": [
               {
-                "from": "u",
-                "to": "a",
-                "label": "不可信搜索词",
-                "tone": "normal"
+                "label": "courses中的行",
+                "cells": [
+                  {
+                    "id": "courses中的行-0",
+                    "text": "id1 · title TCP"
+                  },
+                  {
+                    "id": "courses中的行-1",
+                    "text": "id2 · title DNS"
+                  }
+                ]
+              },
+              {
+                "label": "外部输入",
+                "cells": [
+                  {
+                    "id": "外部输入-0",
+                    "text": "TCP"
+                  }
+                ]
               }
             ],
+            "active": [],
             "states": {},
-            "values": []
-          },
-          {
-            "title": "先固定SQL结构",
-            "text": "查询语句确定要做什么，输入通过参数绑定作为值提供。数据库按值处理它，而不是把它接成新的查询结构。",
-            "active": [
-              "a",
-              "d"
-            ],
-            "flows": [
-              {
-                "from": "a",
-                "to": "d",
-                "label": "固定SQL + 绑定参数",
-                "tone": "normal"
-              }
-            ],
-            "states": {},
-            "values": []
-          },
-          {
-            "title": "结构位置另做白名单",
-            "text": "表名、列名或排序字段等位置不能通用地拿参数直接替代，应从预定义选项映射。数据库账号还要限制权限以降低后果。",
-            "active": [
-              "a"
-            ],
             "flows": [],
-            "states": {
-              "a": "值用参数，结构用白名单"
-            },
+            "values": []
+          },
+          {
+            "title": "固定命令，另绑定值",
+            "text": "SQL结构固定为SELECT id, title FROM courses WHERE title = ?。问号表示参数位置，应用把输入TCP作为值绑定，而不是接进SQL语句文字。参数占位符写法因驱动而异。",
+            "rows": [
+              {
+                "label": "固定查询结构",
+                "cells": [
+                  {
+                    "id": "固定查询结构-0",
+                    "text": "SELECT id, title FROM courses WHERE title = ?"
+                  }
+                ]
+              },
+              {
+                "label": "参数值",
+                "cells": [
+                  {
+                    "id": "参数值-0",
+                    "text": "TCP"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "数据库按值比较并返回",
+            "text": "执行含义仍是比较title等于参数值；TCP匹配id1，不匹配DNS行，返回id1/TCP。即使输入含特殊字符，它仍是比较值，不自行增加新命令。",
+            "rows": [
+              {
+                "label": "比较",
+                "cells": [
+                  {
+                    "id": "比较-0",
+                    "text": "TCP = TCP · 匹配"
+                  },
+                  {
+                    "id": "比较-1",
+                    "text": "DNS = TCP · 不匹配"
+                  }
+                ]
+              },
+              {
+                "label": "查询结果",
+                "cells": [
+                  {
+                    "id": "查询结果-0",
+                    "text": "id1 · TCP"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "结构位置采用预定义选项",
+            "text": "若还要按id或title排序，应用从已批准的列名映射选择，不能把任意外部字符串当SQL结构。参数主要绑定值，账号最小权限另用于限制后果。",
+            "rows": [
+              {
+                "label": "值的位置",
+                "cells": [
+                  {
+                    "id": "值的位置-0",
+                    "text": "搜索词用参数绑定"
+                  }
+                ]
+              },
+              {
+                "label": "结构的位置",
+                "cells": [
+                  {
+                    "id": "结构的位置-0",
+                    "text": "列名用预定义白名单"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
             "values": []
           }
-        ]
+        ],
+        "diagram": {
+          "kind": "blocks",
+          "rows": [
+            {
+              "label": "查询示例",
+              "cells": [
+                {
+                  "id": "查询示例-0",
+                  "text": "固定SQL结构"
+                },
+                {
+                  "id": "查询示例-1",
+                  "text": "绑定输入值"
+                }
+              ]
+            }
+          ]
+        }
       },
       {
         "label": "头像文件隔离保存",
@@ -7566,102 +9206,185 @@
         "assumption": "教学系统只有4个可用数据库连接，每份报告占用一个直到完成；实际容量并非此固定值。",
         "steps": [
           {
-            "title": "四份报告同时处理",
-            "text": "四个连接全部被占用，即使还有可用端口，其他需要数据库的功能也可能等待。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "第一份报告占一个连接",
+            "text": "本例连接池共4个，每份报告占1个直到完成。第1份开始，空位剩3。",
             "rows": [
               {
                 "label": "连接池",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "报告A"
+                    "id": "连接池-0",
+                    "text": "报告1"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "报告B"
+                    "id": "连接池-1",
+                    "text": "空"
                   },
                   {
-                    "id": "r0c2",
-                    "text": "报告C"
+                    "id": "连接池-2",
+                    "text": "空"
                   },
                   {
-                    "id": "r0c3",
-                    "text": "报告D"
+                    "id": "连接池-3",
+                    "text": "空"
                   }
                 ]
               }
-            ]
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
           },
           {
-            "title": "继续无限接收会积累等待",
-            "text": "没有边界地排队会继续耗费内存、超时预算等。瓶颈不是给Cookie加长就能解决的。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "第2份到来，空位剩2",
+            "text": "第2份也获得一个连接，现有2份并发；还没有占满池。",
             "rows": [
               {
-                "label": "已占用",
+                "label": "连接池",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "4个连接"
+                    "id": "连接池-0",
+                    "text": "报告1"
+                  },
+                  {
+                    "id": "连接池-1",
+                    "text": "报告2"
+                  },
+                  {
+                    "id": "连接池-2",
+                    "text": "空"
+                  },
+                  {
+                    "id": "连接池-3",
+                    "text": "空"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "第3份到来，空位剩1",
+            "text": "前两份报告仍未完成、没有归还连接；第3份再占1个，四个位置减掉三个占用，只剩1个空位。",
+            "rows": [
+              {
+                "label": "连接池",
+                "cells": [
+                  {
+                    "id": "连接池-0",
+                    "text": "报告1"
+                  },
+                  {
+                    "id": "连接池-1",
+                    "text": "报告2"
+                  },
+                  {
+                    "id": "连接池-2",
+                    "text": "报告3"
+                  },
+                  {
+                    "id": "连接池-3",
+                    "text": "空"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "第4份占满池",
+            "text": "四份均未完成，全部连接占用。需要数据库的普通功能此时也不能直接取得连接。",
+            "rows": [
+              {
+                "label": "连接池",
+                "cells": [
+                  {
+                    "id": "连接池-0",
+                    "text": "报告1"
+                  },
+                  {
+                    "id": "连接池-1",
+                    "text": "报告2"
+                  },
+                  {
+                    "id": "连接池-2",
+                    "text": "报告3"
+                  },
+                  {
+                    "id": "连接池-3",
+                    "text": "报告4"
                   }
                 ]
               },
               {
-                "label": "新增请求",
+                "label": "普通功能",
                 "cells": [
                   {
-                    "id": "r1c0",
-                    "text": "等待"
-                  },
-                  {
-                    "id": "r1c1",
-                    "text": "继续等待"
-                  },
-                  {
-                    "id": "r1c2",
-                    "text": "更多等待"
+                    "id": "普通功能-0",
+                    "text": "需要连接 · 暂无空位"
                   }
                 ]
               }
-            ]
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
           },
           {
-            "title": "先定位资源与请求成本",
-            "text": "观察连接池、耗时、来源、行为与错误。相同每秒请求数访问静态logo和生成报告，资源代价可以很不一样。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "第5、6份只能等待",
+            "text": "无界接收会把第5、第6及更多请求积在等待队列；等待仍占内存和超时预算，不会因为没连接就没有成本。",
             "rows": [
               {
-                "label": "证据",
+                "label": "连接池",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "接口成本"
+                    "id": "连接池-0",
+                    "text": "报告1"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "并发与耗时"
+                    "id": "连接池-1",
+                    "text": "报告2"
                   },
                   {
-                    "id": "r0c2",
-                    "text": "资源占用"
+                    "id": "连接池-2",
+                    "text": "报告3"
                   },
                   {
-                    "id": "r0c3",
-                    "text": "来源行为"
+                    "id": "连接池-3",
+                    "text": "报告4"
+                  }
+                ]
+              },
+              {
+                "label": "等待队列",
+                "cells": [
+                  {
+                    "id": "等待队列-0",
+                    "text": "报告5"
+                  },
+                  {
+                    "id": "等待队列-1",
+                    "text": "报告6"
+                  },
+                  {
+                    "id": "等待队列-2",
+                    "text": "仍可能继续增长"
                   }
                 ]
               }
-            ]
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
           }
         ]
       },
@@ -7670,94 +9393,252 @@
         "assumption": "仍用4个连接的示例，假设应用把报告并发限制为2、等待队列上限为2。",
         "steps": [
           {
-            "title": "限制昂贵任务并发",
-            "text": "报告最多占两个连接，示例中其余连接有机会服务其他工作；实际仍需配额和调度设计。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "报告1先开始",
+            "text": "限制报告并发最多2，连接池仍有4个；第1份报告获得连接。限制针对昂贵接口，不是把所有功能都停掉。",
             "rows": [
               {
-                "label": "数据库连接",
+                "label": "连接池",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "报告A"
+                    "id": "连接池-0",
+                    "text": "报告1"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "报告B"
+                    "id": "连接池-1",
+                    "text": "空"
                   },
                   {
-                    "id": "r0c2",
-                    "text": "其他业务可用"
+                    "id": "连接池-2",
+                    "text": "普通功能可用"
                   },
                   {
-                    "id": "r0c3",
-                    "text": "其他业务可用"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "title": "等待也设边界",
-            "text": "队列已满时，后续请求按设计拒绝、降级或重试，而不是无限排队。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
-            "rows": [
-              {
-                "label": "有界等待",
-                "cells": [
-                  {
-                    "id": "r0c0",
-                    "text": "待处理1"
-                  },
-                  {
-                    "id": "r0c1",
-                    "text": "待处理2"
+                    "id": "连接池-3",
+                    "text": "普通功能可用"
                   }
                 ]
               },
               {
-                "label": "超额请求",
+                "label": "报告等待队列",
                 "cells": [
                   {
-                    "id": "r1c0",
-                    "text": "拒绝或降级"
+                    "id": "报告等待队列-0",
+                    "text": "空"
                   }
                 ]
               }
-            ]
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
           },
           {
-            "title": "入口被压满还需上游防护",
-            "text": "如果带宽先耗尽，应用限流可能已经太晚。要结合CDN、上游清洗、超时与资源隔离等对准不同耗尽点。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "报告2开始，达到并发上限",
+            "text": "两份报告各占一个连接，报告并发到2。示例调度为普通功能保留另外2个连接使用机会。",
             "rows": [
               {
-                "label": "不同层次",
+                "label": "连接池",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "网络入口"
+                    "id": "连接池-0",
+                    "text": "报告1"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "连接资源"
+                    "id": "连接池-1",
+                    "text": "报告2"
                   },
                   {
-                    "id": "r0c2",
-                    "text": "应用与数据库"
+                    "id": "连接池-2",
+                    "text": "普通功能可用"
+                  },
+                  {
+                    "id": "连接池-3",
+                    "text": "普通功能可用"
                   }
                 ]
               }
-            ]
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "报告3排队，不再占连接",
+            "text": "第3份超过报告并发上限，进入最多2份的等待队列。它没有获得第3个数据库连接。",
+            "rows": [
+              {
+                "label": "连接池",
+                "cells": [
+                  {
+                    "id": "连接池-0",
+                    "text": "报告1"
+                  },
+                  {
+                    "id": "连接池-1",
+                    "text": "报告2"
+                  },
+                  {
+                    "id": "连接池-2",
+                    "text": "普通功能可用"
+                  },
+                  {
+                    "id": "连接池-3",
+                    "text": "普通功能可用"
+                  }
+                ]
+              },
+              {
+                "label": "报告等待队列",
+                "cells": [
+                  {
+                    "id": "报告等待队列-0",
+                    "text": "报告3"
+                  },
+                  {
+                    "id": "报告等待队列-1",
+                    "text": "空"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "报告4填满有界队列",
+            "text": "队列现在2份，报告3和4等待；并发报告仍只有1和2。",
+            "rows": [
+              {
+                "label": "连接池",
+                "cells": [
+                  {
+                    "id": "连接池-0",
+                    "text": "报告1"
+                  },
+                  {
+                    "id": "连接池-1",
+                    "text": "报告2"
+                  },
+                  {
+                    "id": "连接池-2",
+                    "text": "普通功能可用"
+                  },
+                  {
+                    "id": "连接池-3",
+                    "text": "普通功能可用"
+                  }
+                ]
+              },
+              {
+                "label": "报告等待队列",
+                "cells": [
+                  {
+                    "id": "报告等待队列-0",
+                    "text": "报告3"
+                  },
+                  {
+                    "id": "报告等待队列-1",
+                    "text": "报告4"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "报告5被拒绝或降级",
+            "text": "第5份既超并发又超队列，按设计拒绝或降级，不无限加入等待。已有报告完成归还连接后，才按调度启动下一份。",
+            "rows": [
+              {
+                "label": "连接池",
+                "cells": [
+                  {
+                    "id": "连接池-0",
+                    "text": "报告1"
+                  },
+                  {
+                    "id": "连接池-1",
+                    "text": "报告2"
+                  },
+                  {
+                    "id": "连接池-2",
+                    "text": "普通功能可用"
+                  },
+                  {
+                    "id": "连接池-3",
+                    "text": "普通功能可用"
+                  }
+                ]
+              },
+              {
+                "label": "报告等待队列",
+                "cells": [
+                  {
+                    "id": "报告等待队列-0",
+                    "text": "报告3"
+                  },
+                  {
+                    "id": "报告等待队列-1",
+                    "text": "报告4"
+                  }
+                ]
+              },
+              {
+                "label": "新报告5",
+                "cells": [
+                  {
+                    "id": "新报告5-0",
+                    "text": "拒绝/降级 · 不入队"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "先耗尽网络时还需上游防护",
+            "text": "这套边界保护应用连接和队列；入口带宽若先耗尽，仍需要上游清洗、边缘防护等，不会被这4个连接的账目自动解决。",
+            "rows": [
+              {
+                "label": "本例保护",
+                "cells": [
+                  {
+                    "id": "本例保护-0",
+                    "text": "数据库连接"
+                  },
+                  {
+                    "id": "本例保护-1",
+                    "text": "报告等待队列"
+                  }
+                ]
+              },
+              {
+                "label": "仍需分别保护",
+                "cells": [
+                  {
+                    "id": "仍需分别保护-0",
+                    "text": "入口带宽"
+                  },
+                  {
+                    "id": "仍需分别保护-1",
+                    "text": "其他应用资源"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
           }
         ]
       }
@@ -7776,95 +9657,223 @@
       "nodes": [
         {
           "id": "b",
-          "label": "浏览器",
-          "kind": "laptop"
+          "label": "你的浏览器",
+          "kind": "laptop",
+          "x": 70,
+          "y": 145
         },
         {
           "id": "d",
           "label": "DNS解析服务",
-          "kind": "server"
+          "kind": "server",
+          "x": 285,
+          "y": 65
         },
         {
           "id": "g",
-          "label": "本地网关",
-          "kind": "router"
+          "label": "家中网关",
+          "kind": "router",
+          "x": 500,
+          "y": 205
+        },
+        {
+          "id": "s",
+          "label": "learn.example",
+          "kind": "server",
+          "x": 710,
+          "y": 65
         }
       ]
     },
     "cases": [
       {
         "label": "没有可复用内容和连接",
-        "assumption": "访问https://learn.example/notes?day=12#summary，假设需要DNS解析且没有相关有效缓存。",
+        "assumption": "URL为https://learn.example/notes?day=12#summary。本机192.168.1.10/24、网关192.168.1.1；无可复用内容或连接，也无网站地址的DNS缓存。DNS消息本身的路由和链路步骤省略，之后追踪去网站的首个SYN。",
         "steps": [
           {
-            "title": "先拆开URL",
-            "text": "https指安全HTTP方案，主机learn.example，默认端口443；路径与查询描述请求目标，summary片段留给浏览器相应处理。",
-            "active": [
-              "b"
-            ],
+            "title": "拆开同一URL",
+            "text": "https、learn.example和默认443确定目标服务；/notes?day=12是后续HTTP请求目标，#summary留在浏览器处理。此刻尚无网站IP。",
+            "states": {
+              "b": "已知域名 · 尚无网站IP",
+              "d": "可接待DNS查询",
+              "g": "家中网关192.168.1.1",
+              "s": "目标服务 · 尚未连接"
+            },
             "flows": [],
-            "states": {},
-            "values": [
-              {
-                "label": "主机",
-                "value": "learn.example"
-              },
-              {
-                "label": "路径与查询",
-                "value": "/notes?day=12"
-              },
-              {
-                "label": "片段",
-                "value": "summary"
-              }
-            ]
-          },
-          {
-            "title": "取得候选IP",
-            "text": "浏览器或系统按配置查DNS。结果可能有多个IPv4/IPv6候选地址，还没取到网页正文。",
             "active": [
               "b",
-              "d"
+              "d",
+              "g",
+              "s"
             ],
+            "values": []
+          },
+          {
+            "title": "先发DNS地址查询",
+            "text": "浏览器或系统按配置向解析服务问learn.example的地址。正在传的是DNS消息，不是GET笔记请求。",
+            "states": {
+              "b": "等待DNS记录",
+              "d": "查询learn.example",
+              "g": "网站SYN尚未发",
+              "s": "HTTP请求尚未到"
+            },
+            "flows": [
+              {
+                "from": "b",
+                "to": "d",
+                "label": "DNS查询 · learn.example",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "b",
+              "d",
+              "g",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "取得候选IPv4地址",
+            "text": "本例解析服务返回198.51.100.20。现在只取得网站地址，没有网页正文，也没有TCP或TLS成功的证据。",
+            "states": {
+              "b": "已知网站198.51.100.20",
+              "d": "返回地址记录",
+              "g": "尚待网站首包",
+              "s": "HTTP请求尚未到"
+            },
             "flows": [
               {
                 "from": "d",
                 "to": "b",
-                "label": "返回候选地址",
+                "label": "地址：198.51.100.20",
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "b",
+              "d",
+              "g",
+              "s"
+            ],
             "values": []
           },
           {
-            "title": "按路由交给下一跳",
-            "text": "假设远端IPv4目标不在直连网段，系统选网关；缺少链路地址时用ARP等解析。最终目的IP与下一跳MAC仍分别起作用。",
+            "title": "按前缀选择下一跳",
+            "text": "本机192.168.1.10/24的直连网段是192.168.1.0/24；198.51.100.20不在其中，本例无更具体路线，选默认网关192.168.1.1。",
+            "states": {
+              "b": "下一跳192.168.1.1 · 缺MAC",
+              "d": "地址查询完成",
+              "g": "网关IP已知",
+              "s": "最终目的198.51.100.20"
+            },
+            "flows": [],
             "active": [
               "b",
-              "g"
+              "d",
+              "g",
+              "s"
             ],
+            "values": []
+          },
+          {
+            "title": "ARP询问网关MAC",
+            "text": "本例ARP缓存为空，电脑在本地链路广播询问谁拥有192.168.1.1。图只画网关收到询问，不把广播画到互联网。",
+            "states": {
+              "b": "询问网关MAC",
+              "d": "地址查询已完成",
+              "g": "收到ARP询问",
+              "s": "不接收本地ARP"
+            },
             "flows": [
               {
                 "from": "b",
                 "to": "g",
-                "label": "发往远端的IP包",
+                "label": "本地ARP · 谁是192.168.1.1",
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "b",
+              "d",
+              "g",
+              "s"
+            ],
             "values": []
           },
           {
-            "title": "后续建立所需通道",
-            "text": "接下来还需按选定协议建立运输、安全与应用通信。DNS成功不能证明端口、证书或权限都正常。",
-            "active": [
-              "g"
-            ],
-            "flows": [],
+            "title": "网关回复MAC G",
+            "text": "网关回复本链路MAC，用教学代号G表示。电脑现在知道下一跳IP和MAC，可为去网站的包组织外层帧。",
             "states": {
-              "g": "按路由继续转发"
+              "b": "网关MAC=G · 可发当前帧",
+              "d": "地址记录已取得",
+              "g": "已回复自己的MAC G",
+              "s": "仍未连接"
             },
+            "flows": [
+              {
+                "from": "g",
+                "to": "b",
+                "label": "ARP回复 · 网关MAC G",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "b",
+              "d",
+              "g",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "首个网站SYN先交网关",
+            "text": "电脑从临时TCP53000向网站TCP443发SYN。内层目的IP仍198.51.100.20，当前帧目标MAC为G；不是改成网关IP。",
+            "states": {
+              "b": "SYN已发 · 等TCP回应",
+              "d": "本次地址查询完成",
+              "g": "收到交给G的帧",
+              "s": "SYN尚在路径中"
+            },
+            "flows": [
+              {
+                "from": "b",
+                "to": "g",
+                "label": "帧MAC G · 内层SYN→网站443",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "b",
+              "d",
+              "g",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "网关继续路由转发",
+            "text": "网关处理帧，按目的198.51.100.20选下一跳并重新封装。图省略其余路由器；网站TCP随后处理SYN，TCP/TLS/HTTP还需继续。",
+            "states": {
+              "b": "SYN-SENT · 等回应",
+              "d": "地址查询完成",
+              "g": "按路由继续转发",
+              "s": "TCP处理SYN · HTTP尚未到"
+            },
+            "flows": [
+              {
+                "from": "g",
+                "to": "s",
+                "label": "IP包继续去198.51.100.20",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "b",
+              "d",
+              "g",
+              "s"
+            ],
             "values": []
           }
         ]
@@ -7881,7 +9890,10 @@
             ],
             "flows": [],
             "states": {
-              "b": "本地表示可用"
+              "b": "本地表示匹配且可用",
+              "d": "本例不必新查询",
+              "g": "本例不必新取主文档",
+              "s": "本例无主文档网络请求"
             },
             "values": []
           },
@@ -7892,7 +9904,12 @@
               "b"
             ],
             "flows": [],
-            "states": {},
+            "states": {
+              "b": "使用本地表示",
+              "d": "本例不必新查询",
+              "g": "本例不必新取主文档",
+              "s": "本例无主文档网络请求"
+            },
             "values": [
               {
                 "label": "本份表示",
@@ -7908,7 +9925,10 @@
             ],
             "flows": [],
             "states": {
-              "b": "逐资源检查复用条件"
+              "b": "使用本地表示",
+              "d": "本例不必新查询",
+              "g": "本例不必新取主文档",
+              "s": "本例无主文档网络请求"
             },
             "values": []
           }
@@ -7923,7 +9943,7 @@
   },
   "d12-http-render": {
     "title": "拿到HTML以后，为什么还没算整个网页完成？",
-    "intro": "先选一个明确的协议分支，把安全通道、HTTP业务和浏览器呈现放在同一条链上。再追踪一张失败的图片。",
+    "intro": "先选一个明确的协议分支，把安全通道、HTTP业务和浏览器呈现放在同一条链上。再追踪一个返回404的样式表。",
     "terms": "HTTP表达请求与响应；HTML描述页面结构，CSS参与样式计算。主文档与子资源可以是不同请求、连接和缓存结果。",
     "diagram": {
       "kind": "network",
@@ -7935,12 +9955,7 @@
         },
         {
           "id": "s",
-          "label": "网站应用",
-          "kind": "server"
-        },
-        {
-          "id": "r",
-          "label": "资源服务",
+          "label": "learn.example",
           "kind": "server"
         }
       ]
@@ -7951,129 +9966,198 @@
         "assumption": "假设无已有连接，已取得地址；TCP/TLS正常，省略HTTP/2帧与完整浏览器流水线。",
         "steps": [
           {
-            "title": "先建立TCP与TLS",
-            "text": "TCP三次握手后，还要做TLS身份校验与密钥协商。它们解决运输与安全，不替应用决定用户权限。",
+            "title": "网站地址已知，完成TCP和TLS",
+            "text": "沿用上一topic。TCP握手建立字节流，TLS验证learn.example并协商密钥，选择HTTP/2。本图不重复展开此前已学的两套握手。",
+            "states": {
+              "b": "TCP/TLS就绪 · 选择HTTP/2",
+              "s": "安全通道就绪"
+            },
+            "flows": [],
             "active": [
               "b",
               "s"
             ],
+            "values": []
+          },
+          {
+            "title": "发同一笔记GET",
+            "text": "浏览器通过HTTP/2表达GET /notes?day=12，符合规则时附Cookie sid=r7；#summary不放进该请求目标。",
+            "states": {
+              "b": "等待第12天笔记",
+              "s": "收到路径/查询与会话标识"
+            },
             "flows": [
               {
                 "from": "b",
                 "to": "s",
-                "label": "TCP与TLS建立",
+                "label": "HTTP/2 · GET /notes?day=12",
                 "tone": "normal"
               }
             ],
-            "states": {},
-            "values": []
-          },
-          {
-            "title": "通过HTTP/2发送请求",
-            "text": "请求语义可以是GET /notes?day=12；在线上以HTTP/2帧表达，不能误画成必然是HTTP/1.1文本报文。",
             "active": [
               "b",
               "s"
             ],
-            "flows": [
-              {
-                "from": "b",
-                "to": "s",
-                "label": "HTTP/2请求",
-                "tone": "normal"
-              }
-            ],
-            "states": {},
             "values": []
           },
           {
-            "title": "应用返回主文档",
-            "text": "应用处理并按需认证授权，返回状态、字段和HTML内容。接收200只说明这个请求的结果。",
+            "title": "应用查会话并授权",
+            "text": "服务器解密并解释HTTP，按r7查用户甲与权限。通过检查后才读取甲的笔记，不能因为TLS成功就直接授权。",
+            "states": {
+              "b": "等待授权后的响应",
+              "s": "r7→甲 · 检查笔记读取权限"
+            },
+            "flows": [],
             "active": [
-              "s",
-              "b"
+              "b",
+              "s"
             ],
+            "values": []
+          },
+          {
+            "title": "返回主HTML",
+            "text": "本例权限允许，源站返回200和HTML，其中引用样式/site.css。浏览器收到主文档，可开始解析文字与引用。",
+            "states": {
+              "b": "HTML到达 · 发现/site.css",
+              "s": "返回第12天笔记HTML"
+            },
             "flows": [
               {
                 "from": "s",
                 "to": "b",
-                "label": "主文档：200 + HTML",
+                "label": "200 HTML · 引用/site.css",
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "b",
+              "s"
+            ],
             "values": []
           },
           {
-            "title": "解析并继续取子资源",
-            "text": "浏览器处理HTML、CSS，进行布局绘制，并可能请求图片、脚本等。响应结束与页面所有功能就绪并非同一事件。",
-            "active": [
-              "b",
-              "r"
-            ],
+            "title": "对样式再发一个GET",
+            "text": "本例样式无可复用缓存，浏览器在已有连接上发GET /site.css。它是另一请求，不因HTML200而自动成功。",
+            "states": {
+              "b": "文字可解析 · 等待样式",
+              "s": "收到单独样式请求"
+            },
             "flows": [
               {
                 "from": "b",
-                "to": "r",
-                "label": "后续资源请求",
+                "to": "s",
+                "label": "GET /site.css",
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "样式返回，完成相应呈现",
+            "text": "服务器返回200与CSS，浏览器应用其中的字体、颜色和布局规则，继续布局绘制。仍可能有其他资源，不把本次样式成功当作全站功能完成。",
+            "states": {
+              "b": "HTML+CSS可用 · 布局绘制",
+              "s": "本次样式请求成功"
+            },
+            "flows": [
+              {
+                "from": "s",
+                "to": "b",
+                "label": "200 · CSS样式",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "b",
+              "s"
+            ],
             "values": []
           }
         ]
       },
       {
-        "label": "主文档成功，图片失败",
-        "assumption": "假设HTML引用了错误的图片路径，其他主要资源正常。",
+        "label": "主文档成功，样式失败",
+        "assumption": "同一笔记HTML引用误写的/missing.css；TCP/TLS与主文档已成功，其他主要资源正常。",
         "steps": [
           {
-            "title": "HTML先到达",
-            "text": "浏览器开始解析，用户可能已看到部分文字。页面并不是所有资源到齐才允许任何处理。",
-            "active": [
-              "s",
-              "b"
-            ],
+            "title": "HTML中实际引用错误样式路径",
+            "text": "浏览器收到200 HTML并解析出/missing.css。主文档能正常到达，说明此前已有成功的获取路径。",
+            "states": {
+              "b": "已有HTML · 发现/missing.css",
+              "s": "主文档返回200"
+            },
             "flows": [
               {
                 "from": "s",
                 "to": "b",
-                "label": "HTML：200",
+                "label": "200 HTML · 引用/missing.css",
                 "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "b",
+              "s"
+            ],
             "values": []
           },
           {
-            "title": "图片请求返回404",
-            "text": "这是具体图片资源的错误，不证明整个DNS或HTTPS连接从未成功建立。",
-            "active": [
-              "r",
-              "b"
-            ],
+            "title": "浏览器请求/missing.css",
+            "text": "浏览器对这个地址新发GET，不能仅凭HTML引用就认为它已经存在。",
+            "states": {
+              "b": "等待/missing.css响应",
+              "s": "检查样式路径"
+            },
             "flows": [
               {
-                "from": "r",
-                "to": "b",
-                "label": "图片：404",
-                "tone": "warning"
+                "from": "b",
+                "to": "s",
+                "label": "GET /missing.css",
+                "tone": "normal"
               }
             ],
-            "states": {},
+            "active": [
+              "b",
+              "s"
+            ],
             "values": []
           },
           {
-            "title": "用资源级证据定位",
-            "text": "检查图片URL、响应状态与加载错误，再判断根因。把每一份资源的请求、缓存与呈现结果联系起来。",
-            "active": [
-              "b"
-            ],
-            "flows": [],
+            "title": "样式请求返回404",
+            "text": "源站在本例找不到该资源，返回404。这个404属于样式请求，不否定已成功的HTML请求与TLS通道。",
             "states": {
-              "b": "文字可见，图片缺失"
+              "b": "收到样式404",
+              "s": "该样式资源未找到"
             },
+            "flows": [
+              {
+                "from": "s",
+                "to": "b",
+                "label": "404 · /missing.css",
+                "tone": "normal"
+              }
+            ],
+            "active": [
+              "b",
+              "s"
+            ],
+            "values": []
+          },
+          {
+            "title": "文字可见，预期样式缺失",
+            "text": "浏览器可显示笔记文字，但缺少这个样式表指定的排版。先核对引用URL与响应状态，而不是直接断言DNS或TCP整体失败。",
+            "states": {
+              "b": "文字可见 · 预期样式缺失",
+              "s": "主文档200 · 样式404"
+            },
+            "flows": [],
+            "active": [
+              "b",
+              "s"
+            ],
             "values": []
           }
         ]
@@ -8091,22 +10175,24 @@
     "intro": "把监听套接字和已连接套接字画成不同对象，避免把一个服务端口误当成一次只能接一个人的位置。",
     "terms": "Socket是应用使用网络能力的接口抽象。bind选本地地址，listen准备接待，accept取得一个新的已连接对象；UDP不照搬这个TCP接待流程。",
     "diagram": {
-      "kind": "network",
-      "nodes": [
+      "kind": "blocks",
+      "rows": [
         {
-          "id": "c",
-          "label": "客户端",
-          "kind": "laptop"
-        },
-        {
-          "id": "l",
-          "label": "监听套接字",
-          "kind": "server"
-        },
-        {
-          "id": "a",
-          "label": "已连接套接字",
-          "kind": "server"
+          "label": "同一服务器198.51.100.20",
+          "cells": [
+            {
+              "id": "同一服务器198.51.100.20-0",
+              "text": "监听L：443"
+            },
+            {
+              "id": "同一服务器198.51.100.20-1",
+              "text": "连接A：尚无"
+            },
+            {
+              "id": "同一服务器198.51.100.20-2",
+              "text": "连接B：尚无"
+            }
+          ]
         }
       ]
     },
@@ -8116,67 +10202,203 @@
         "assumption": "典型TCP服务器接口过程，省略非阻塞细节与并发实现。",
         "steps": [
           {
-            "title": "socket、bind、listen",
-            "text": "服务端创建套接字，绑定本地443并监听。应用还没因此读到某个客户端的请求正文。",
-            "active": [
-              "l"
-            ],
-            "flows": [],
-            "states": {
-              "l": "监听本地443"
-            },
-            "values": []
-          },
-          {
-            "title": "甲完成相应连接建立",
-            "text": "TCP处理连接建立；连接可能已在等待应用接收。connect完成与服务端应用accept不是同一动作。",
-            "active": [
-              "c",
-              "l"
-            ],
-            "flows": [
+            "title": "先建立监听对象L",
+            "text": "socket创建对象，bind绑定198.51.100.20:443，listen让它接待新连接。此刻L不是已经与甲或乙通信的对象。",
+            "rows": [
               {
-                "from": "c",
-                "to": "l",
-                "label": "甲发起TCP连接",
-                "tone": "normal"
+                "label": "客户端端点",
+                "cells": [
+                  {
+                    "id": "客户端端点-0",
+                    "text": "甲192.0.2.10:53000"
+                  },
+                  {
+                    "id": "客户端端点-1",
+                    "text": "乙192.0.2.11:53000"
+                  }
+                ]
+              },
+              {
+                "label": "同一服务器198.51.100.20",
+                "cells": [
+                  {
+                    "id": "同一服务器198.51.100.20-0",
+                    "text": "监听L：443"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-1",
+                    "text": "连接A：尚无"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-2",
+                    "text": "连接B：尚无"
+                  }
+                ]
               }
             ],
+            "active": [],
             "states": {},
+            "flows": [],
             "values": []
           },
           {
-            "title": "accept返回连接A",
-            "text": "accept得到一个新的已连接套接字A；原监听套接字仍在，端口也没有自动变成另一个随机数。",
-            "active": [
-              "l",
-              "a"
-            ],
-            "flows": [
+            "title": "甲连接完成，等应用accept",
+            "text": "甲192.0.2.10:53000连到服务器443，TCP完成握手后，连接可以在系统队列等应用accept。L仍承担新的接待。",
+            "rows": [
               {
-                "from": "l",
-                "to": "a",
-                "label": "取得连接A",
-                "tone": "normal"
+                "label": "客户端端点",
+                "cells": [
+                  {
+                    "id": "客户端端点-0",
+                    "text": "甲192.0.2.10:53000"
+                  },
+                  {
+                    "id": "客户端端点-1",
+                    "text": "乙192.0.2.11:53000"
+                  }
+                ]
+              },
+              {
+                "label": "同一服务器198.51.100.20",
+                "cells": [
+                  {
+                    "id": "同一服务器198.51.100.20-0",
+                    "text": "监听L：443"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-1",
+                    "text": "甲的连接：已握手，等待accept"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-2",
+                    "text": "连接B：尚无"
+                  }
+                ]
               }
             ],
-            "states": {
-              "l": "继续监听443",
-              "a": "甲的已连接对象"
-            },
+            "active": [],
+            "states": {},
+            "flows": [],
             "values": []
           },
           {
-            "title": "仍可接待客户端乙",
-            "text": "应用可以继续accept获得连接B。如何用线程或事件循环管理多个连接，属于并发实现选择。",
-            "active": [
-              "l"
+            "title": "accept得到甲的连接A",
+            "text": "应用对L调用accept，取得新的已连接对象A；A本地仍198.51.100.20:443，远端甲192.0.2.10:53000。新的是对象，不是服务端口。",
+            "rows": [
+              {
+                "label": "客户端端点",
+                "cells": [
+                  {
+                    "id": "客户端端点-0",
+                    "text": "甲192.0.2.10:53000"
+                  },
+                  {
+                    "id": "客户端端点-1",
+                    "text": "乙192.0.2.11:53000"
+                  }
+                ]
+              },
+              {
+                "label": "同一服务器198.51.100.20",
+                "cells": [
+                  {
+                    "id": "同一服务器198.51.100.20-0",
+                    "text": "监听L：443"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-1",
+                    "text": "A：443 ↔ 甲53000，独立读写"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-2",
+                    "text": "连接B：尚无"
+                  }
+                ]
+              }
             ],
+            "active": [],
+            "states": {},
             "flows": [],
-            "states": {
-              "l": "还可接待乙",
-              "a": "A独立读写"
-            },
+            "values": []
+          },
+          {
+            "title": "乙也完成连接，等第二次accept",
+            "text": "乙192.0.2.11:53000也连到同一个443。源端口号码虽和甲相同，源IP不同；L继续接待，A没有被替代。",
+            "rows": [
+              {
+                "label": "客户端端点",
+                "cells": [
+                  {
+                    "id": "客户端端点-0",
+                    "text": "甲192.0.2.10:53000"
+                  },
+                  {
+                    "id": "客户端端点-1",
+                    "text": "乙192.0.2.11:53000"
+                  }
+                ]
+              },
+              {
+                "label": "同一服务器198.51.100.20",
+                "cells": [
+                  {
+                    "id": "同一服务器198.51.100.20-0",
+                    "text": "监听L：443"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-1",
+                    "text": "A：甲的连接仍在"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-2",
+                    "text": "乙的连接：已握手，等待accept"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "accept得到乙的连接B",
+            "text": "第二次accept取得B，本地443、远端乙192.0.2.11:53000。现在L、A、B三个对象同时存在：L接待，A与甲读写，B与乙读写。",
+            "rows": [
+              {
+                "label": "客户端端点",
+                "cells": [
+                  {
+                    "id": "客户端端点-0",
+                    "text": "甲192.0.2.10:53000"
+                  },
+                  {
+                    "id": "客户端端点-1",
+                    "text": "乙192.0.2.11:53000"
+                  }
+                ]
+              },
+              {
+                "label": "同一服务器198.51.100.20",
+                "cells": [
+                  {
+                    "id": "同一服务器198.51.100.20-0",
+                    "text": "监听L：443"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-1",
+                    "text": "A：443 ↔ 甲53000，独立读写"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-2",
+                    "text": "B：443 ↔ 乙53000，独立读写"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
             "values": []
           }
         ]
@@ -8186,48 +10408,123 @@
         "assumption": "假设只关闭这一个已连接对象，监听服务仍正常。",
         "steps": [
           {
-            "title": "A与监听对象不同",
-            "text": "A负责与甲的通信，监听对象负责新的接待。两者不能混为一份资源。",
-            "active": [
-              "l",
-              "a"
-            ],
-            "flows": [],
-            "states": {
-              "l": "监听443",
-              "a": "甲的连接A"
-            },
-            "values": []
-          },
-          {
-            "title": "结束并关闭A",
-            "text": "关闭A按接口和协议推进相应连接结束，不会因此必然关闭整个监听入口。",
-            "active": [
-              "a"
-            ],
-            "flows": [],
-            "states": {
-              "a": "A结束",
-              "l": "仍在监听"
-            },
-            "values": []
-          },
-          {
-            "title": "新客户端仍可连接",
-            "text": "只要服务、资源和网络条件允许，乙仍可通过443入口建立新的连接。",
-            "active": [
-              "c",
-              "l"
-            ],
-            "flows": [
+            "title": "L、A、B目前同时存在",
+            "text": "接续已接待甲乙的情形。监听L和两条已连接对象各有不同职责，不是同一对象换名。",
+            "rows": [
               {
-                "from": "c",
-                "to": "l",
-                "label": "乙的新连接",
-                "tone": "normal"
+                "label": "客户端端点",
+                "cells": [
+                  {
+                    "id": "客户端端点-0",
+                    "text": "甲192.0.2.10:53000"
+                  },
+                  {
+                    "id": "客户端端点-1",
+                    "text": "乙192.0.2.11:53000"
+                  }
+                ]
+              },
+              {
+                "label": "同一服务器198.51.100.20",
+                "cells": [
+                  {
+                    "id": "同一服务器198.51.100.20-0",
+                    "text": "监听L：443"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-1",
+                    "text": "A：与甲读写"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-2",
+                    "text": "B：与乙读写"
+                  }
+                ]
               }
             ],
+            "active": [],
             "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "只结束并关闭A",
+            "text": "本例应用只关闭A，按接口与TCP规则推进甲的连接结束。没有同时关闭B或监听L。",
+            "rows": [
+              {
+                "label": "客户端端点",
+                "cells": [
+                  {
+                    "id": "客户端端点-0",
+                    "text": "甲192.0.2.10:53000"
+                  },
+                  {
+                    "id": "客户端端点-1",
+                    "text": "乙192.0.2.11:53000"
+                  }
+                ]
+              },
+              {
+                "label": "同一服务器198.51.100.20",
+                "cells": [
+                  {
+                    "id": "同一服务器198.51.100.20-0",
+                    "text": "监听L：443"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-1",
+                    "text": "A：甲的连接已结束"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-2",
+                    "text": "B：仍与乙读写"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "B可继续，L仍可接待新连接",
+            "text": "乙原有B不因甲A结束而被替代；服务、网络和资源允许时，L仍能接待更多连接。这与关闭监听入口不同。",
+            "rows": [
+              {
+                "label": "客户端端点",
+                "cells": [
+                  {
+                    "id": "客户端端点-0",
+                    "text": "甲192.0.2.10:53000"
+                  },
+                  {
+                    "id": "客户端端点-1",
+                    "text": "乙192.0.2.11:53000"
+                  }
+                ]
+              },
+              {
+                "label": "同一服务器198.51.100.20",
+                "cells": [
+                  {
+                    "id": "同一服务器198.51.100.20-0",
+                    "text": "监听L：443"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-1",
+                    "text": "A：已结束"
+                  },
+                  {
+                    "id": "同一服务器198.51.100.20-2",
+                    "text": "B：仍与乙读写"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
             "values": []
           }
         ]
@@ -8272,7 +10569,7 @@
     "cases": [
       {
         "label": "同一服务端443的三个连接",
-        "assumption": "地址为示例，讨论同一TCP命名空间中有效建立的不同连接。",
+        "assumption": "独立的连接计数算例，A/B/C在此重新编号，不沿用上节Socket对象名。地址为示例，讨论同一TCP命名空间中有效建立的不同连接。",
         "steps": [
           {
             "title": "甲用源端口53000",
@@ -8437,94 +10734,140 @@
         "assumption": "教学客户端只有一个源IP，操作系统在本例仅允许两个可分配源端口，并假设均已占用。",
         "steps": [
           {
-            "title": "固定另外三项",
-            "text": "源IP和目标IP、目标端口固定，当前只能靠不同源端口得到不同组合。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "固定三个字段，仅两个源端口",
+            "text": "本例只有源IP192.0.2.10、目标198.51.100.20:443，允许源端口仅53000/53001。这个人为范围用于计数，不是系统普遍只有两个。",
             "rows": [
               {
-                "label": "固定项",
+                "label": "固定字段",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "单一源IP"
+                    "id": "固定字段-0",
+                    "text": "源192.0.2.10"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "同一目标IP"
+                    "id": "固定字段-1",
+                    "text": "目标198.51.100.20"
                   },
                   {
-                    "id": "r0c2",
-                    "text": "同一目标端口"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "title": "允许的两个源端口已占用",
-            "text": "在这组条件下端口分配可能先成为限制。真实临时范围、TIME-WAIT、接口与复用规则都要另查。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
-            "rows": [
-              {
-                "label": "可分配端口",
-                "cells": [
-                  {
-                    "id": "r0c0",
-                    "text": "已占用53000"
-                  },
-                  {
-                    "id": "r0c1",
-                    "text": "已占用53001"
+                    "id": "固定字段-2",
+                    "text": "目标TCP443"
                   }
                 ]
               },
               {
-                "label": "新增连接",
+                "label": "可选源端口",
                 "cells": [
                   {
-                    "id": "r1c0",
-                    "text": "没有本例可分配源端口"
+                    "id": "可选源端口-0",
+                    "text": "53000"
+                  },
+                  {
+                    "id": "可选源端口-1",
+                    "text": "53001"
                   }
                 ]
               }
-            ]
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
           },
           {
-            "title": "整机容量仍有其他约束",
-            "text": "增加源IP或改变目标可能改变组合空间，但内存、文件描述符、CPU、NAT映射等也会限制容量，不能只做16位字段乘法保证可实现。",
-            "active": [],
-            "flows": [],
-            "states": {},
-            "values": [],
+            "title": "两个不同四元组都已占用",
+            "text": "A用53000，B用53001；目标相同而源端口不同，所以两条连接可区分。现在本例两个允许组合均已占用。",
             "rows": [
+              {
+                "label": "连接A",
+                "cells": [
+                  {
+                    "id": "连接A-0",
+                    "text": "192.0.2.10:53000 → 198.51.100.20:443"
+                  }
+                ]
+              },
+              {
+                "label": "连接B",
+                "cells": [
+                  {
+                    "id": "连接B-0",
+                    "text": "192.0.2.10:53001 → 198.51.100.20:443"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "第三次没有可分配的新组合",
+            "text": "本例不允许复用这两个已占组合，也无其他源地址/端口，因此第三次新连接分配失败。限制属于固定客户端到固定目标，不能推广成整个服务器只能两条连接。",
+            "rows": [
+              {
+                "label": "尝试连接C",
+                "cells": [
+                  {
+                    "id": "尝试连接C-0",
+                    "text": "53000已占"
+                  },
+                  {
+                    "id": "尝试连接C-1",
+                    "text": "53001已占"
+                  },
+                  {
+                    "id": "尝试连接C-2",
+                    "text": "无第三可用组合"
+                  }
+                ]
+              },
+              {
+                "label": "本例结果",
+                "cells": [
+                  {
+                    "id": "本例结果-0",
+                    "text": "源端口分配受限"
+                  }
+                ]
+              }
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
+          },
+          {
+            "title": "改变条件仍要检查真实资源",
+            "text": "增加源IP或改变目标可改变组合空间，但真实接口、TIME-WAIT、内存、CPU和NAT映射也可能限制容量。不能仅做端口乘法就保证系统能接待。",
+            "rows": [
+              {
+                "label": "组合条件",
+                "cells": [
+                  {
+                    "id": "组合条件-0",
+                    "text": "源地址/目标变化会影响"
+                  }
+                ]
+              },
               {
                 "label": "其他限制",
                 "cells": [
                   {
-                    "id": "r0c0",
-                    "text": "内存"
+                    "id": "其他限制-0",
+                    "text": "接口和复用规则"
                   },
                   {
-                    "id": "r0c1",
-                    "text": "文件描述符"
-                  },
-                  {
-                    "id": "r0c2",
-                    "text": "CPU与带宽"
-                  },
-                  {
-                    "id": "r0c3",
-                    "text": "代理/NAT"
+                    "id": "其他限制-1",
+                    "text": "内存/CPU/NAT"
                   }
                 ]
               }
-            ]
+            ],
+            "active": [],
+            "states": {},
+            "flows": [],
+            "values": []
           }
         ]
       }
