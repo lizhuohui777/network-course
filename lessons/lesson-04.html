@@ -7,9 +7,10 @@
 
 <p>两端有各自的发送字节空间，而不是两个人共享一条全局流水号。客户端确认的是服务器方向的字节，服务器确认的是客户端方向的字节。一对连接通常由两边IP与端口组成的四元组区分；所以同一服务端口可以同时对应许多不同客户端连接。</p>
 <details class="mini-check"><summary>小检查：SEQ=500、数据长100，连续收到后确认号为何是600而不是599？</summary><p>数据占500至599共100个编号；确认号指出下一字节600。不要把“最后收到的编号”与“下一期待编号”混为一谈。</p></details></article><article class="topic" id="d4-handshake" data-topic="三次握手怎样同步两个方向" data-sources="55,56,59"><div class="topic-heading"><span class="topic-number">02</span><h3>三次握手怎样同步两个方向</h3><button class="topic-note-button" data-note="d4-handshake" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
-<p>TCP建立连接前，需要为两边的字节流同步初始序列号，并确认对方能够对当前请求作出回应。常见情形是服务器已经<strong>LISTEN</strong>，即等待某端口上的连接请求；客户端主动发起。握手并不为网络预留固定线路，它建立的是两端TCP中的状态。</p>
+<p>下载还没开始，两边就要先约好各自的编号起点：客户端不知道服务器从哪个编号开始，服务器也不知道客户端的起点。<strong>握手交换这两项信息，并让每一端获得对自己SYN的有效确认。</strong>服务器先监听，等待某端口上的请求；客户端主动发起。握手建立的是两端TCP的状态，并不为互联网预留独占线路。</p>
+<p>第一步说“我从100开始”，发出以后客户端在<strong>SYN-SENT</strong>，即“已发同步请求，等回应”；服务器收到后回第二步：“收到了你的100，因此期待101；我从700开始”。服务器此时在<strong>SYN-RECEIVED</strong>，即“已收到同步请求，自己的同步还等确认”。第二步将服务器的确认与自己的同步请求合在一个段里。</p>
+<p>客户端收到第二步，才知道自己的100已确认、对方从700开始，本端进入<strong>ESTABLISHED</strong>，即“连接已建立”；它再发第三步ack=701。服务器必须等第三步实际到达，才得到对自己700的确认并进入ESTABLISHED。<strong>同一箭头发出时，两端不会同时变状态。</strong></p>
 <figure class="figure"><div class="sequence" role="img" aria-label="客户端SYN序列号100；服务器SYN加ACK序列号700确认101；客户端ACK序列号101确认701"><p><strong>客户端 → 服务器：</strong>SYN=1，seq=100。客户端进入 <code>SYN-SENT</code>。</p><p><strong>服务器 → 客户端：</strong>SYN=1、ACK=1，seq=700、ack=101。服务器进入 <code>SYN-RECEIVED</code>。</p><p><strong>客户端 → 服务器：</strong>ACK=1，seq=101、ack=701。客户端处理第二步后进入 <code>ESTABLISHED</code>；服务器收到有效第三步后也进入该状态。</p></div><figcaption>图1 · 普通主动/被动打开，假设握手前两步不带数据。100和700是便于计算的示意值。</figcaption></figure>
-<p>第一步说“我从100开始，请建立这次连接”；第二步既说“收到了你的SYN，因此期待101”，又提出“我从700开始”；第三步说“也收到了你的SYN，因此期待701”。<strong>第二步把服务器的确认和自己的同步请求合在一个段里</strong>，所以不必先用两个独立段做这两件事。</p>
 <p>为什么还需要第三步？服务器发出SYN后，还不知道客户端有没有接收到自己的初始序列号并能对当前状态回应。第三步为这个方向补上确认，也有助于避免把网络里延迟的旧请求直接当作已经建立的新连接。仅说“证明双方能收能发”是有用的直觉，但应同时说出同步了什么、谁仍在等待哪项确认。</p>
 <p>若第三步纯ACK丢失，客户端与服务器可能暂时处于不同状态。服务器仍会按规则重传SYN与ACK；客户端可再次确认，或者随后携带正确确认的信息促成建立。握手不是“三个包在宇宙中绝不丢失”的假设，而是围绕状态、重传和有效确认继续推进。</p>
 <!-- EXAMPLE:d4-handshake -->
@@ -22,7 +23,8 @@
 <p>序列号还与安全有关：若外部攻击者可以轻易预测合适的编号，会增加伪造看似有效TCP报文的机会。现代规范建议用随时间变化的部分，加上与连接四元组和秘密值有关的计算，使不同连接的初始值难以预测。<strong>它既不是“必须固定加一”，也不是只要看起来随机就万事大吉。</strong></p>
 <!-- EXAMPLE:d4-isn -->
 
-<p>例如两条不同连接都向服务器443发起，初始值可能分别为100000与900000；它们收到各自SYN的确认应分别加1。接收端依据连接标识找到状态，再按该连接编号处理，而不是拿全站所有客户端的序列号混着排序。32位序列号会循环，具体比较规则还要结合有效窗口，不能直接把普通整数“大于”当作所有情况下的判断方式。</p>
+<p>图中420000是独立的抓包显示算例，不是把上一节握手中的100临时改掉：线上SYN编号420000，工具可显示成相对0；线上第一数据字节420001，就显示成相对1。工具减掉的是同一个起点，数据位置没有改变。</p>
+<details class="mini-check"><summary>32位序列号会用完吗？</summary><p>它会循环，具体比较要结合有效窗口等规则，不能直接用普通整数“大于”处理所有情况。接收端先依据连接标识找到状态，再按该连接的序列号处理，不把全站客户端的编号混着排序。</p></details>
 <details class="mini-check"><summary>小检查：抓包界面显示SYN的Seq为0，说明系统的ISN没有随机性吗？</summary><p>不说明。工具可能启用了相对序列号，将当前连接起点显示为0。应查看显示模式或原始字段，而不是仅凭界面简化值推断算法。</p></details></article><article class="topic" id="d4-queues" data-topic="半连接、等待接收与SYN攻击" data-sources="57,60"><div class="topic-heading"><span class="topic-number">04</span><h3>半连接、等待接收与SYN攻击</h3><button class="topic-note-button" data-note="d4-queues" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
 <p>操作系统管理设备上的程序和网络资源；应用通过它提供的接口使用网络。<strong>套接字（Socket）</strong>是程序使用网络通信的对象，<strong>accept</strong>是程序取得一条已连接套接字的接口。服务器不能把“收到第一个SYN”与“应用已经获得一个可用连接”当作同一件事。普通握手过程中，服务器需要暂存尚未完成握手的状态；握手完成后，连接还可能等待应用调用<code>accept</code>。<strong>半连接队列与已完成连接的等待队列是理解这些阶段的常见模型。</strong></p>
 <figure class="figure"><div class="flow" role="img" aria-label="收到SYN进入待完成握手状态，收到有效最终确认后成为已完成连接，再等待应用接收"><div class="endpoint"><strong>收到SYN</strong><span>暂存握手状态<br>SYN-RECEIVED</span></div><span class="flow-arrow">→</span><div class="endpoint"><strong>握手完成</strong><span>等待应用接收<br>ESTABLISHED</span></div><span class="flow-arrow">→</span><div class="endpoint"><strong>应用accept</strong><span>程序获得连接<br>继续读写业务数据</span></div></div><figcaption>图2 · 这是常见实现思路。队列名、容量、溢出策略和具体数据结构因系统而异，不是所有TCP实现完全相同。</figcaption></figure>

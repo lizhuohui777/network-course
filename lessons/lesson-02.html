@@ -114,7 +114,7 @@
     <div class="topic-heading"><span class="topic-number">02</span><h3>Ping检查了什么</h3><button class="topic-note-button" data-note="d2-ping" aria-controls="topic-notes">笔记</button></div>
     <div class="topic-source-links" data-topic-sources></div>
     <p>刚才我们推演了包怎样出发。假如现在网页打不开，能不能先发一小段探测，看看对方是否会回应？<strong>Ping就是常用的探测工具。</strong>它通常发送ICMP的“回显请求”（Echo Request）；目标若允许并能处理这种请求，就返回“回显应答”（Echo Reply）。</p>
-    <p><strong>ICMP</strong>是配合IP工作的控制与差错报告机制。你可以先把回显理解为：“我发一个探测，请你回一声。”这份回应由目标网络协议栈处理，不要求网站程序先生成首页。Ping也不需要选TCP443这样的网页服务端口；IPv6使用相应的ICMPv6。</p>
+    <p><strong>ICMP</strong>是配合IP工作的控制与差错报告机制。你可以先把回显理解为：“我发一个探测，请你回一声。”这份回应由目标系统中负责IP、ICMP等协议的软件处理，这些软件常统称为<strong>网络协议栈</strong>；不要求网站程序先生成首页。Ping也不需要选TCP443这样的网页服务端口；IPv6使用相应的ICMPv6。</p>
     <figure class="figure">
       <div class="flow" role="img" aria-label="本机向目标IP发送ICMP回显请求，目标返回回显应答，本机统计整个往返耗时">
         <div class="endpoint"><strong>你的电脑</strong><span>记下发出时刻<br>收到回应后计算耗时</span></div>

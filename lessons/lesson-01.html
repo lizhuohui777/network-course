@@ -20,13 +20,13 @@
     <p>想象你打开一个课程网站。<strong>浏览器先提出请求，对方的服务程序处理请求，再返回内容。</strong>浏览器拿到描述页面的内容后，才把它显示出来。</p>
     <figure class="figure"><div class="flow" role="img" aria-label="浏览器作为客户端发送网页请求，服务器的服务程序处理并返回网页内容"><div class="endpoint"><strong>你的浏览器</strong><span>运行在你的设备上<br>客户端程序</span></div><div class="flow-middle">想要课程首页<span class="flow-arrow">→</span><span class="flow-arrow">←</span>返回页面内容</div><div class="endpoint"><strong>网站服务程序</strong><span>运行在远方的设备上<br>服务器程序</span></div></div><figcaption>图1 · 请求与响应。中间可能经过多台网络设备。</figcaption></figure>
     <div class="three-col"><div class="mini-card"><strong>客户端</strong><p>在这次交互中发起请求的一方。浏览器是常见例子；手机App也可以是客户端。</p></div><div class="mini-card"><strong>服务器</strong><p>提供服务、接收并处理请求的一方。这个词有时指程序，有时指运行程序的计算机，要看上下文。</p></div><div class="mini-card"><strong>协议</strong><p>双方交流遵守的规则：消息怎么写、字段是什么意思、收到后怎样回应。</p></div></div>
-    <p>浏览器既要表达“我要哪份内容”，也要借助网络把数据传出去。先看双方怎样理解请求；下一节再把表达消息、运送数据和传送信号等职责分开。</p>
+    <p>你点击“首页”以后，浏览器要把这个动作变成对方能读懂的消息。网站收到消息，才能判断该返回首页还是另一份内容。<strong>“点击按钮”发生在你这边，“处理请求”发生在网站那边；请求把两件事连接起来。</strong></p>
     <h4 style="margin-top:24px">例子：你说“给我首页”，对方得知道怎么读。</h4>
-    <p>如果你随意发出一串字，对方未必知道你要什么。协议就像约好的表格：哪一格写目标，哪一格写动作。<strong>HTTP</strong> 就是一套用于网站请求与响应的通信规则；它不是网页内容本身，也不是浏览器这个软件。</p>
+    <p><strong>HTTP</strong>约定网站请求与响应的格式和含义。例如，<code>GET /</code>可以表达“获取这个网站根路径的内容”：<code>GET</code>说要获取，<code>/</code>指出目标。网站程序按这些规则解释请求，再返回响应。这里先认出“动作”和“目标”，第8天会读完整报文。</p>
     <p><strong>把“设备”和“程序”分开想。</strong>一台计算机可以同时运行多个程序，也可能同时扮演不同角色。例如，网站的服务程序接待你的请求时是服务器；它向另一项服务请求数据时，又扮演客户端。</p>
 <!-- EXAMPLE:d1-client-server -->
 
-    <div class="callout warm"><strong>类比能帮助理解，但角色没有固定身份。</strong><p>把客户端想成顾客、服务器想成服务台，只对应“请求与提供服务”的关系。不能据此推断服务器永远被动、永远不能主动通信。</p></div>
+    <details class="mini-check"><summary>为什么网站程序也能成为客户端？</summary><p>网站接待浏览器时提供服务；它主动向数据服务请求课程列表时，又在另一段交互中发起请求。客户端、服务器是这次交互中的角色，设备没有一个永远固定的身份。</p></details>
     <details class="mini-check"><summary>练习：浏览器、计算机、HTTP，分别属于什么？</summary><p>浏览器是程序；计算机是运行程序的设备；HTTP是通信规则。程序使用规则交换数据，设备承载程序并连接网络。</p></details>
     <div class="topic-actions"><div class="rating-group" data-topic-rating="d1-client-server"></div><button class="text-button" data-feedback="d1-client-server">这里还没懂 →</button></div>
   </article>
@@ -48,7 +48,8 @@
     <div class="callout"><strong>这些协议怎样配合？</strong><p>HTTP表达请求，TCP提供本例需要的数据传输服务，IP负责跨网络寻址与转发，再借助各段链路与信号传输。HTTP有不同版本；下面选用HTTP/1.1这一种版本，经TCP传输，观察一次未加密请求的封装过程。</p></div>
     <h4>为什么还要给请求加上控制信息？</h4>
     <p>只有“我要首页”的内容，网络设备还不知道要送往哪里，TCP也缺少组织传输所需的信息。各层把自己需要的控制信息加到承载的数据中，这叫<strong>封装</strong>。放在数据前面的控制字段集合叫<strong>首部</strong>。</p>
-    <p>例如，IP首部包含源、目的IP地址；TCP首部包含区分通信入口等信息，入口使用的编号叫<strong>端口</strong>，下一节会具体解释。加入TCP首部后的传输单位叫<strong>TCP报文段</strong>，IP层承载它形成<strong>IP包</strong>，链路层再把IP包放进当前链路使用的<strong>帧</strong>。它们是不同层次的数据单位。</p>
+    <p>先保留同一份<code>GET /</code>请求。TCP在它外面加入传输控制信息，组成<strong>TCP报文段</strong>；IP再加入源、目的地址，组成<strong>IP包</strong>；链路层把IP包放进当前链路使用的<strong>帧</strong>。内层内容被外层承载，网站的请求没有被改成三份不同业务。</p>
+    <p>这些信息分别给谁看？路由器看目的IP以选择下一步路线；目的设备的TCP看传输入口等信息，把请求字节交给相应程序；网站程序才按HTTP解释<code>GET /</code>。传输入口的编号叫<strong>端口</strong>，下一节就用两项服务区分它。</p>
     <p>接收端沿相反方向处理各层控制信息，最后让应用程序取得数据，叫<strong>解封装</strong>。这里的控制信息是给协议处理使用的，不是要显示在网页里的正文。</p>
     <!-- EXAMPLE:d1-layers -->
     <p>实际传输还可能分段、重组，应用的一条消息并不一定对应一个TCP报文段。图中选取的是完整收到本例所需数据的简化情况。</p>
@@ -67,14 +68,14 @@
   <article class="topic" id="d1-addresses" data-sources="32" data-topic="IP地址与端口的分工">
     <div class="topic-heading"><span class="topic-number">03</span><h3>IP地址与端口的分工</h3><button class="topic-note-button" data-note="d1-addresses" aria-controls="topic-notes">笔记</button></div><div class="topic-source-links" data-topic-sources></div>
     <p>同一台服务器可以同时提供不同服务。只知道一个IP地址，还不足以表达“我要和这里的哪项服务通信”。<strong>IP用于网络层寻址；端口用于传输层，帮助定位通信端点。</strong></p>
-    <p>初学时可以暂把IP看成“到哪处地址”，端口看成“在这个地址上找哪个服务入口”。但真实网络里，一台设备可以有多个IP地址，多个程序的安排也有例外，所以“IP=一台电脑、端口=一个固定程序”只能是简化印象。</p>
+    <p>假设<code>198.51.100.20</code>同时提供课程首页和另一项Web服务。两者的IP相同，仅填IP仍无法选择其中一项。本例把课程入口配置为<strong>TCP443</strong>，另一入口配置为<strong>TCP8443</strong>：换端口，就换了本例要联系的入口。</p>
     <figure class="figure"><span class="eyebrow">同一个IP，不同的服务入口</span><div class="address-map" role="img" aria-label="客户端192.0.2.10连接服务器198.51.100.20，服务器提供TCP443和TCP8443两个示意服务端口"><div class="address-client"><strong>浏览器</strong><br><code>192.0.2.10</code><br><small>客户端IP</small></div><span class="flow-arrow">→</span><div class="address-server"><strong>同一个服务器IP</strong><br><code>198.51.100.20</code><div class="service active" data-service="443"><span>课程首页</span><code>TCP :443</code></div><div class="service" data-service="8443"><span>另一项Web服务</span><code>TCP :8443</code></div></div></div><div class="demo-buttons" style="margin-top:18px"><button data-port="443" aria-pressed="true">访问课程首页</button><button data-port="8443" aria-pressed="false">访问另一服务</button></div><p id="port-explanation" class="demo-caption" aria-live="polite">目标为TCP的 198.51.100.20:443。IP相同，端口用于区分这里的服务入口。</p><figcaption>图4 · 地址与服务均为教学示意。443是HTTPS常用端口；8443在本例中人为分配给另一服务，不是必须这样使用。</figcaption></figure>
-    <h4>把“楼房地址与房间号”类比用到正确的位置。</h4>
-    <p>IP像楼房地址、端口像房间号，这能帮助区分两级定位。但房间号本身没有全球唯一性：另一栋楼也能有“443号房间”。同样，<strong>不同IP可以使用相同端口号。TCP和UDP是两种传输层协议：TCP提供前面介绍的可靠、有序字节流；UDP按一份份有边界的数据报传送，本身不保证到达和顺序。两者的端口空间分别管理，第3天会比较它们。</strong></p>
+    <h4>为什么还要说“TCP443”，不能只说“443”？</h4>
+    <p><strong>TCP和UDP</strong>是两种传输层协议。TCP提供前面的可靠、有序字节流；UDP按一份份有边界的数据报传送，本身不保证到达和顺序。它们分别管理端口，所以TCP443和UDP443可以是不同入口。联系服务时，要把<strong>IP、传输协议、端口</strong>一起说清，第3天再比较两种运输服务。</p>
 <!-- EXAMPLE:d1-addresses -->
 
     <p>一个服务还可能同时接待许多客户端。程序等待某个端口上的通信，称为<strong>监听</strong>；同一监听入口可以接待多个客户端。别把端口想成“只容一个人占用的座位”。</p>
-    <div class="callout"><strong>端口号的范围：0–65535</strong><p>TCP/UDP端口号字段是16位，有2<sup>16</sup>＝65536种取值，因此编号从0到65535。端口0被保留；不能写成“1到65536”。</p></div>
+    <div class="callout"><strong>端口号的范围：0–65535</strong><p>每一位只能取0或1：2位可写成00、01、10、11，共2×2＝4种；16位则有2<sup>16</sup>＝65536种。TCP/UDP端口号字段正是16位，编号从0到65535。端口0被保留；不能写成“1到65536”。</p></div>
     <details class="mini-check"><summary>端口范围怎样划分？</summary><p>0–1023是系统端口范围，1024–49151是用户端口范围，49152–65535是动态/私有范围。这里说的是IANA的分配分类，不是说每台操作系统都使用相同的临时端口范围，也不是说普通用户在所有系统上都能直接绑定任意端口。</p></details>
     <h4 style="margin-top:24px">小练习：网站换了服务端口，IP没变。</h4>
     <p>原来访问 <code>198.51.100.20:443</code>，现在服务只监听 <code>198.51.100.20:8443</code>。如果仍向443发起访问，“IP相同”能保证找到原来的服务吗？</p>
